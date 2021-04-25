@@ -45,8 +45,9 @@ vaccines_raw <- read_csv(file = "data/_raw/2021VAERSVAX.csv")
 # completion of the form), but they might be useful for solving
 # row duplications, so let's not remove them yet.
 
+# Removing columns should maybe be in 02_clean.R?
 patients <- patients_raw %>%
-  select(-c("CAGE_YR", "CAGE_MO"))
+  select(-c("CAGE_YR", "CAGE_MO", "ER_VISIT", "X_STAY", "V_FUNDBY", "BIRTH_DEFECT"))
 
 # There are some vaccines that are not for COVID, remove those
 vaccines <- vaccines_raw %>% filter (VAX_TYPE == "COVID19")

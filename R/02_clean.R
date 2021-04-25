@@ -24,6 +24,11 @@ patients <- read_csv(file = "data/01_patients.csv")
 vaccines %>% count (VAERS_ID, sort = TRUE)
 patients %>% count (VAERS_ID, sort = TRUE)
 
+patients %>% filter (SEX == "U") %>% count()
+# 898 patients have sex = "U" - should we delete?
+# According to VAERS it should be blank:
+# Sex (SEX):Sex of the vaccine recipient (M = Male, F = Female, Unknown = Blank).
+
 
 # Write data --------------------------------------------------------------
 write_tsv(x = my_data_clean,
