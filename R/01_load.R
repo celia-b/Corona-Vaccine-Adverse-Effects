@@ -48,7 +48,12 @@ vaccines_raw <- read_csv(file = "data/_raw/2021VAERSVAX.csv")
 patients <- patients_raw %>%
   select(-c("CAGE_YR", "CAGE_MO"))
 
+# There are some vaccines that are not for COVID, remove those
+vaccines <- vaccines_raw %>% filter (VAX_TYPE == "COVID19")
 
 # Write data --------------------------------------------------------------
 write_csv(x = patients,
           file = "data/01_patients.csv")
+
+write_csv (x = vaccines,
+           file = "data/01_vaccines.csv")
