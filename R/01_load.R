@@ -49,23 +49,30 @@ vaccines_raw <- read_csv(file = "data/_raw/2021VAERSVAX.csv")
 # completion of the form), but they might be useful for solving
 # row duplications, so let's not remove them yet.
 
+
 # Removing columns should maybe be in 02_clean.R?
 patients <- patients_raw %>%
-  select(-c("CAGE_YR", "CAGE_MO", "ER_VISIT", "X_STAY", "V_FUNDBY", "BIRTH_DEFECT"))
+  select(-c("CAGE_YR", "CAGE_MO", "ER_VISIT", "X_STAY", "V_FUNDBY", "BIRTH_DEFECT")) %>% # Removed columns
+  replace_na(list("DIED" = "N", 
+                  "L_THREAT" = "N",
+                  "HOSPITAL" = "N",
+                  "DISABLE" = "N",
+                  "OFC_VISIT" = "N",
+                  "ER_ED_VISIT" = "N"))
 
 
 symptoms <- symptoms_raw
-
-vaccines <- vaccines_raw
-
-data <- patients %>%
-  full_join(., symptoms, by = "VAERS_ID") %>%
-  full_join(., vaccines, by = "VAERS_ID")
 
 
 # There are some vaccines that are not for COVID, remove those
 vaccines <- vaccines_raw %>% 
   filter (VAX_TYPE == "COVID19")
+
+# Join the three tables into one
+data <- patients %>%
+  full_join(., symptoms, by = "VAERS_ID") %>%
+  full_join(., vaccines, by = "VAERS_ID")
+
 
 # Write data --------------------------------------------------------------
 write_csv(x = patients,
