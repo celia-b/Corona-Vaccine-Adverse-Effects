@@ -28,7 +28,11 @@ patients_raw <- read_csv(file = "data/_raw/2021VAERSDATA.csv",
                                           "X_STAY" = col_character(),
                                           "RPT_DATE" = col_date(format="%m/%d/%Y"),
                                           "V_FUNDBY" = col_character(),
-                                          "ER_VISIT" = col_character()))
+                                          "ER_VISIT" = col_character()),
+                         na = c("", " ", 
+                                "NA", "N/A", "na", "Na", "n/a", "N/a", 
+                                "None", "none", "None.", "NONE",
+                                "unknown", "Unknown", "UNKNOWN", "NO KNOWN", "None reported", "Not applicable", "None known")) # There is also "no", but that might interfere with certain columns where we do want yes/no --> change them to Y/N
 
 symptoms_raw <- read_csv(file = "data/_raw/2021VAERSSYMPTOMS.csv")
 vaccines_raw <- read_csv(file = "data/_raw/2021VAERSVAX.csv")
@@ -47,6 +51,14 @@ vaccines_raw <- read_csv(file = "data/_raw/2021VAERSVAX.csv")
 
 patients <- patients_raw %>%
   select(-c("CAGE_YR", "CAGE_MO"))
+
+symptoms <- symptoms_raw
+
+vaccines <- vaccines_raw
+
+data <- patients %>%
+  full_join(., symptoms, by = "VAERS_ID") %>%
+  full_join(., vaccines, by = "VAERS_ID")
 
 
 # Write data --------------------------------------------------------------
