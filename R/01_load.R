@@ -24,10 +24,7 @@ source(file = "R/99_project_functions.R")
 # The correct column types can be found in the VAERS user guide:
 # https://vaers.hhs.gov/docs/VAERSDataUseGuide_November2020.pdf
 
-patients_raw <- read_csv(file = "data/_raw/2021VAERSDATA.csv",
-=======
 patients_raw <- read_csv(file = "data/_raw/2021VAERSDATA.csv", 
->>>>>>> 7fc9c8c0bd31c9a28a0b3ebd0e42cd4b32f4060d
                          col_types = cols("BIRTH_DEFECT" = col_character(),
                                           "X_STAY" = col_character(),
                                           "RPT_DATE" = col_date(format="%m/%d/%Y"),

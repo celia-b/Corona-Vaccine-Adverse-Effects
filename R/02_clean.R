@@ -19,16 +19,12 @@ patients <- read_csv(file = "data/01_patients.csv",
                                       "ER_VISIT" = col_character()))
 symptoms <- read_csv(file = "data/01_symptoms.csv")
 vaccines <- read_csv(file = "data/01_vaccines.csv")
-<<<<<<< HEAD
-patients <- read_csv(file = "data/01_patients.csv")
-symptoms <- read_csv(file = "data/01_symptoms.csv")
-=======
->>>>>>> 7fc9c8c0bd31c9a28a0b3ebd0e42cd4b32f4060d
+
 
 
 # Wrangle data ------------------------------------------------------------
 
-## PATIENTS
+################################## PATIENTS ##################################
 patients_clean <- patients %>%
   select(-c(CAGE_YR, 
             CAGE_MO,
@@ -51,16 +47,18 @@ patients_clean <- patients %>%
 
 
 
-## VACCINES
+################################## VACCINES ##################################
 vaccines <- vaccines_raw %>% 
   filter (VAX_TYPE == "COVID19") # Keep only COVID vaccines
 
 
 
-<<<<<<< HEAD
+################################## SYMPTOMS ##################################
 # Remove symptom versions
 symptoms <- symptoms %>%
-  select(VAERS_ID, SYMPTOM1, SYMPTOM2, SYMPTOM3, SYMPTOM4, SYMPTOM5)
+  select(VAERS_ID, SYMPTOM1, SYMPTOM2, SYMPTOM3, SYMPTOM4, SYMPTOM5) %>%
+  mutate_all(funs(str_replace(., "\\s", "_"))) %>% # replace first space in symptoms with _
+  mutate_all(funs(str_replace(., "\\s", "_"))) # replace second space in symptoms with _
 
 # Extract the 20 symptoms that most commonly occur
 top_20_vec <- symptoms %>%
@@ -95,8 +93,7 @@ symptoms_all_IDs <- symptoms %>%
             top_20_symptoms) %>% #join tibble with all IDs
   replace(., 
           is.na(.), 
-          FALSE) %>% #convert NAs to FALSE
-  view()
+          FALSE) #convert NAs to FALSE
 
 # Make new column containing total number of symptoms each individual has
 symptom_counts <- symptoms %>%
@@ -122,7 +119,11 @@ symptoms_clean <- symptom_counts %>%
 write_tsv(x = symptoms_clean,
           file = "data/02_symptoms_clean.tsv")
 
-=======
+write_csv(x = patients_clean,
+          file = "data/02_patients_clean.csv")
+
+
+###########################################################################
 # Trying to see if there are repeated vaccine IDs, some are repeated in 
 # vaccines, but in patients they are all unique which is weird bc patients
 # has more rows
@@ -138,7 +139,4 @@ patients %>% filter (SEX == "U") %>% count()
 # Sex (SEX):Sex of the vaccine recipient (M = Male, F = Female, Unknown = Blank).
 
 
-# Write data --------------------------------------------------------------
-write_csv(x = patients_clean,
-          file = "data/02_patients_clean.csv")
->>>>>>> 7fc9c8c0bd31c9a28a0b3ebd0e42cd4b32f4060d
+
