@@ -12,6 +12,7 @@ source(file = "R/99_project_functions.R")
 
 # Load data ---------------------------------------------------------------
 
+<<<<<<< HEAD
 # When you load 2021VAERSDATA.csv without specifying column types, 
 # some problems arise. I found this is because R infers the column
 # type from the first 1000 rows, which is bad in cases like the column
@@ -28,33 +29,40 @@ patients_raw <- read_csv(file = "data/_raw/2021VAERSDATA.csv",
                                           "X_STAY" = col_character(),
                                           "RPT_DATE" = col_date(format="%m/%d/%Y"),
                                           "V_FUNDBY" = col_character(),
-                                          "ER_VISIT" = col_character()))
+                                          "ER_VISIT" = col_character()),
+                         na = c("", " ", 
+                                "NA", "N/A", "na", "Na", "n/a", "N/a", 
+                                "None", "none", "None.", "NONE",
+                                "unknown", "Unknown", "UNKNOWN", 
+                                "NO KNOWN", "no known", "No known", "No Known", 
+                                "None known", "none known", "NONE KNOWN", "None Known", 
+                                "None reported", "Not applicable",
+                                "No", "NO", "no")) # There is also "no", but that might interfere with certain columns where we do want yes/no --> change them to Y/N
 
 symptoms_raw <- read_csv(file = "data/_raw/2021VAERSSYMPTOMS.csv")
+
 vaccines_raw <- read_csv(file = "data/_raw/2021VAERSVAX.csv")
 
 # Wrangle data ------------------------------------------------------------
+  
 
-# Looking better into the data, there are not that many columns with no data.
-# Most N/As mean "no" or something similar. This we will have to deal with.
+patients <- patients_raw
+symptoms <- symptoms_raw
+vaccines <- vaccines_raw
 
-# Removed columns:
-# CAGE_YR and CAGE_MO (calculated patient age in years and month) 
-#   -> empty - we have AGE_YRS instead
-# There are some columns that seem useless like RPT_DATE (date of 
-# completion of the form), but they might be useful for solving
-# row duplications, so let's not remove them yet.
-
-# Removing columns should maybe be in 02_clean.R?
-patients <- patients_raw %>%
-  select(-c("CAGE_YR", "CAGE_MO", "ER_VISIT", "X_STAY", "V_FUNDBY", "BIRTH_DEFECT"))
-
-# There are some vaccines that are not for COVID, remove those
-vaccines <- vaccines_raw %>% filter (VAX_TYPE == "COVID19")
 
 # Write data --------------------------------------------------------------
 write_csv(x = patients,
           file = "data/01_patients.csv")
 
-write_csv (x = vaccines,
+write_csv(x = symptoms,
+          file = "data/01_symptoms.csv")
+
+write_csv(x = vaccines,
            file = "data/01_vaccines.csv")
+
+write_csv (x = symptoms_raw,
+           file = "data/01_symptoms.csv")
+
+
+
