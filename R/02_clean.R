@@ -12,8 +12,6 @@ source(file = "R/99_project_functions.R")
 
 # Load data ---------------------------------------------------------------
 vaccines <- read_csv(file = "data/01_vaccines.csv")
-patients <- read_csv(file = "data/01_patients.csv",
-                    col_types = cols ("RPT_DATE"= col_date(format="%Y-%m-%d")))
 
 
 # Wrangle data ------------------------------------------------------------
