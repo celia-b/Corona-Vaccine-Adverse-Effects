@@ -11,11 +11,46 @@ source(file = "R/99_project_functions.R")
 
 
 # Load data ---------------------------------------------------------------
+patients <- read_csv(file = "data/01_patients.csv", 
+                     col_types = cols("BIRTH_DEFECT" = col_character(),
+                                      "X_STAY" = col_character(),
+                                      "RPT_DATE" = col_date(format="%Y-%m-%d"),
+                                      "V_FUNDBY" = col_character(),
+                                      "ER_VISIT" = col_character()))
+symptoms <- read_csv(file = "data/01_symptoms.csv")
 vaccines <- read_csv(file = "data/01_vaccines.csv")
 
 
 # Wrangle data ------------------------------------------------------------
-#my_data_clean <- my_data # %>% ...
+
+## PATIENTS
+patients_clean <- patients %>%
+  select(-c(CAGE_YR, 
+            CAGE_MO,
+            RPT_DATE,
+            SYMPTOM_TEXT,
+            LAB_DATA,
+            OFC_VISIT,
+            ER_VISIT, 
+            X_STAY, 
+            V_FUNDBY, 
+            BIRTH_DEFECT,
+            SPLTTYPE)) %>% # Removed columns
+  replace_na(list(DIED = "N",
+                  L_THREAT = "N",
+                  HOSPITAL = "N",
+                  DISABLE = "N",
+                  OFC_VISIT = "N",
+                  ER_ED_VISIT = "N")) %>% # Handled NAs that are actually "No"
+  mutate(AGE_YRS = as.integer(AGE_YRS)) # Age to integers
+
+
+
+## VACCINES
+vaccines <- vaccines_raw %>% 
+  filter (VAX_TYPE == "COVID19") # Keep only COVID vaccines
+
+
 
 # Trying to see if there are repeated vaccine IDs, some are repeated in 
 # vaccines, but in patients they are all unique which is weird bc patients
