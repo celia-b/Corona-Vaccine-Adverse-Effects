@@ -57,13 +57,13 @@ vaccines <- vaccines_raw %>%
 # Remove symptom versions
 symptoms <- symptoms %>%
   select(VAERS_ID, SYMPTOM1, SYMPTOM2, SYMPTOM3, SYMPTOM4, SYMPTOM5) %>%
-  mutate_all(funs(str_replace(., "\\s", "_"))) %>% # replace first space in symptoms with _
+  mutate_all(funs(str_replace(., "\\s+", "_"))) %>% # replace first space in symptoms with _
   mutate_all(funs(str_replace(., "\\s", "_"))) # replace second space in symptoms with _
 
 # Extract the 20 symptoms that most commonly occur
 top_20_vec <- symptoms %>%
   pivot_longer(cols = -VAERS_ID, 
-               names_to = "symptom num",
+               names_to = "symptom_n",
                values_to = "symptom",
                values_drop_na = TRUE) %>% #get all symptoms into one column
   select(VAERS_ID, symptom) %>%
