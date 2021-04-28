@@ -25,7 +25,13 @@ patients_clean_aug <- patients_clean %>%
                                  TRUE ~ 'Y')) %>% # New column: currently has illness 
   mutate(COVID_POSITIVE = case_when(grepl("covid", CUR_ILL, ignore.case = TRUE) ~ 'Y',
                                     grepl("covid", HISTORY, ignore.case = TRUE) ~ 'Y',
-                                    TRUE ~ 'N')) # New column: has or had Covid-19
+                                    TRUE ~ 'N')) %>% # New column: has or had Covid-19
+  mutate(PRIOR_ADVERSE = case_when(is.na(PRIOR_VAX) ~ 'N',
+                                   TRUE ~ 'Y')) %>% # New column: has had adverse reaction to other vaccines
+  mutate(TAKES_ANTIINFLAMATORY = case_when(grepl("ibuprofen|aspirin|celecoxib|diclofenac|diflunisal|etodolac|indomethacin", OTHER_MEDS, ignore.case = TRUE) ~ 'Y',
+                                           TRUE ~ 'N')) %>% # New column: takes anti-inflamatory meds
+  mutate(TAKES_STEROIDS = case_when(grepl("steroid|betamethasone|prednisolone|dexamethasone|hydrocortisone", OTHER_MEDS, ignore.case = TRUE) ~ 'Y',
+                                    TRUE ~ 'N'))
 
 # Write data --------------------------------------------------------------
 write_csv(x = patients_clean_aug,
