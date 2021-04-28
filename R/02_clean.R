@@ -12,7 +12,8 @@ source(file = "R/99_project_functions.R")
 
 # Load data ---------------------------------------------------------------
 vaccines <- read_csv(file = "data/01_vaccines.csv")
-patients <- read_csv(file = "data/01_patients.csv")
+patients <- read_csv(file = "data/01_patients.csv",
+                    col_types = cols ("RPT_DATE"= col_date(format="%Y-%m-%d")))
 
 
 # Wrangle data ------------------------------------------------------------
@@ -23,6 +24,9 @@ patients <- read_csv(file = "data/01_patients.csv")
 # has more rows
 vaccines %>% count (VAERS_ID, sort = TRUE)
 patients %>% count (VAERS_ID, sort = TRUE)
+id_groups <- vaccines %>% group_by(VAERS_ID) %>% summarise(n = n())
+lot_groups <- vaccines %>% group_by(VAX_LOT) %>% summarise(n = n())
+
 
 patients %>% filter (SEX == "U") %>% count()
 # 898 patients have sex = "U" - should we delete?
