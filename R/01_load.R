@@ -12,7 +12,6 @@ source(file = "R/99_project_functions.R")
 
 # Load data ---------------------------------------------------------------
 
-<<<<<<< HEAD
 # When you load 2021VAERSDATA.csv without specifying column types, 
 # some problems arise. I found this is because R infers the column
 # type from the first 1000 rows, which is bad in cases like the column
@@ -60,9 +59,6 @@ write_csv(x = symptoms,
 
 write_csv(x = vaccines,
            file = "data/01_vaccines.csv")
-
-write_csv (x = symptoms_raw,
-           file = "data/01_symptoms.csv")
 
 
 
