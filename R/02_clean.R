@@ -52,7 +52,7 @@ sum(duplicated(vaccines)) # 30 duplicated rows in dataframe
 # There should not be any rows with the duplicates of VAERS_ID and VAX_LOT...
 vaccines %>% distinct(VAERS_ID, VAX_LOT) 
 
-vaccines <- vaccines %>%  # Vaccines, vaccines_clean?? we need naming convention
+vaccines_ <- vaccines %>%  # Vaccines, vaccines_clean?? we need naming convention
   filter (VAX_TYPE == "COVID19") %>% # Keep only COVID vaccines
   distinct () %>% # removes duplicates (same values for all variables)
   add_count (VAERS_ID) %>% 
