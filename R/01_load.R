@@ -11,6 +11,7 @@ source(file = "R/99_project_functions.R")
 
 
 # Load data ---------------------------------------------------------------
+<<<<<<< HEAD
 
 # When you load 2021VAERSDATA.csv without specifying column types, 
 # some problems arise. I found this is because R infers the column
@@ -23,6 +24,8 @@ source(file = "R/99_project_functions.R")
 # The correct column types can be found in the VAERS user guide:
 # https://vaers.hhs.gov/docs/VAERSDataUseGuide_November2020.pdf
 
+=======
+>>>>>>> 885dafa369d2089c0e3054a26b017915257483d8
 patients_raw <- read_csv(file = "data/_raw/2021VAERSDATA.csv", 
                          col_types = cols("BIRTH_DEFECT" = col_character(),
                                           "X_STAY" = col_character(),
@@ -37,6 +40,7 @@ patients_raw <- read_csv(file = "data/_raw/2021VAERSDATA.csv",
                                 "None known", "none known", "NONE KNOWN", "None Known", 
                                 "None reported", "Not applicable",
                                 "No", "NO", "no")) # There is also "no", but that might interfere with certain columns where we do want yes/no --> change them to Y/N
+
 
 symptoms_raw <- read_csv(file = "data/_raw/2021VAERSSYMPTOMS.csv")
 
@@ -59,9 +63,6 @@ write_csv(x = symptoms,
 
 write_csv(x = vaccines,
            file = "data/01_vaccines.csv")
-
-write_csv (x = symptoms_raw,
-           file = "data/01_symptoms.csv")
 
 
 

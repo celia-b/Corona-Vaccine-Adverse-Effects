@@ -36,7 +36,8 @@ patients_clean <- patients %>%
             X_STAY, 
             V_FUNDBY, 
             BIRTH_DEFECT,
-            SPLTTYPE)) %>% # Removed columns
+            SPLTTYPE,
+            RECVDATE)) %>% # Removed columns
   replace_na(list(DIED = "N",
                   L_THREAT = "N",
                   HOSPITAL = "N",
@@ -44,6 +45,13 @@ patients_clean <- patients %>%
                   OFC_VISIT = "N",
                   ER_ED_VISIT = "N")) %>% # Handled NAs that are actually "No"
   mutate(AGE_YRS = as.integer(AGE_YRS)) # Age to integers
+
+
+
+################################## SYMPTOMS ##################################
+# Remove symptom versions
+symptoms_clean <- symptoms %>%
+  select(VAERS_ID, SYMPTOM1, SYMPTOM2, SYMPTOM3, SYMPTOM4, SYMPTOM5)
 
 
 
@@ -97,87 +105,20 @@ vaccines <- vaccines %>%
 
 # Clean VAX_LOT column
 
-
-
-################################## SYMPTOMS ##################################
-# Remove symptom versions
-symptoms <- symptoms %>%
-  select(VAERS_ID, SYMPTOM1, SYMPTOM2, SYMPTOM3, SYMPTOM4, SYMPTOM5) %>%
-  mutate_all(funs(str_replace(., "\\s+", "_"))) %>% # replace first space in symptoms with _
-  mutate_all(funs(str_replace(., "\\s", "_"))) # replace second space in symptoms with _
-
-# Extract the 20 symptoms that most commonly occur
-top_20_vec <- symptoms %>%
-  pivot_longer(cols = -VAERS_ID, 
-               names_to = "symptom_n",
-               values_to = "symptom",
-               values_drop_na = TRUE) %>% #get all symptoms into one column
-  select(VAERS_ID, symptom) %>%
-  group_by(symptom) %>%
-  count(sort = TRUE) %>% #count symptom occurrence, sort by highest occurrence
-  head(20) %>%
-  pull(symptom) #convert symptoms column from tibble into vector
-
-# Filter out individuals that have a least one of the top 20 symptoms. 
-# Make tibble with columns VAERS_ID for these individuals and each of the top 20 symptoms. 
-# Fill tibble with TRUE/FALSE depending on whether the individual has symptom.  
-top_20_symptoms <- symptoms %>%
-  pivot_longer(cols = -VAERS_ID) %>% #get all symptoms into one column
-  filter(value %in% top_20_vec) %>% # Filter out IDs with any of the top 20 symptoms  
-  mutate(name = TRUE) %>% #create column with values TRUE
-  drop_na(value) %>% 
-  pivot_wider(id_cols = VAERS_ID,
-              names_from = value,
-              values_from = name,
-              values_fill = FALSE) #convert symptoms into column names and TRUE into values
-                                   #and give symptom value FALSE if empty
-
-# Reintroduce individuals with none of the top 20 symptoms which were filtered out above
-symptoms_all_IDs <- symptoms %>% 
-  select(VAERS_ID) %>%
-  full_join(., 
-            top_20_symptoms) %>% #join tibble with all IDs
-  replace(., 
-          is.na(.), 
-          FALSE) #convert NAs to FALSE
-
-# Make new column containing total number of symptoms each individual has
-symptom_counts <- symptoms %>%
-  pivot_longer(cols = -VAERS_ID, 
-               names_to = "symptom num",
-               values_to = "symptom",
-               values_drop_na = TRUE) %>% #get all symptoms into one column
-  select(VAERS_ID, 
-         symptom) %>%
-  group_by(VAERS_ID) %>%
-  count(sort = FALSE) %>%
-  rename(n_symptoms = n)
-
-# Join tibble containing total number of symptoms with tibble containing patient symptoms
-symptoms_clean <- symptom_counts %>% 
-  select(VAERS_ID, 
-         n_symptoms) %>%
-  full_join(symptoms_all_IDs, 
-            .) #join tibble with all IDs
-
-
-# Write data --------------------------------------------------------------
-write_tsv(x = symptoms_clean,
-          file = "data/02_symptoms_clean.tsv")
-
-write_csv(x = patients_clean,
-          file = "data/02_patients_clean.csv")
-
-
-###########################################################################
-
-
+# ?
 patients %>% filter (SEX == "U") %>% count()
 # 898 patients have sex = "U" - should we delete?
 # According to VAERS it should be blank:
 # Sex (SEX):Sex of the vaccine recipient (M = Male, F = Female, Unknown = Blank).
 
 
+
 # Write data --------------------------------------------------------------
-write_tsv(x = my_data_clean,
-          file = "data/02_my_data_clean.tsv")
+write_csv(x = patients_clean,
+          file = "data/02_patients_clean.csv")
+
+write_csv(x = symptoms_clean,
+          file = "data/02_symptoms_clean.csv")
+
+
+
