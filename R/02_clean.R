@@ -48,8 +48,54 @@ patients_clean <- patients %>%
 
 
 ################################## VACCINES ##################################
-vaccines <- vaccines_raw %>% 
-  filter (VAX_TYPE == "COVID19") # Keep only COVID vaccines
+sum(duplicated(vaccines)) # 30 duplicated rows in dataframe
+# There should not be any rows with the duplicates of VAERS_ID and VAX_LOT...
+vaccines %>% distinct(VAERS_ID, VAX_LOT) 
+
+vaccines <- vaccines %>%  # Vaccines, vaccines_clean?? we need naming convention
+  filter (VAX_TYPE == "COVID19") %>% # Keep only COVID vaccines
+  distinct () %>% # removes duplicates (same values for all variables)
+  add_count (VAERS_ID) %>% 
+  filter (n==1) %>% # only keep non-repeated IDs (remove duplicated IDs that had different vaccine or lot)
+  select (-n) # remove count column
+
+View(vaccines)
+
+### Check each column one by one and clean up
+vaccines %>% count(VAX_MANU)
+# There are 18 rows with "UNKNOWN MANUFACTURER" of vaccine; these are deleted:
+vaccines <- vaccines %>% subset(VAX_MANU != "UNKNOWN MANUFACTURER")
+# Rename PFIZER\\BIONTECH so that we can check for consistency
+vaccines <- vaccines %>% mutate(VAX_MANU = recode(VAX_MANU, "PFIZER\\BIONTECH" = "PFIZER-BIONTECH")) 
+# We have 3 vaccine manufacturers in the dataset:
+vaccines %>% distinct(VAX_MANU) 
+#1 "MODERNA"         
+#2 "PFIZER\\BIONTECH"
+#3 "JANSSEN"
+
+vaccines %>% distinct(VAX_DOSE_SERIES)
+# Replace the strings "N/A" and "UNK" with NA values
+vaccines <- vaccines %>% mutate(VAX_DOSE_SERIES = na_if(VAX_DOSE_SERIES, "UNK"))
+vaccines <- vaccines %>% mutate(VAX_DOSE_SERIES = na_if(VAX_DOSE_SERIES, "N/A"))
+
+vaccines %>% distinct(VAX_ROUTE) 
+# All values OK
+
+vaccines %>% distinct(VAX_SITE)
+# All values OK
+
+pattern <- "COVID19\\s\\(COVID19\\s\\((\\w++\\-*\\w*)\\)"# Regular expression matching the name of the vaccine manufacturer
+vaccines <- vaccines %>% mutate(VAX_NAME_extracted = str_match(VAX_NAME, pattern)[,2]) #%>% select(VAX_NAME, VAX_NAME_extracted)
+vaccines <- vaccines %>% mutate(comparison = if_else(VAX_MANU == VAX_NAME_extracted, TRUE, FALSE)) 
+# Same number of rows:
+vaccines %>% count(comparison)
+nrow(vaccines)
+# VAX_MANU and VAX_NAME are matching so we can delete the following columns:
+# VAX_NAME, VAX_NAME_extracted, comparison
+vaccines <- vaccines %>%
+  select(-c("VAX_NAME", "VAX_NAME_extracted", "comparison"))
+
+# Clean VAX_LOT column
 
 
 
@@ -129,13 +175,6 @@ write_csv(x = patients_clean,
 
 
 ###########################################################################
-# Trying to see if there are repeated vaccine IDs, some are repeated in 
-# vaccines, but in patients they are all unique which is weird bc patients
-# has more rows
-vaccines %>% count (VAERS_ID, sort = TRUE)
-patients %>% count (VAERS_ID, sort = TRUE)
-id_groups <- vaccines %>% group_by(VAERS_ID) %>% summarise(n = n())
-lot_groups <- vaccines %>% group_by(VAX_LOT) %>% summarise(n = n())
 
 
 patients %>% filter (SEX == "U") %>% count()
@@ -144,4 +183,6 @@ patients %>% filter (SEX == "U") %>% count()
 # Sex (SEX):Sex of the vaccine recipient (M = Male, F = Female, Unknown = Blank).
 
 
-
+# Write data --------------------------------------------------------------
+write_tsv(x = my_data_clean,
+          file = "data/02_my_data_clean.tsv")
