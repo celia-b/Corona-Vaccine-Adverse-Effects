@@ -11,18 +11,6 @@ source(file = "R/99_project_functions.R")
 
 
 # Load data ---------------------------------------------------------------
-
-# When you load 2021VAERSDATA.csv without specifying column types, 
-# some problems arise. I found this is because R infers the column
-# type from the first 1000 rows, which is bad in cases like the column
-# BIRTH_DEFECT, where there is a "Y" in case of "yes" and an NA in case 
-# of "no". Most patients don't have birth defects and so the 1000 first 
-# rows are all NAs and R assigns the column type to be logical (1/0/T/F/TRUE/FALSE)
-# and gets confused when it sees a "Y" and just puts an NA. This means 
-# we lose data so we have to fix it by specifying column types in the loading.
-# The correct column types can be found in the VAERS user guide:
-# https://vaers.hhs.gov/docs/VAERSDataUseGuide_November2020.pdf
-
 patients_raw <- read_csv(file = "data/_raw/2021VAERSDATA.csv", 
                          col_types = cols("BIRTH_DEFECT" = col_character(),
                                           "X_STAY" = col_character(),
@@ -37,6 +25,7 @@ patients_raw <- read_csv(file = "data/_raw/2021VAERSDATA.csv",
                                 "None known", "none known", "NONE KNOWN", "None Known", 
                                 "None reported", "Not applicable",
                                 "No", "NO", "no")) # There is also "no", but that might interfere with certain columns where we do want yes/no --> change them to Y/N
+
 
 symptoms_raw <- read_csv(file = "data/_raw/2021VAERSSYMPTOMS.csv")
 
