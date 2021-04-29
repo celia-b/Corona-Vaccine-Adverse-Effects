@@ -44,28 +44,19 @@ patients_clean <- patients %>%
                   ER_ED_VISIT = "N")) %>% # Handled NAs that are actually "No"
   mutate(AGE_YRS = as.integer(AGE_YRS)) # Age to integers
 
-
-
-## VACCINES
-vaccines <- vaccines_raw %>% 
-  filter (VAX_TYPE == "COVID19") # Keep only COVID vaccines
-
-
-
-# Trying to see if there are repeated vaccine IDs, some are repeated in 
-# vaccines, but in patients they are all unique which is weird bc patients
-# has more rows
-vaccines %>% count (VAERS_ID, sort = TRUE)
-patients %>% count (VAERS_ID, sort = TRUE)
-id_groups <- vaccines %>% group_by(VAERS_ID) %>% summarise(n = n())
-lot_groups <- vaccines %>% group_by(VAX_LOT) %>% summarise(n = n())
-
-
 patients %>% filter (SEX == "U") %>% count()
 # 898 patients have sex = "U" - should we delete?
 # According to VAERS it should be blank:
 # Sex (SEX):Sex of the vaccine recipient (M = Male, F = Female, Unknown = Blank).
 
+
+## VACCINES
+vaccines_clean <- vaccines %>% 
+  filter (VAX_TYPE == "COVID19") %>% # Keep only COVID vaccines
+  distinct () %>% # removes duplicates (same values for all variables)
+  add_count (VAERS_ID) %>% 
+  filter (n==1) %>% # only keep non-repeated IDs (remove duplicated IDs that had different vaccine or lot)
+  select (-n) # remove count column
 
 # Write data --------------------------------------------------------------
 write_tsv(x = my_data_clean,
