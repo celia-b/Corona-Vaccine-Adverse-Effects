@@ -12,7 +12,6 @@ source(file = "R/99_project_functions.R")
 
 # Load data ---------------------------------------------------------------
 
-<<<<<<< HEAD
 # When you load 2021VAERSDATA.csv without specifying column types, 
 # some problems arise. I found this is because R infers the column
 # type from the first 1000 rows, which is bad in cases like the column
