@@ -36,7 +36,8 @@ patients_clean <- patients %>%
             X_STAY, 
             V_FUNDBY, 
             BIRTH_DEFECT,
-            SPLTTYPE)) %>% # Removed columns
+            SPLTTYPE,
+            RECVDATE)) %>% # Removed columns
   replace_na(list(DIED = "N",
                   L_THREAT = "N",
                   HOSPITAL = "N",
@@ -44,6 +45,13 @@ patients_clean <- patients %>%
                   OFC_VISIT = "N",
                   ER_ED_VISIT = "N")) %>% # Handled NAs that are actually "No"
   mutate(AGE_YRS = as.integer(AGE_YRS)) # Age to integers
+
+
+
+################################## SYMPTOMS ##################################
+# Remove symptom versions
+symptoms_clean <- symptoms %>%
+  select(VAERS_ID, SYMPTOM1, SYMPTOM2, SYMPTOM3, SYMPTOM4, SYMPTOM5)
 
 
 
@@ -106,9 +114,11 @@ patients %>% filter (SEX == "U") %>% count()
 
 
 # Write data --------------------------------------------------------------
-write_csv(x = symptoms,
-          file = "data/02_symptoms_clean.csv")
-
 write_csv(x = patients_clean,
           file = "data/02_patients_clean.csv")
+
+write_csv(x = symptoms_clean,
+          file = "data/02_symptoms_clean.csv")
+
+
 

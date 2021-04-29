@@ -12,13 +12,8 @@ source(file = "R/99_project_functions.R")
 
 # Load data ---------------------------------------------------------------
 patients_clean <- read_csv(file = "data/02_patients_clean.csv", 
-                           col_types = cols(VAX_DATE = col_date(format="%m/%d/%Y"),
+                           col_types = cols(VAX_DATE = col_date(format = "%m/%d/%Y"),
                                             DATEDIED = col_date(format = "%m/%d/%Y")))
-
-
-# Wrangle data ------------------------------------------------------------
-################################## PATIENTS ##################################
-patients_clean <- read_csv(file = "data/02_patients_clean.csv")
 symptoms_clean <- read_csv(file = "data/02_symptoms_clean.csv")
 
 
@@ -30,7 +25,7 @@ patients_clean_aug <- patients_clean %>%
                                          ALLERGIES, 
                                          ignore.case = TRUE) ~ 'N',
                                  is.na(ALLERGIES) ~ 'N',
-                                 TRUE ~ 'Y')) %>% # New column: patient has allergies
+                                 TRUE ~ 'Y')) %>% # New column: patient has allergies - more symptoms/death rate?
   select(-ALLERGIES) %>% # Remove old dirty column
   mutate(HAS_ILLNESS = case_when(grepl("^non-serological|^Non-Hodgkin|^Non Hodgkin|^non-alcoholic|^non systemic", 
                                        CUR_ILL, 
@@ -39,26 +34,27 @@ patients_clean_aug <- patients_clean %>%
                                        CUR_ILL, 
                                        ignore.case = TRUE) ~ 'N',
                                  is.na(CUR_ILL) ~ 'N',
-                                 TRUE ~ 'Y')) %>% # New column: currently has illness
-  mutate(COVID_POSITIVE = case_when(grepl("covid", 
-                                          CUR_ILL, 
-                                          ignore.case = TRUE) ~ 'Y',
-                                    grepl("covid", 
-                                          HISTORY, 
-                                          ignore.case = TRUE) ~ 'Y',
-                                    TRUE ~ 'N')) %>% # New column: has or had Covid-19
+                                 TRUE ~ 'Y')) %>% # New column: currently has illness - more symptoms/death rate?
+  mutate(HAS_COVID = case_when(grepl("covid",
+                                     CUR_ILL,
+                                     ignore.case = TRUE) ~ 'Y',
+                               TRUE ~ 'N')) %>% # New column: has Covid-19 at time of vaccination - more symptoms/death rate?
+  mutate(HAD_COVID = case_when(grepl("covid",
+                                     HISTORY,
+                                     ignore.case = TRUE) ~ 'Y',
+                               TRUE ~ 'N')) %>% # New column: had Covid-19 in the past - less symptoms?
   select(-c(CUR_ILL, HISTORY)) %>% # Remove old dirty columns
   mutate(PRIOR_ADVERSE = case_when(is.na(PRIOR_VAX) ~ 'N',
-                                   TRUE ~ 'Y')) %>% # New column: has had adverse reaction to other vaccines
+                                   TRUE ~ 'Y')) %>% # New column: has had adverse reaction to other vaccines - more symptoms/death rate?
   select(-PRIOR_VAX) %>% #Remove old dirty column
   mutate(TAKES_ANTIINFLAMATORY = case_when(grepl("ibuprofen|aspirin|celecoxib|diclofenac|diflunisal|etodolac|indomethacin", 
                                                  OTHER_MEDS, 
                                                  ignore.case = TRUE) ~ 'Y',
-                                           TRUE ~ 'N')) %>% # New column: takes anti-inflamatory meds
+                                           TRUE ~ 'N')) %>% # New column: takes anti-inflamatory meds - less symptoms?
   mutate(TAKES_STEROIDS = case_when(grepl("steroid|betamethasone|prednisolone|dexamethasone|hydrocortisone", 
                                           OTHER_MEDS, 
                                           ignore.case = TRUE) ~ 'Y',
-                                    TRUE ~ 'N')) %>% # New column: takes steroid meds
+                                    TRUE ~ 'N')) %>% # New column: takes steroid meds - something?
   select(-OTHER_MEDS) %>% # Remove old dirty column
   mutate(AGE_CLASS = case_when(AGE_YRS < 10 ~ '[0,10)',
                                AGE_YRS >= 10 & AGE_YRS < 20 ~ '[10,20)',
@@ -69,7 +65,7 @@ patients_clean_aug <- patients_clean %>%
                                AGE_YRS >= 60 & AGE_YRS < 70 ~ '[60,70)',
                                AGE_YRS >= 70 & AGE_YRS < 80 ~ '[70,80)',
                                AGE_YRS >= 80 & AGE_YRS < 90 ~ '[80,90)',
-                               AGE_YRS >= 90 ~ '[90,120)')) %>% # New column: age group (for plotting)
+                               AGE_YRS >= 90 ~ '[90,120)')) %>% # New column: age group - for plotting
   mutate(DIED_AFTER = DATEDIED - VAX_DATE) %>% # New column: how long after taking the vaccine the subject died --> DIRTY FORMAT: figure out how to change it
   rename(SYMPTOMS_AFTER = NUMDAYS) %>% # Renamed column: how long after taking the vaccine the symptoms appeared
   select(-c(VAX_DATE, DATEDIED, ONSET_DATE, TODAYS_DATE)) # Remove old dirty columns
@@ -81,10 +77,6 @@ patients_clean_aug <- patients_clean %>%
 
 
 ################################## SYMPTOMS ##################################
-# Remove symptom versions
-symptoms_clean <- symptoms_clean %>%
-  select(VAERS_ID, SYMPTOM1, SYMPTOM2, SYMPTOM3, SYMPTOM4, SYMPTOM5)
-
 # Extract the 20 symptoms that most commonly occur
 top_20_vec <- symptoms_clean %>%
   pivot_longer(cols = -VAERS_ID, 
