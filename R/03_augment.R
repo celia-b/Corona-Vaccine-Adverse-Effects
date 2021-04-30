@@ -14,7 +14,6 @@ source(file = "R/99_project_functions.R")
 patients_clean <- read_csv(file = "data/02_patients_clean.csv")
 symptoms_clean <- read_csv(file = "data/02_symptoms_clean.csv")
 
-
 # Wrangle data ------------------------------------------------------------
 
 ################################### PATIENTS ###################################
@@ -40,11 +39,8 @@ patients_clean_aug <- patients_clean %>%
 
 
 ################################## SYMPTOMS ##################################
-# Remove symptom versions
-symptoms_clean <- symptoms_clean %>%
-  select(VAERS_ID, SYMPTOM1, SYMPTOM2, SYMPTOM3, SYMPTOM4, SYMPTOM5)
 
-# Extract the 20 symptoms that most commonly occur
+# Extract the 20 symptoms that most commonly occur as a vector
 top_20_vec <- symptoms_clean %>%
   pivot_longer(cols = -VAERS_ID, 
                names_to = "symptom_n",
@@ -56,8 +52,8 @@ top_20_vec <- symptoms_clean %>%
   head(20) %>%
   pull(symptom) # convert symptoms column from tibble into vector
 
-# Filter out individuals that have a least one of the top 20 symptoms. 
-# Make tibble with columns VAERS_ID for these individuals and each of the top 20 symptoms. 
+# Filter for individuals that have a least one of the top 20 symptoms. 
+# Make tibble with columns VAERS_ID and each of the top 20 symptoms. 
 # Fill tibble with TRUE/FALSE depending on whether the individual has symptom.  
 top_20_symptoms <- symptoms_clean %>%
   pivot_longer(cols = -VAERS_ID) %>% # get all symptoms into one column
@@ -70,7 +66,8 @@ top_20_symptoms <- symptoms_clean %>%
               values_fill = FALSE) # convert symptoms into column names and TRUE into values.
   # Give symptom value FALSE if empty
 
-# Reintroduce individuals with none of the top 20 symptoms which were filtered out above
+# Reintroduce individuals with none of the top 20 symptoms which were filtered out above. 
+# The result is a tibble containing all IDs and symptom columns with TRUE/FALSE
 symptoms_all_IDs <- symptoms_clean %>% 
   select(VAERS_ID) %>%
   distinct(VAERS_ID) %>% # remove repeated IDs
@@ -80,8 +77,10 @@ symptoms_all_IDs <- symptoms_clean %>%
           is.na(.), 
           FALSE) # convert NAs to FALSE
 
-# Make new column containing total number of symptoms each individual has
-symptom_counts <- symptoms_clean %>%
+# Make new column containing total number of symptoms each individual has.
+# Join this column with tibble containing symptom columns. 
+# The final tibble contains IDs, total number of symptoms and top 20 symptoms. 
+symptoms_clean_aug <- symptoms_clean %>%
   pivot_longer(cols = -VAERS_ID, 
                names_to = "symptom num",
                values_to = "symptom",
@@ -89,16 +88,13 @@ symptom_counts <- symptoms_clean %>%
   select(VAERS_ID, 
          symptom) %>%
   group_by(VAERS_ID) %>%
-  count(sort = FALSE) %>%
-  rename(n_symptoms = n)
-
-# Join tibble containing total number of symptoms with tibble containing symptom columns 
-symptoms_clean_aug <- symptom_counts %>% 
-  select(VAERS_ID, 
-         n_symptoms) %>%
+  count(sort = FALSE) %>% # count number of symptoms per ID
+  rename(n_symptoms = n) %>%
   full_join(., 
             symptoms_all_IDs) %>% # join tibble with all IDs 
-  setNames(gsub(" ", "_", names(.))) # replace all spaces in column names with _
+  setNames(gsub(" ", "_", names(.))) %>% # replace spaces with _ in column names
+  setNames(toupper(names(.))) %>%
+  view()
 
 
 

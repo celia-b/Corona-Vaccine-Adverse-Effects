@@ -103,10 +103,16 @@ patients %>% filter (SEX == "U") %>% count()
 # According to VAERS it should be blank:
 # Sex (SEX):Sex of the vaccine recipient (M = Male, F = Female, Unknown = Blank).
 
+################################## SYMPTOMS ##################################
+
+# Remove symptom versions
+symptoms_clean <- symptoms %>%
+  select(VAERS_ID, SYMPTOM1, SYMPTOM2, SYMPTOM3, SYMPTOM4, SYMPTOM5)
+
 
 
 # Write data --------------------------------------------------------------
-write_csv(x = symptoms,
+write_csv(x = symptoms_clean,
           file = "data/02_symptoms_clean.csv")
 
 write_csv(x = patients_clean,
