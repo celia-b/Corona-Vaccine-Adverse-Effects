@@ -36,7 +36,8 @@ patients_clean <- patients %>%
             X_STAY, 
             V_FUNDBY, 
             BIRTH_DEFECT,
-            SPLTTYPE)) %>% # Removed columns
+            SPLTTYPE,
+            RECVDATE)) %>% # Removed columns
   replace_na(list(DIED = "N",
                   L_THREAT = "N",
                   HOSPITAL = "N",
@@ -47,12 +48,19 @@ patients_clean <- patients %>%
 
 
 
+################################## SYMPTOMS ##################################
+# Remove symptom versions
+symptoms_clean <- symptoms %>%
+  select(VAERS_ID, SYMPTOM1, SYMPTOM2, SYMPTOM3, SYMPTOM4, SYMPTOM5)
+
+
+
 ################################## VACCINES ##################################
 sum(duplicated(vaccines)) # 30 duplicated rows in dataframe
 # There should not be any rows with the duplicates of VAERS_ID and VAX_LOT...
 vaccines %>% distinct(VAERS_ID, VAX_LOT) 
 
-vaccines <- vaccines %>%  # Vaccines, vaccines_clean?? we need naming convention
+vaccines_clean <- vaccines %>%  # Vaccines, vaccines_clean?? we need naming convention
   filter (VAX_TYPE == "COVID19") %>% # Keep only COVID vaccines
   distinct () %>% # removes duplicates (same values for all variables)
   add_count (VAERS_ID) %>% 
@@ -117,4 +125,6 @@ write_csv(x = symptoms_clean,
 
 write_csv(x = patients_clean,
           file = "data/02_patients_clean.csv")
+
+
 

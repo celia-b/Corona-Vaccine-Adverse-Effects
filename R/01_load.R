@@ -38,26 +38,22 @@ patients_raw <- read_csv(file = "data/_raw/2021VAERSDATA.csv",
                                 "None reported", "Not applicable",
                                 "No", "NO", "no")) # There is also "no", but that might interfere with certain columns where we do want yes/no --> change them to Y/N
 
+
 symptoms_raw <- read_csv(file = "data/_raw/2021VAERSSYMPTOMS.csv")
 
 vaccines_raw <- read_csv(file = "data/_raw/2021VAERSVAX.csv")
 
 # Wrangle data ------------------------------------------------------------
-  
-
-patients <- patients_raw
-symptoms <- symptoms_raw
-vaccines <- vaccines_raw
-
+ 
 
 # Write data --------------------------------------------------------------
-write_csv(x = patients,
+write_csv(x = patients_raw,
           file = "data/01_patients.csv")
 
-write_csv(x = symptoms,
+write_csv(x = symptoms_raw,
           file = "data/01_symptoms.csv")
 
-write_csv(x = vaccines,
+write_csv(x = vaccines_raw,
            file = "data/01_vaccines.csv")
 
 
