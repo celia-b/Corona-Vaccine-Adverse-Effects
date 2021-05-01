@@ -78,11 +78,10 @@ top_20_vec <- symptoms_clean %>%
                names_to = "symptom_n",
                values_to = "symptom",
                values_drop_na = TRUE) %>% # get all symptoms into one column
-  select(VAERS_ID, symptom) %>%
-  group_by(symptom) %>%
-  count(sort = TRUE) %>% # count symptom occurrence, sort by highest occurrence
+  count(symptom, sort = TRUE) %>% # count symptom occurrence, sort by highest occurrence
   head(20) %>%
   pull(symptom) # convert symptoms column from tibble into vector
+  
 
 # Filter for individuals that have a least one of the top 20 symptoms. 
 # Make tibble with columns VAERS_ID and each of the top 20 symptoms. 
