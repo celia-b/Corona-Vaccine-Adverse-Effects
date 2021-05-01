@@ -125,6 +125,7 @@ symptoms_clean_aug <- symptoms_clean %>%
             symptoms_all_IDs) %>% # join tibble with all IDs 
   setNames(gsub(" ", "_", names(.))) %>% # replace spaces with _ in column names
   setNames(toupper(names(.))) %>%
+  ungroup() %>%
   view()
 
 
