@@ -14,7 +14,11 @@ library("tidyverse")
 patients_clean <- read_csv(file = "data/02_patients_clean.csv", 
                            col_types = cols(VAX_DATE = col_date(format = "%m/%d/%Y"),
                                             DATEDIED = col_date(format = "%m/%d/%Y")))
+
 symptoms_clean <- read_csv(file = "data/02_symptoms_clean.csv")
+
+vaccines_clean <- read_csv(file = "data/02_vaccines_clean.csv",
+                           col_types = cols(VAX_DOSE_SERIES = col_character()))
 
 # Wrangle data ------------------------------------------------------------
 
@@ -103,7 +107,8 @@ symptoms_all_IDs <- symptoms_clean %>%
   select(VAERS_ID) %>%
   distinct(VAERS_ID) %>% # remove repeated IDs
   full_join(., 
-            top_20_symptoms) %>% # join tibble with all IDs with symptoms tibble
+            top_20_symptoms,
+            by = "VAERS_ID") %>% # join tibble with all IDs with symptoms tibble
   replace(., 
           is.na(.), 
           FALSE) # convert NAs to FALSE
@@ -122,12 +127,24 @@ symptoms_clean_aug <- symptoms_clean %>%
   count(sort = FALSE) %>% # count number of symptoms per ID
   rename(n_symptoms = n) %>%
   full_join(., 
-            symptoms_all_IDs) %>% # join tibble with all IDs 
+            symptoms_all_IDs,
+            by = "VAERS_ID") %>% # join tibble with all IDs 
   setNames(gsub(" ", "_", names(.))) %>% # replace spaces with _ in column names
   setNames(toupper(names(.))) %>%
   ungroup() %>%
   view()
 
+
+################################## VACCINES ##################################
+
+vaccines_clean_aug <- vaccines_clean
+
+
+################################ MERGED TABLE ################################
+
+merged_data <- patients_clean_aug %>%
+  inner_join(symptoms_clean_aug, by = "VAERS_ID") %>%
+  inner_join(vaccines_clean_aug, by = "VAERS_ID")
 
 
 # Write data --------------------------------------------------------------
@@ -137,4 +154,8 @@ write_csv(x = patients_clean_aug,
 write_csv(x = symptoms_clean_aug,
           file = "data/03_symptoms_clean_aug.csv")
 
+write_csv(x = vaccines_clean_aug,
+          file = "data/03_vaccines_clean_aug.csv")
 
+write_csv(x = merged_data,
+          file = "data/03_merged_data.csv")
