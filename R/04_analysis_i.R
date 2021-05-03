@@ -20,7 +20,7 @@ merged_data <- read_csv(file = "data/03_merged_data.csv",
 
 ################################## SYMPTOMS ##################################
 
-# Get vector with names of symptom columns in order to refer to refer to 
+# Get vector with names of symptom columns in order to refer to 
 # all symptom columns later on
 symptom_cols <- merged_data %>%
   select(DYSPNOEA, PAIN_IN_EXTREMITY, DIZZINESS, FATIGUE, INJECTION_SITE_ERYTHEMA, 
@@ -101,9 +101,9 @@ merged_data %>%
 
 #################### GENDER VS NUMBER/TYPES OF SYMPTOMS ####################
 
-# Get list of relative symptom counts for men and women (symptom counts for each
-# gender relative to number of each gender that participated in study). 
-# Make bar plot showing relative occurence of top 20 symptoms by gender
+# Bar plot showing the relative occurrence of the top 20 symptoms by gender. 
+# As there are not an equal number of males and females in the study, the
+# counts are relative to the respective gender. 
 symp_types_bar <- merged_long %>%
   count(SEX, symptom, value) %>%
   group_by(symptom, SEX) %>%
@@ -121,7 +121,8 @@ symp_types_bar <- merged_long %>%
   xlab("Symptoms") + 
   ylab("Relative occurence (%)")
 
-# Plot number of symptoms experienced by males and females as bar plot
+# Bar plot showing the number of symptoms experienced by males and females. 
+# The counts are relative to the respective genders. 
 n_symp_bar <- merged_data %>%
   group_by(SEX) %>%
   ggplot(.,
