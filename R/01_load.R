@@ -7,7 +7,7 @@ library("tidyverse")
 
 
 # Define functions --------------------------------------------------------
-source(file = "R/99_project_functions.R")
+#source(file = "R/99_project_functions.R")
 
 
 # Load data ---------------------------------------------------------------
@@ -17,7 +17,9 @@ patients_raw <- read_csv(file = "data/_raw/2021VAERSDATA.csv",
                                           "X_STAY" = col_character(),
                                           "RPT_DATE" = col_date(format="%m/%d/%Y"),
                                           "V_FUNDBY" = col_character(),
-                                          "ER_VISIT" = col_character()),
+                                          "ER_VISIT" = col_character(),
+                                          "HOSPDAYS" = col_character()),
+                         
                          na = c("", " ", 
                                 "NA", "N/A", "na", "Na", "n/a", "N/a", 
                                 "None", "none", "None.", "NONE",

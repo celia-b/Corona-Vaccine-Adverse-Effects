@@ -146,6 +146,24 @@ merged_data <- patients_clean_aug %>%
   inner_join(vaccines_clean_aug, by = "VAERS_ID")
 
 
+######################### LONG FORMAT SYMPTOMS TABLE #########################
+
+# Get vector with names of symptom columns in order to refer to 
+# all symptom columns later on
+symptom_cols <- merged_data %>%
+  select(DYSPNOEA, PAIN_IN_EXTREMITY, DIZZINESS, FATIGUE, INJECTION_SITE_ERYTHEMA, 
+         INJECTION_SITE_PRURITUS, INJECTION_SITE_SWELLING, CHILLS, RASH, HEADACHE, 
+         INJECTION_SITE_PAIN, NAUSEA, PAIN, PYREXIA, MYALGIA, ARTHRALGIA, PRURITUS, 
+         ASTHENIA, VOMITING, DEATH) %>%
+  names()
+
+# Make long format tibble containing VAERS_ID, SEX, and symptoms column with all top 20 symptoms
+merged_data_long <- merged_data %>%
+  pivot_longer(cols = all_of(symptom_cols), 
+               names_to = "SYMPTOM", 
+               values_to = "SYMPTOM_VALUE")
+
+
 # Write data --------------------------------------------------------------
 write_csv(x = patients_clean_aug,
           file = "data/03_patients_clean_aug.csv")
@@ -158,3 +176,7 @@ write_csv(x = vaccines_clean_aug,
 
 write_csv(x = merged_data,
           file = "data/03_merged_data.csv")
+
+write_csv(x = merged_data_long,
+          file = "data/03_merged_data_long.csv.gz")
+

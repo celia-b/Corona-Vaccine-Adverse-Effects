@@ -13,28 +13,13 @@ library("tidyverse")
 # Load data ---------------------------------------------------------------
 merged_data <- read_csv(file = "data/03_merged_data.csv",
                         col_types = cols(VAX_DOSE_SERIES = col_character()))
-  
+
+merged_data_long <- read_csv(file = gzfile("data/03_merged_data_long.csv.gz"))
 
 
 # Wrangle data ------------------------------------------------------------
 
-################################## SYMPTOMS ##################################
 
-# Get vector with names of symptom columns in order to refer to 
-# all symptom columns later on
-symptom_cols <- merged_data %>%
-  select(DYSPNOEA, PAIN_IN_EXTREMITY, DIZZINESS, FATIGUE, INJECTION_SITE_ERYTHEMA, 
-         INJECTION_SITE_PRURITUS, INJECTION_SITE_SWELLING, CHILLS, RASH, HEADACHE, 
-         INJECTION_SITE_PAIN, NAUSEA, PAIN, PYREXIA, MYALGIA, ARTHRALGIA, PRURITUS, 
-         ASTHENIA, VOMITING, DEATH) %>%
-  names()
-
-# Make long format tibble containing VAERS_ID, SEX, and symptoms column with all top 20 symptoms
-merged_long <- merged_data %>%
-  select(VAERS_ID, SEX, N_SYMPTOMS, all_of(symptom_cols)) %>%
-  pivot_longer(cols = all_of(symptom_cols), 
-               names_to = "symptom", 
-               values_to = "value")
 
 
 # Model data ----------------------------------------------------------
@@ -96,22 +81,20 @@ merged_data %>%
   ggplot(aes(N_SYMPTOMS)) + 
   geom_bar()
 
-  
-
 
 #################### GENDER VS NUMBER/TYPES OF SYMPTOMS ####################
 
 # Bar plot showing the relative occurrence of the top 20 symptoms by gender. 
 # As there are not an equal number of males and females in the study, the
 # counts are relative to the respective gender. 
-symp_types_bar <- merged_long %>%
-  count(SEX, symptom, value) %>%
-  group_by(symptom, SEX) %>%
+symp_types_bar <- merged_data_long %>%
+  count(SEX, SYMPTOM, SYMPTOM_VALUE) %>%
+  group_by(SYMPTOM, SEX) %>%
   mutate(total = sum(n)) %>%
-  filter(value == TRUE) %>%
+  filter(SYMPTOM_VALUE == TRUE) %>%
   summarise(prop = n/total*100, .groups = "rowwise") %>%
   ggplot(.,
-         aes(x = reorder(symptom, desc(prop)),
+         aes(x = reorder(SYMPTOM, desc(prop)),
              y = prop,
              fill = SEX)) +
   geom_bar(position = "dodge",
@@ -123,7 +106,7 @@ symp_types_bar <- merged_long %>%
 
 # Bar plot showing the number of symptoms experienced by males and females. 
 # The counts are relative to the respective genders. 
-n_symp_bar <- merged_data %>%
+n_symp_bar <- merged_data_long %>%
   group_by(SEX) %>%
   ggplot(.,
          aes(x = N_SYMPTOMS,
@@ -135,6 +118,10 @@ n_symp_bar <- merged_data %>%
   xlab("Number of symptoms") + 
   ylab("Relative occurence")
 
+
+
+
+############### VACCINE MANUFACTURER VS NUMBER/TYPES OF SYMPTOMS ###############
 
 
 
