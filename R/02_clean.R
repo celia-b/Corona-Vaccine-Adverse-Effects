@@ -47,7 +47,8 @@ patients_clean <- patients %>%
                   DISABLE = "N",
                   OFC_VISIT = "N",
                   ER_ED_VISIT = "N")) %>% # Handled NAs that are actually "No"
-  mutate(AGE_YRS = as.integer(AGE_YRS)) # Age to integers
+  mutate(AGE_YRS = as.integer(AGE_YRS)) %>% # Age to integers
+  filter(SEX != "U") # remove persons with unkwnon sex
 
 
 
@@ -99,11 +100,6 @@ vaccines <- vaccines %>%
 ## DEAL WITH THIS AT SOME POINT
 
 # Clean VAX_LOT column
-# ?
-patients %>% filter (SEX == "U") %>% count()
-# 898 patients have sex = "U" - should we delete?
-# According to VAERS it should be blank:
-# Sex (SEX):Sex of the vaccine recipient (M = Male, F = Female, Unknown = Blank).
 
 
 

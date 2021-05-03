@@ -85,7 +85,7 @@ top_20_vec <- symptoms_clean %>%
   count(symptom, sort = TRUE) %>% # count symptom occurrence, sort by highest occurrence
   head(20) %>%
   pull(symptom) # convert symptoms column from tibble into vector
-  
+
 
 # Filter for individuals that have a least one of the top 20 symptoms. 
 # Make tibble with columns VAERS_ID and each of the top 20 symptoms. 
@@ -131,8 +131,7 @@ symptoms_clean_aug <- symptoms_clean %>%
             by = "VAERS_ID") %>% # join tibble with all IDs 
   setNames(gsub(" ", "_", names(.))) %>% # replace spaces with _ in column names
   setNames(toupper(names(.))) %>%
-  ungroup() %>%
-  view()
+  ungroup()
 
 
 ################################## VACCINES ##################################
