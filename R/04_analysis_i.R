@@ -11,9 +11,12 @@ library("tidyverse")
 
 
 # Load data ---------------------------------------------------------------
+
+# Wide format
 merged_data <- read_csv(file = "data/03_merged_data.csv",
                         col_types = cols(VAX_DOSE_SERIES = col_character()))
 
+# Long format symptom column
 merged_data_long <- read_csv(file = gzfile("data/03_merged_data_long.csv.gz"))
 
 
@@ -82,47 +85,103 @@ merged_data %>%
   geom_bar()
 
 
-#################### GENDER VS NUMBER/TYPES OF SYMPTOMS ####################
+#################### SEX VS NUMBER/TYPES OF SYMPTOMS ####################
 
-# Bar plot showing the relative occurrence of the top 20 symptoms by gender. 
-# As there are not an equal number of males and females in the study, the
-# counts are relative to the respective gender. 
-symp_types_bar <- merged_data_long %>%
+# Bar plot showing the relative occurrence of the top 20 symptoms by sex. 
+# As there is not an equal number of males and females in the study, the
+# counts are relative to the respective sex. 
+merged_data_long %>%
   count(SEX, SYMPTOM, SYMPTOM_VALUE) %>%
   group_by(SYMPTOM, SEX) %>%
   mutate(total = sum(n)) %>%
   filter(SYMPTOM_VALUE == TRUE) %>%
-  summarise(prop = n/total*100, .groups = "rowwise") %>%
+  summarise(prop = n/total, .groups = "rowwise") %>%
   ggplot(.,
          aes(x = reorder(SYMPTOM, desc(prop)),
              y = prop,
              fill = SEX)) +
   geom_bar(position = "dodge",
            stat = "identity") +
-  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)) +
-  ggtitle("Relative occurence of top 20 symptoms by gender") +
+  theme_classic() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  scale_y_continuous(labels = scales::percent) +
+  scale_fill_discrete(name = "Sex", 
+       labels = c("Females", "Males")) +
+  ggtitle("Relative occurence of top 20 symptoms by sex") +
   xlab("Symptoms") + 
-  ylab("Relative occurence (%)")
+  ylab("Relative occurence")
 
 # Bar plot showing the number of symptoms experienced by males and females. 
 # The counts are relative to the respective genders. 
-n_symp_bar <- merged_data_long %>%
+merged_data_long %>%
   group_by(SEX) %>%
   ggplot(.,
          aes(x = N_SYMPTOMS,
              fill = SEX,
              stat(prop))) +
   geom_bar(position = "dodge") + 
-  scale_x_continuous(limits = c(0, 25)) + 
-  ggtitle("Total number of symptoms by gender") +
+  scale_x_continuous(limits = c(0, 30)) + 
+  scale_y_continuous(labels = scales::percent) +
+  scale_fill_discrete(name = "Sex", 
+                      labels = c("Females", "Males")) +
+  ggtitle("Relative occurrence of number of symptoms by gender") +
   xlab("Number of symptoms") + 
-  ylab("Relative occurence")
-
+  ylab("Relative occurence") +
+  theme_classic()
 
 
 
 ############### VACCINE MANUFACTURER VS NUMBER/TYPES OF SYMPTOMS ###############
 
+merged_data_long %>%
+  ggplot(.,
+         aes(x = N_SYMPTOMS,
+             fill = VAX_MANU,
+             stat(prop))) +
+  geom_bar(position = "stack") + 
+  scale_x_continuous(limits = c(0, 20)) + 
+  scale_y_continuous(labels = scales::percent) +
+  ggtitle("Total number of symptoms by vaccine manufacturer") +
+  labs(fill = "Vaccine manufacturer") +
+  xlab("Number of symptoms") + 
+  ylab("Relative occurence") +
+  theme_classic()
+
+
+merged_data_long %>%
+  ggplot(., 
+         aes(N_SYMPTOMS,
+             fill = VAX_MANU)) +
+  geom_density(alpha = 0.3, 
+               adjust = 2.5) +
+  scale_x_continuous(limits = c(0, 30)) + 
+  scale_y_continuous(labels = scales::percent) +
+  ggtitle("Total number of symptoms by vaccine manufacturer") +
+  labs(fill = "Vaccine manufacturer") +
+  xlab("Number of symptoms") + 
+  ylab("Relative occurence") + 
+  theme_classic()
+
+
+merged_data_long %>%
+  count(VAX_MANU, SYMPTOM, SYMPTOM_VALUE) %>%
+  group_by(SYMPTOM, VAX_MANU) %>%
+  mutate(total = sum(n)) %>%
+  filter(SYMPTOM_VALUE == TRUE) %>%
+  summarise(prop = n/total, .groups = "rowwise") %>%
+  ggplot(.,
+         aes(x = reorder(SYMPTOM, desc(prop)),
+             y = prop,
+             fill = VAX_MANU)) +
+  geom_bar(position = "dodge",
+           stat = "identity") +
+  theme_classic() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  scale_y_continuous(labels = scales::percent) +
+  labs(fill = "Vaccine manufacturer") +
+  ggtitle("Relative occurence of top 20 symptoms by manufacturer") +
+  xlab("Symptoms") + 
+  ylab("Relative occurence")
 
 
 
