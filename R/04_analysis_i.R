@@ -11,6 +11,7 @@ library("tidyverse")
 
 
 # Load data ---------------------------------------------------------------
+<<<<<<< HEAD
 merged_clean_aug <- read_csv(file = "data/03_merged_data.csv")
   
 
@@ -38,10 +39,66 @@ merged_clean_aug_long <- merged_clean_aug %>%
 
 # Model data ----------------------------------------------------------
 my_data_clean_aug %>% ...
+=======
+merged_data <- read_csv(file = "data/03_merged_data.csv",
+                        col_types = cols(VAX_DOSE_SERIES = col_character()))
+
+
+# Wrangle data ------------------------------------------------------------
+#my_data_clean_aug %>% ...
+
+
+# Model data
+#my_data_clean_aug %>% ...
+>>>>>>> a4bcc2e07d3cee5c6103597333a4d21f5134dd17
 
 
 # Visualise data ----------------------------------------------------------
-my_data_clean_aug %>% ...
+######################## SYMPTOMS AFTER N DAYS ############################
+## Distribution of the number of days after vaccine injection
+## when symptoms appear.
+
+merged_data %>%
+  select(VAERS_ID, AGE_CLASS, SEX, SYMPTOMS_AFTER, VAX_MANU) %>%
+  arrange(SYMPTOMS_AFTER) %>%
+  filter(SYMPTOMS_AFTER < 20) %>%
+  ggplot(aes(SYMPTOMS_AFTER)) +
+  geom_bar() # would be nice to have x-axis as proportion instead of count
+
+# It's interesting that there is a bump at around 7 days, which is when 
+# the adaptive immune system kick in. Maybe symptoms that appear immediately
+# after the vaccine is recieved are due to the innate immune response
+# and the ones after a few days are the adaptive.
+
+# By age class 
+# --> there is a problem here with unequal representation of age classes
+merged_data %>%
+  select(VAERS_ID, AGE_CLASS, SEX, SYMPTOMS_AFTER, VAX_MANU) %>%
+  arrange(SYMPTOMS_AFTER) %>%
+  filter(SYMPTOMS_AFTER < 20) %>%
+  drop_na(AGE_CLASS) %>%
+  ggplot(aes(SYMPTOMS_AFTER, fill = AGE_CLASS)) +
+  geom_bar()
+
+# By manufacturer 
+# --> again, problem with manufacturer representation
+merged_data %>%
+  select(VAERS_ID, AGE_CLASS, SEX, SYMPTOMS_AFTER, VAX_MANU) %>%
+  arrange(SYMPTOMS_AFTER) %>%
+  filter(SYMPTOMS_AFTER < 20) %>%
+  ggplot(aes(SYMPTOMS_AFTER, fill = VAX_MANU)) +
+  geom_bar()
+
+
+######################## NUMBER OF SYMPTOMS ###############################
+merged_data %>%
+  select(VAERS_ID, AGE_CLASS, SEX, N_SYMPTOMS, VAX_MANU) %>%
+  arrange(N_SYMPTOMS) %>%
+  filter(N_SYMPTOMS < 20) %>%
+  ggplot(aes(N_SYMPTOMS)) + 
+  geom_bar()
+
+  
 
 
 #################### GENDER VS NUMBER/TYPES OF SYMPTOMS ####################
