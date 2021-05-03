@@ -11,8 +11,8 @@ library("tidyverse")
 
 
 # Load data ---------------------------------------------------------------
-<<<<<<< HEAD
-merged_clean_aug <- read_csv(file = "data/03_merged_data.csv")
+merged_data <- read_csv(file = "data/03_merged_data.csv",
+                        col_types = cols(VAX_DOSE_SERIES = col_character()))
   
 
 
@@ -22,7 +22,7 @@ merged_clean_aug <- read_csv(file = "data/03_merged_data.csv")
 
 # Get vector with names of symptom columns in order to refer to refer to 
 # all symptom columns later on
-symptom_cols <- merged_clean_aug %>%
+symptom_cols <- merged_data %>%
   select(DYSPNOEA, PAIN_IN_EXTREMITY, DIZZINESS, FATIGUE, INJECTION_SITE_ERYTHEMA, 
          INJECTION_SITE_PRURITUS, INJECTION_SITE_SWELLING, CHILLS, RASH, HEADACHE, 
          INJECTION_SITE_PAIN, NAUSEA, PAIN, PYREXIA, MYALGIA, ARTHRALGIA, PRURITUS, 
@@ -30,7 +30,7 @@ symptom_cols <- merged_clean_aug %>%
   names()
 
 # Make long format tibble containing VAERS_ID, SEX, and symptoms column with all top 20 symptoms
-merged_clean_aug_long <- merged_clean_aug %>%
+merged_long <- merged_data %>%
   select(VAERS_ID, SEX, N_SYMPTOMS, all_of(symptom_cols)) %>%
   pivot_longer(cols = all_of(symptom_cols), 
                names_to = "symptom", 
@@ -38,10 +38,8 @@ merged_clean_aug_long <- merged_clean_aug %>%
 
 
 # Model data ----------------------------------------------------------
-my_data_clean_aug %>% ...
-=======
-merged_data <- read_csv(file = "data/03_merged_data.csv",
-                        col_types = cols(VAX_DOSE_SERIES = col_character()))
+#my_data_clean_aug %>% ...
+
 
 
 # Wrangle data ------------------------------------------------------------
@@ -50,10 +48,10 @@ merged_data <- read_csv(file = "data/03_merged_data.csv",
 
 # Model data
 #my_data_clean_aug %>% ...
->>>>>>> a4bcc2e07d3cee5c6103597333a4d21f5134dd17
 
 
 # Visualise data ----------------------------------------------------------
+
 ######################## SYMPTOMS AFTER N DAYS ############################
 ## Distribution of the number of days after vaccine injection
 ## when symptoms appear.
@@ -106,7 +104,7 @@ merged_data %>%
 # Get list of relative symptom counts for men and women (symptom counts for each
 # gender relative to number of each gender that participated in study). 
 # Make bar plot showing relative occurence of top 20 symptoms by gender
-symp_types_bar <- merged_clean_aug_long %>%
+symp_types_bar <- merged_long %>%
   count(SEX, symptom, value) %>%
   group_by(symptom, SEX) %>%
   mutate(total = sum(n)) %>%
@@ -124,7 +122,7 @@ symp_types_bar <- merged_clean_aug_long %>%
   ylab("Relative occurence (%)")
 
 # Plot number of symptoms experienced by males and females as bar plot
-n_symp_bar <- merged_clean_aug %>%
+n_symp_bar <- merged_data %>%
   group_by(SEX) %>%
   ggplot(.,
          aes(x = N_SYMPTOMS,
