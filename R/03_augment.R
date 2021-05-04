@@ -84,20 +84,22 @@ top_20_vec <- symptoms_clean %>%
                values_drop_na = TRUE) %>% # get all symptoms into one column
   count(symptom, sort = TRUE) %>% # count symptom occurrence, sort by highest occurrence
   head(20) %>%
-  pull(symptom) # convert symptoms column from tibble into vector
+  pluck("symptom") # convert symptoms column from tibble into vector 
 
 
 # Filter for individuals that have a least one of the top 20 symptoms. 
 # Make tibble with columns VAERS_ID and each of the top 20 symptoms. 
 # Fill tibble with TRUE/FALSE depending on whether the individual has symptom.  
 top_20_symptoms <- symptoms_clean %>%
-  pivot_longer(cols = -VAERS_ID) %>% # get all symptoms into one column
-  filter(value %in% top_20_vec) %>% # Filter out IDs with any of the top 20 symptoms  
-  mutate(name = TRUE) %>% # create column with values TRUE
-  drop_na(value) %>% 
+  pivot_longer(cols = -VAERS_ID, 
+               names_to = "symptom_num", 
+               values_to = "symptom") %>% # get all symptoms into one column
+  filter(symptom %in% top_20_vec) %>% # Filter out IDs with any of the top 20 symptoms  
+  mutate(true_col = TRUE) %>% # create column with values TRUE
+  drop_na(symptom) %>% 
   pivot_wider(id_cols = VAERS_ID,
-              names_from = value,
-              values_from = name,
+              names_from = symptom,
+              values_from = true_col,
               values_fill = FALSE) # convert symptoms into column names and TRUE into values.
   # Give symptom value FALSE if empty
 
@@ -134,6 +136,7 @@ symptoms_clean_aug <- symptoms_clean %>%
   ungroup()
 
 
+
 ################################## VACCINES ##################################
 
 vaccines_clean_aug <- vaccines_clean
@@ -148,20 +151,12 @@ merged_data <- patients_clean_aug %>%
 
 ######################### LONG FORMAT SYMPTOMS TABLE #########################
 
-# Get vector with names of symptom columns in order to refer to 
-# all symptom columns later on
-symptom_cols <- merged_data %>%
-  select(DYSPNOEA, PAIN_IN_EXTREMITY, DIZZINESS, FATIGUE, INJECTION_SITE_ERYTHEMA, 
-         INJECTION_SITE_PRURITUS, INJECTION_SITE_SWELLING, CHILLS, RASH, HEADACHE, 
-         INJECTION_SITE_PAIN, NAUSEA, PAIN, PYREXIA, MYALGIA, ARTHRALGIA, PRURITUS, 
-         ASTHENIA, VOMITING, DEATH) %>%
-  names()
-
 # Make long format tibble containing VAERS_ID, SEX, and symptoms column with all top 20 symptoms
 merged_data_long <- merged_data %>%
-  pivot_longer(cols = all_of(symptom_cols), 
+  pivot_longer(cols = (top_20_vec %>% toupper(.) %>% gsub(" ", "_", .)), 
                names_to = "SYMPTOM", 
                values_to = "SYMPTOM_VALUE")
+
 
 
 # Write data --------------------------------------------------------------
