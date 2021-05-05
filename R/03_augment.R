@@ -84,20 +84,22 @@ top_20_vec <- symptoms_clean %>%
                values_drop_na = TRUE) %>% # get all symptoms into one column
   count(symptom, sort = TRUE) %>% # count symptom occurrence, sort by highest occurrence
   head(20) %>%
-  pull(symptom) # convert symptoms column from tibble into vector
-  
+  pluck("symptom") # convert symptoms column from tibble into vector 
+
 
 # Filter for individuals that have a least one of the top 20 symptoms. 
 # Make tibble with columns VAERS_ID and each of the top 20 symptoms. 
 # Fill tibble with TRUE/FALSE depending on whether the individual has symptom.  
 top_20_symptoms <- symptoms_clean %>%
-  pivot_longer(cols = -VAERS_ID) %>% # get all symptoms into one column
-  filter(value %in% top_20_vec) %>% # Filter out IDs with any of the top 20 symptoms  
-  mutate(name = TRUE) %>% # create column with values TRUE
-  drop_na(value) %>% 
+  pivot_longer(cols = -VAERS_ID, 
+               names_to = "symptom_num", 
+               values_to = "symptom") %>% # get all symptoms into one column
+  filter(symptom %in% top_20_vec) %>% # Filter out IDs with any of the top 20 symptoms  
+  mutate(true_col = TRUE) %>% # create column with values TRUE
+  drop_na(symptom) %>% 
   pivot_wider(id_cols = VAERS_ID,
-              names_from = value,
-              values_from = name,
+              names_from = symptom,
+              values_from = true_col,
               values_fill = FALSE) # convert symptoms into column names and TRUE into values.
   # Give symptom value FALSE if empty
 
@@ -131,8 +133,8 @@ symptoms_clean_aug <- symptoms_clean %>%
             by = "VAERS_ID") %>% # join tibble with all IDs 
   setNames(gsub(" ", "_", names(.))) %>% # replace spaces with _ in column names
   setNames(toupper(names(.))) %>%
-  ungroup() %>%
-  view()
+  ungroup()
+
 
 
 ################################## VACCINES ##################################
@@ -147,6 +149,16 @@ merged_data <- patients_clean_aug %>%
   inner_join(vaccines_clean_aug, by = "VAERS_ID")
 
 
+######################### LONG FORMAT SYMPTOMS TABLE #########################
+
+# Make long format tibble containing VAERS_ID, SEX, and symptoms column with all top 20 symptoms
+merged_data_long <- merged_data %>%
+  pivot_longer(cols = (top_20_vec %>% toupper(.) %>% gsub(" ", "_", .)), 
+               names_to = "SYMPTOM", 
+               values_to = "SYMPTOM_VALUE")
+
+
+
 # Write data --------------------------------------------------------------
 write_csv(x = patients_clean_aug,
           file = "data/03_patients_clean_aug.csv")
@@ -159,3 +171,7 @@ write_csv(x = vaccines_clean_aug,
 
 write_csv(x = merged_data,
           file = "data/03_merged_data.csv")
+
+write_csv(x = merged_data_long,
+          file = "data/03_merged_data_long.csv.gz")
+

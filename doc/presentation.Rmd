@@ -1,0 +1,105 @@
+---
+title: "R for Bio Data Science - Final Project"
+author: Alexandra Weronika Balicki, Celia Burgos Sequeros, Isabel Diaz-Pines Cort and Sofie Schovsbo
+
+date: May 10, 2021
+output: 
+  ioslides_presentation:
+    widescreen: true
+    smaller: true
+---
+
+```{r include=FALSE}
+library(tidyverse)
+```
+
+
+## Overview of presentation
+1. Introduction to COVID-19 World Vaccine Adverse Reactions Dataset
+2. Project work flow
+3. Challenges and solutions - Load, Clean and Augment
+4. Data analysis
+5. Conclusion and discussion
+
+
+## COVID-19 World Vaccine Adverse Reactions
+- Found on Kaggle (https://www.kaggle.com/ayushggarg/covid19-vaccine-adverse-reactions?select=2021VAERSSYMPTOMS.csv)
+- Data from the Vaccine Adverse Event Reporting System (VAERS) created by the Food and Drug Administration (FDA) and Centers for Disease Control and Prevention (CDC) 
+- Contains 3 data sets: 
+    1. PATIENTS.CSV
+    2. VACCINES.CSV
+    3. SYMPTOMS.CSV
+- Data sets connected by individual IDs (VAERS_ID)
+- VAERS User Guide (https://vaers.hhs.gov/docs/VAERSDataUseGuide_November2020.pdf)
+  - A guide to variable names
+
+```{r message=TRUE, warning=TRUE, include=FALSE}
+patients <- read_csv(file = "../data/01_patients.csv", 
+                     col_types = cols("BIRTH_DEFECT" = col_character(),
+                                      "X_STAY" = col_character(),
+                                      "RPT_DATE" = col_date(format="%Y-%m-%d"),
+                                      "V_FUNDBY" = col_character(),
+                                      "ER_VISIT" = col_character()))
+
+symptoms <- read_csv(file = "../data/01_symptoms.csv")
+
+vaccines <- read_csv(file = "../data/01_vaccines.csv",
+                     col_types = cols("VAX_DOSE_SERIES" = col_character()))
+
+
+```
+
+
+
+## COVID-19 World Vaccine Adverse Reactions
+PATIENTS.CSV: Contains information about the individuals that received the vaccines
+
+```{r echo=FALSE}
+head(patients, 3)
+```
+
+
+## COVID-19 World Vaccine Adverse Reactions
+VACCINES.CSV: Contains information about the received vaccine
+
+```{r echo=FALSE}
+as_tibble(vaccines) %>% head(., 3)
+```
+
+
+## COVID-19 World Vaccine Adverse Reactions
+SYMPTOMS.CSV: Contains information about the symptoms experiences after vaccination
+
+```{r echo=FALSE}
+head(symptoms, 3)
+```
+
+
+
+## Project workflow
+
+```{r pressure, echo=FALSE, out.width = '75%'}
+knitr::include_graphics("../doc/workflow.jpeg")
+```
+
+
+## 01_load - Challenges and Solutions
+
+
+## 02_clean - Challenges and Solutions
+
+
+## 03_augment - Challenges and Solutions
+
+
+## 04_analysis
+Graphs
+
+
+## Conclusion and discussion
+
+
+
+
+
+
