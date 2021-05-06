@@ -6,6 +6,8 @@ rm(list = ls())
 library("tidyverse")
 library("patchwork")
 library("scales")
+library("broom")
+library("purrr")
 
 
 # Define functions --------------------------------------------------------
@@ -28,22 +30,29 @@ merged_data_long <- read_csv(file = gzfile("data/03_merged_data_long.csv.gz"),
 
 # Convert variables to factors
 merged_data_wide <- merged_data_wide %>% 
-  mutate(DIED = as.factor(DIED), 
-         SEX = as.factor(SEX), 
-         HAS_ALLERGIES = as.factor(HAS_ALLERGIES), 
-         HAS_ILLNESS = as.factor(HAS_ILLNESS), 
-         HAS_COVID = as.factor(HAS_COVID))
+  mutate_if(is.character, as.factor) %>%
+  mutate_if(is.logical, as.factor)
 
 # Convert variables to factors
 merged_data_long <- merged_data_long %>%
-  mutate(SYMPTOMS = as.factor(SYMPTOM), 
-         SYMPTOM_VALUE = as.factor(SYMPTOM_VALUE))
+  mutate_if(is.character, as.factor) %>%
+  mutate_if(is.logical, as.factor)
+
+# Define symptoms
+symptoms <- merged_data_wide %>% 
+  select(DYSPNOEA, PAIN_IN_EXTREMITY, DIZZINESS, FATIGUE, 
+         INJECTION_SITE_ERYTHEMA, INJECTION_SITE_PRURITUS, INJECTION_SITE_SWELLING, 
+         CHILLS, RASH, HEADACHE, INJECTION_SITE_PAIN, NAUSEA,PAIN, PYREXIA, MYALGIA,
+         ARTHRALGIA, PRURITUS, ASTHENIA, VOMITING, DEATH) %>%
+  names() %>%
+  paste(collapse = "+")
+
 
 
 # Model data --------------------------------------------------------------
 
-# Modeling death outcome vs sex, age, n hospital days, n days before symptoms, 
-# presence of allergies, presence of illness, presence of COVID
+######### Modeling death outcome vs sex, age, n hospital days, n days before 
+# symptoms presence of allergies, presence of illness, presence of COVID ######
 logistic_regression <- merged_data_wide %>%
   glm(formula = DIED ~ 
         SEX + AGE_YRS + HOSPDAYS + SYMPTOMS_AFTER + HAS_ALLERGIES + HAS_ILLNESS + HAS_COVID, 
@@ -53,6 +62,37 @@ logistic_regression <- merged_data_wide %>%
 summary(logistic_regression)
 
 
+################# Modeling death vs presence/absence of symptoms ###############
+# Can be done like this:
+death_v_symptoms <- merged_data_wide %>%
+  glm(data = ., 
+      formula = DIED ~ 
+        DYSPNOEA + PAIN_IN_EXTREMITY + DIZZINESS + FATIGUE + 
+        INJECTION_SITE_ERYTHEMA + INJECTION_SITE_PRURITUS + 
+        INJECTION_SITE_SWELLING + CHILLS + RASH + HEADACHE + INJECTION_SITE_PAIN +
+        NAUSEA + PAIN + PYREXIA + MYALGIA + ARTHRALGIA + PRURITUS + ASTHENIA + 
+        VOMITING, 
+      family = binomial)
+
+# Or like this (symptoms defined in wrangle section):
+death_v_symptoms <- merged_data_wide %>%
+  glm(data = ., 
+      formula = as.formula(paste("DEATH ~ ", symptoms)), 
+      family = binomial)
+
+tidy(death_v_symptoms) %>%
+  filter(term != "(Intercept)") %>%
+  filter(p.value < 0.05) %>%
+  ggplot(aes(x = fct_reorder(term, p.value),
+             y = -log(p.value))) +
+  geom_bar(stat = "identity") +
+  geom_hline(yintercept = -log(0.05), col = "red", linetype="dashed") +
+  theme_classic() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  ggtitle("Symptoms significantly associated with death") +
+  xlab("Symptoms") + 
+  ylab("-log(p-value)")
+
 
 # The "estimate" column is the log-odds ratio, so we must interpret them as follows:
 # 1. If the variable is categorical, like HAS_ILLNESS, an estimate of 9.877e-01 for the "Y" group
@@ -61,6 +101,7 @@ summary(logistic_regression)
 # 2. If the variable is continuous, like HOSPDAYS, an estimate of 6.024e-02
 #    means that, holding all else constant, one unit change in HOSPDAYS will have 
 #    exp(6.024e-02) = 1.062091 units change in the odds ratio.
+
 
 
 # Visualise data ----------------------------------------------------------
@@ -250,7 +291,7 @@ merged_data_long %>%
   count(SEX, SYMPTOM, SYMPTOM_VALUE) %>%
   group_by(SYMPTOM, SEX) %>%
   mutate(total = sum(n)) %>%
-  filter(SYMPTOM_VALUE == TRUE) %>%
+  filter(SYMPTOM_VALUE == TRUE, !is.na(SEX)) %>%
   summarise(prop = n/total, .groups = "rowwise") %>%
   ggplot(aes(x = fct_reorder(SYMPTOM, desc(prop)),
              y = prop,
@@ -269,6 +310,7 @@ merged_data_long %>%
 # Bar plot showing the number of symptoms experienced by males and females. 
 # The counts are relative to the respective genders. 
 merged_data_long %>%
+  filter(!is.na(SEX)) %>%
   ggplot(aes(x = N_SYMPTOMS,
              fill = SEX,
              stat(prop))) +
