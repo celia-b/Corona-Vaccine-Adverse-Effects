@@ -678,6 +678,15 @@ age_vs_symptom_types_heatmap <- merged_data_long %>%
 ## Proportion tests for DIED vs. different variables
 
 # Null hypothesis: the proportions are the same
+# Assumptions:
+
+#Data in contingency table is presented in counts (not in percent)
+#All cells contain more than 5 observations
+#Each observation contributes to one group only
+#Groups are independent
+#The variables under study are categorical
+#The sample is, supposedly, reasonably random
+
 
 # Function that performs a Pearson's Chi-squared contingency table test between two variables
 chisq_func <- function(variable1, variable2) {
@@ -715,6 +724,25 @@ merged_data_wide %>%
   summarise(n = n()) %>%
   spread(DIED, n) %>%  
   tibble() 
+
+
+# Visualizations
+merged_data_wide %>%
+  ggplot(aes(x = DIED, fill = HAS_ILLNESS)) +
+  geom_bar(position = "fill") +
+  labs(title = "Visualization of Contingency Table",
+       x = "DIED",
+       y = "Proportion")
+
+merged_data_wide %>%
+  ggplot(aes(x = DIED, fill = SEX)) +
+  geom_bar(position = "fill") +
+  labs(title = "Visualization of Contingency Table",
+       x = "DIED",
+       y = "Proportion")
+
+
+# Make some mosaic plots?
 
 
 
