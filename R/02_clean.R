@@ -12,16 +12,16 @@ library("tidyverse")
 
 # Load data ---------------------------------------------------------------
 
-patients <- read_csv(file = "data/01_patients.csv", 
+patients <- read_csv(file = gzfile("data/01_patients.csv.gz"), 
                      col_types = cols("BIRTH_DEFECT" = col_character(),
                                       "X_STAY" = col_character(),
-                                      "RPT_DATE" = col_date(format="%Y-%m-%d"),
+                                      "RPT_DATE" = col_date(format = "%Y-%m-%d"),
                                       "V_FUNDBY" = col_character(),
                                       "ER_VISIT" = col_character()))
 
-symptoms <- read_csv(file = "data/01_symptoms.csv")
+symptoms <- read_csv(file = gzfile("data/01_symptoms.csv.gz"))
 
-vaccines <- read_csv(file = "data/01_vaccines.csv",
+vaccines <- read_csv(file = gzfile("data/01_vaccines.csv.gz"),
                      col_types = cols("VAX_DOSE_SERIES" = col_character()))
 
 
@@ -47,8 +47,7 @@ patients_clean <- patients %>%
                   DISABLE = "N",
                   OFC_VISIT = "N",
                   ER_ED_VISIT = "N")) %>% # Handled NAs that are actually "No"
-  mutate(AGE_YRS = as.integer(AGE_YRS)) %>% # Age to integers
-  filter(SEX != "U") # remove persons with unkwnon sex
+  mutate(AGE_YRS = as.integer(AGE_YRS)) # Age to integers
 
 
 
@@ -105,13 +104,13 @@ vaccines <- vaccines %>%
 
 # Write data --------------------------------------------------------------
 write_csv(x = patients_clean,
-          file = "data/02_patients_clean.csv")
+          file = "data/02_patients_clean.csv.gz")
 
 write_csv(x = symptoms_clean,
-          file = "data/02_symptoms_clean.csv")
+          file = "data/02_symptoms_clean.csv.gz")
 
 write_csv(x = vaccines_clean,
-          file = "data/02_vaccines_clean.csv")
+          file = "data/02_vaccines_clean.csv.gz")
 
 
 

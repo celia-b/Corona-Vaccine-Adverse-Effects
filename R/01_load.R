@@ -19,11 +19,10 @@ patients_raw <- read_csv(file = "data/_raw/2021VAERSDATA.csv",
                                           "V_FUNDBY" = col_character(),
                                           "ER_VISIT" = col_character(),
                                           "HOSPDAYS" = col_character()),
-                         
                          na = c("", " ", 
                                 "NA", "N/A", "na", "Na", "n/a", "N/a", 
                                 "None", "none", "None.", "NONE",
-                                "unknown", "Unknown", "UNKNOWN", 
+                                "unknown", "Unknown", "UNKNOWN", "U",
                                 "NO KNOWN", "no known", "No known", "No Known", 
                                 "None known", "none known", "NONE KNOWN", "None Known", 
                                 "None reported", "Not applicable",
@@ -41,13 +40,13 @@ vaccines_raw <- read_csv(file = "data/_raw/2021VAERSVAX.csv",
 
 # Write data --------------------------------------------------------------
 write_csv(x = patients_raw,
-          file = "data/01_patients.csv")
+          file = "data/01_patients.csv.gz")
 
 write_csv(x = symptoms_raw,
-          file = "data/01_symptoms.csv")
+          file = "data/01_symptoms.csv.gz")
 
 write_csv(x = vaccines_raw,
-           file = "data/01_vaccines.csv")
+           file = "data/01_vaccines.csv.gz")
 
 
 
