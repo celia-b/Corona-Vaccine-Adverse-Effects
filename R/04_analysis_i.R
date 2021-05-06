@@ -5,10 +5,7 @@ rm(list = ls())
 # Load libraries ----------------------------------------------------------
 library("tidyverse")
 library("patchwork")
-<<<<<<< HEAD
-=======
 library("scales")
->>>>>>> f1f385499387f22917a0c1ead1e72a546571da37
 
 
 # Define functions --------------------------------------------------------
@@ -18,7 +15,7 @@ library("scales")
 # Load data ---------------------------------------------------------------
 
 # Wide format
-merged_data <- read_csv(file = "data/03_merged_data.csv",
+merged_data_wide <- read_csv(file = gzfile("data/03_merged_data_wide.csv.gz"),
                         col_types = cols(VAX_DOSE_SERIES = col_character()))
 
 # Long format symptom column
@@ -32,6 +29,27 @@ merged_data_long <- read_csv(file = gzfile("data/03_merged_data_long.csv.gz"))
 # Model data
 #my_data_clean_aug %>% ...
 
+=======
+
+# Model data --------------------------------------------------------------
+logistic_regression <- merged_data_wide %>%
+  mutate(DIED = as.factor(DIED)) %>%
+  mutate(SEX = as.factor(SEX)) %>%
+  mutate(HAS_ALLERGIES = as.factor(HAS_ALLERGIES)) %>%
+  mutate(HAS_ILLNESS = as.factor(HAS_ILLNESS)) %>%
+  mutate(HAS_COVID = as.factor(HAS_COVID)) %>%
+  glm(formula = DIED ~ SEX + AGE_YRS + HOSPDAYS + SYMPTOMS_AFTER + HAS_ALLERGIES + HAS_ILLNESS + HAS_COVID, family = binomial, data = .)
+
+summary(logistic_regression)
+
+# The "estimate" column is the log-odds ratio, so we must interpret them as follows:
+# 1. If the variable is categorical, like HAS_ILLNESS, an estimate of 9.877e-01 for the "Y" group
+#    means that this group is exp(9.877e-01) = 2.685052 times more likely to die after taking 
+#    the vaccine than the reference 'N' group.
+# 2. If the variable is continuous, like HOSPDAYS, an estimate of 6.024e-02
+#    means that, holding all else constant, one unit change in HOSPDAYS will have 
+#    exp(6.024e-02) = 1.062091 units change in the odds ratio.
+
 
 # Visualise data ----------------------------------------------------------
 
@@ -39,7 +57,7 @@ merged_data_long <- read_csv(file = gzfile("data/03_merged_data_long.csv.gz"))
 
 ## Distribution of the number of days after receiving the vaccine
 ## when symptoms appear.
-symptoms_after <- merged_data %>%
+symptoms_after <- merged_data_wide %>%
   select(VAERS_ID, AGE_CLASS, SEX, SYMPTOMS_AFTER, VAX_MANU) %>%
   arrange(SYMPTOMS_AFTER) %>%
   filter(SYMPTOMS_AFTER < 20) %>%
@@ -50,10 +68,9 @@ symptoms_after <- merged_data %>%
        y = "Relative ocurrence")
 
 
-
 ## By age class --> I think we need less age classes
 # Also I'm not convinced this plot looks nice --> maybe facet_wrap it?
-symptoms_after_age <- merged_data %>%
+symptoms_after_age <- merged_data_wide %>%
   select(VAERS_ID, AGE_CLASS, SEX, SYMPTOMS_AFTER, VAX_MANU) %>%
   arrange(SYMPTOMS_AFTER) %>%
   filter(SYMPTOMS_AFTER < 20) %>%
@@ -70,7 +87,6 @@ symptoms_after_age <- merged_data %>%
   labs(fill = "Age class")
 
 
-
 # Putting them together
 (symptoms_after + symptoms_after_age) + 
   plot_annotation(title = 'Days after vaccination when symptoms appear',
@@ -79,9 +95,8 @@ symptoms_after_age <- merged_data %>%
   theme(plot.title = element_text(size=24))
 
 
-
 ## By manufacturer 
-symptoms_after_manu <- merged_data %>%
+symptoms_after_manu <- merged_data_wide %>%
   select(VAERS_ID, AGE_CLASS, SEX, SYMPTOMS_AFTER, VAX_MANU) %>%
   arrange(SYMPTOMS_AFTER) %>%
   filter(SYMPTOMS_AFTER < 20) %>%
@@ -103,7 +118,7 @@ symptoms_after_manu
 ######################## DEATH AFTER N DAYS ############################
 
 ## Days after vaccination when symptoms appear.
-death_after <- merged_data %>%
+death_after <- merged_data_wide %>%
   select(VAERS_ID, AGE_CLASS, SEX, DIED_AFTER, VAX_MANU) %>%
   arrange(DIED_AFTER) %>%
   filter(DIED_AFTER < 30 & DIED_AFTER >= 0) %>%
@@ -119,7 +134,7 @@ death_after
 
 
 ## By age class --> Not informative (small sample size, < 5 in age classes)
-merged_data %>%
+merged_data_wide %>%
   select(VAERS_ID, AGE_CLASS, SEX, DIED_AFTER, VAX_MANU) %>%
   arrange(DIED_AFTER) %>%
   filter(DIED_AFTER < 30 & DIED_AFTER >= 0) %>%
@@ -129,14 +144,14 @@ merged_data %>%
 
 
 ## By manufacturer --> Again problematic because of small sample size in Janssen
-merged_data %>%
+merged_data_wide %>%
   select(VAERS_ID, AGE_CLASS, SEX, DIED_AFTER, VAX_MANU) %>%
   arrange(DIED_AFTER) %>%
   filter(DIED_AFTER < 30 & DIED_AFTER >= 0) %>%
   group_by(VAX_MANU) %>%
   count() # --> 16 (Janssen) vs 852 vs 690 (Moderna and Pfizer)
 
-n_days_manu <- merged_data %>%
+n_days_manu <- merged_data_wide %>%
   select(VAERS_ID, AGE_CLASS, SEX, DIED_AFTER, VAX_MANU) %>%
   arrange(DIED_AFTER) %>%
   filter(DIED_AFTER < 30 & DIED_AFTER >= 0) %>%
@@ -157,7 +172,7 @@ n_days_manu
 
 ######################## DEATH RATE ###############################
 # Out of the people who died, what proportion were already sick?
-merged_data %>%
+merged_data_wide %>%
   select(VAERS_ID, AGE_CLASS, SEX, DIED, HAS_ILLNESS, VAX_MANU) %>%
   filter(DIED == 'Y') %>%
   ggplot(aes(HAS_ILLNESS)) + 
@@ -166,12 +181,12 @@ merged_data %>%
 
 # How much more likely is it to die when you were already sick when 
 # taking the vaccine vs when you were healthy? --> DO STATISTICAL ANALYSIS
-merged_data %>%
+merged_data_wide %>%
   select(VAERS_ID, AGE_CLASS, SEX, DIED, HAS_ILLNESS, VAX_MANU) %>%
   group_by(HAS_ILLNESS) %>%
   count()
 
-merged_data %>%
+merged_data_wide %>%
   select(VAERS_ID, AGE_CLASS, SEX, DIED, HAS_ILLNESS, VAX_MANU) %>%
   group_by(HAS_ILLNESS, DIED) %>%
   count()
@@ -181,7 +196,7 @@ prop_test(x = c(1191, 644), n = c(29127, 4306),
 
 
 # Out of the people who died, what proportion had covid at the time?
-merged_data %>%
+merged_data_wide %>%
   select(VAERS_ID, AGE_CLASS, SEX, DIED, HAS_COVID, VAX_MANU) %>%
   filter(DIED == 'Y') %>%
   ggplot(aes(HAS_COVID)) + 
@@ -191,24 +206,24 @@ merged_data %>%
 
 # How much more likely is it to die when you had covid while 
 # taking the vaccine vs when you were healthy? --> DO STATISTICAL ANALYSIS
-merged_data %>%
+merged_data_wide %>%
   select(VAERS_ID, AGE_CLASS, SEX, DIED, HAS_COVID, VAX_MANU) %>%
   group_by(HAS_COVID) %>%
   count()
 
-merged_data %>%
+merged_data_wide %>%
   select(VAERS_ID, AGE_CLASS, SEX, DIED, HAS_COVID, VAX_MANU) %>%
   group_by(HAS_COVID, DIED) %>%
   count()
 
 # How much less likely is it to die when you had covid in the past? 
 # --> DO STATISTICAL ANALYSIS
-merged_data %>%
+merged_data_wide %>%
   select(VAERS_ID, AGE_CLASS, SEX, DIED, HAD_COVID, VAX_MANU) %>%
   group_by(HAD_COVID) %>%
   count()
 
-merged_data %>%
+merged_data_wide %>%
   select(VAERS_ID, AGE_CLASS, SEX, DIED, HAD_COVID, VAX_MANU) %>%
   group_by(HAD_COVID, DIED) %>%
   count()
