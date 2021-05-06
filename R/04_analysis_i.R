@@ -70,7 +70,7 @@ logistic_regression_interactions <- merged_data_wide %>%
       data = .)
 
 summary(logistic_regression_interactions)
-
+# Some of the main effects are not significant anymore
 
 
 ################# Modeling death vs presence/absence of symptoms ###############
@@ -608,7 +608,7 @@ pca_fit %>%
   geom_point(size = 0.5) +
   labs(x = 'PC1', y = 'PC2') +
   scale_color_viridis_d(name = "MANUFACTURER", option = "D") +
-  theme_half_open(font_size = 9, font_family = "serif,Times") +
+  theme_half_open(font_size = 9, font_family = "serif, Times") +
   background_grid() 
   
 # define arrow style for plotting
