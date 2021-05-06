@@ -16,29 +16,33 @@ library("scales")
 
 # Wide format
 merged_data_wide <- read_csv(file = gzfile("data/03_merged_data_wide.csv.gz"),
-                        col_types = cols(VAX_DOSE_SERIES = col_character()))
+                             col_types = cols(VAX_DOSE_SERIES = col_character()))
 
 # Long format symptom column
-merged_data_long <- read_csv(file = gzfile("data/03_merged_data_long.csv.gz"))
-
+merged_data_long <- read_csv(file = gzfile("data/03_merged_data_long.csv.gz"), 
+                             col_types = cols(HOSPDAYS = col_integer(),
+                                              DIED_AFTER = col_integer(), 
+                                              VAX_DOSE_SERIES = col_character()))
 
 # Wrangle data ------------------------------------------------------------
-#my_data_clean_aug %>% ...
+merged_data_wide <- merged_data_wide %>% 
+  mutate(DIED = as.factor(DIED), 
+         SEX = as.factor(SEX), 
+         HAS_ALLERGIES = as.factor(HAS_ALLERGIES), 
+         HAS_ILLNESS = as.factor(HAS_ILLNESS), 
+         HAS_COVID = as.factor(HAS_COVID))
 
+merged_data_long <- merged_data_long %>%
+  mutate(SYMPTOMS = as.factor(SYMPTOM), 
+         SYMPTOM_VALUE = as.factor(SYMPTOM_VALUE))
 
-# Model data
-#my_data_clean_aug %>% ...
-
-=======
 
 # Model data --------------------------------------------------------------
 logistic_regression <- merged_data_wide %>%
-  mutate(DIED = as.factor(DIED)) %>%
-  mutate(SEX = as.factor(SEX)) %>%
-  mutate(HAS_ALLERGIES = as.factor(HAS_ALLERGIES)) %>%
-  mutate(HAS_ILLNESS = as.factor(HAS_ILLNESS)) %>%
-  mutate(HAS_COVID = as.factor(HAS_COVID)) %>%
-  glm(formula = DIED ~ SEX + AGE_YRS + HOSPDAYS + SYMPTOMS_AFTER + HAS_ALLERGIES + HAS_ILLNESS + HAS_COVID, family = binomial, data = .)
+  glm(formula = DIED ~ 
+        SEX + AGE_YRS + HOSPDAYS + SYMPTOMS_AFTER + HAS_ALLERGIES + HAS_ILLNESS + HAS_COVID, 
+      family = binomial, 
+      data = .)
 
 summary(logistic_regression)
 
