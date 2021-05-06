@@ -23,12 +23,11 @@ patients_raw <- read_csv(file = "data/_raw/2021VAERSDATA.csv",
                          na = c("", " ", 
                                 "NA", "N/A", "na", "Na", "n/a", "N/a", 
                                 "None", "none", "None.", "NONE",
-                                "unknown", "Unknown", "UNKNOWN", 
+                                "unknown", "Unknown", "UNKNOWN", "U",
                                 "NO KNOWN", "no known", "No known", "No Known", 
                                 "None known", "none known", "NONE KNOWN", "None Known", 
                                 "None reported", "Not applicable",
-                                "No", "NO", "no",
-                                "U")) # There is also "no", but that might interfere with certain columns where we do want yes/no --> change them to Y/N
+                                "No", "NO", "no")) # There is also "no", but that might interfere with certain columns where we do want yes/no --> change them to Y/N
 
 
 symptoms_raw <- read_csv(file = "data/_raw/2021VAERSSYMPTOMS.csv")

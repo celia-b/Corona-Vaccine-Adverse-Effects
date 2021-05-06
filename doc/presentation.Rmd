@@ -34,16 +34,16 @@ library(tidyverse)
   - A guide to variable names
 
 ```{r message=TRUE, warning=TRUE, include=FALSE}
-patients <- read_csv(file = "../data/01_patients.csv", 
+patients <- read_csv(file = gzfile("../data/01_patients.csv.gz"), 
                      col_types = cols("BIRTH_DEFECT" = col_character(),
                                       "X_STAY" = col_character(),
                                       "RPT_DATE" = col_date(format="%Y-%m-%d"),
                                       "V_FUNDBY" = col_character(),
                                       "ER_VISIT" = col_character()))
 
-symptoms <- read_csv(file = "../data/01_symptoms.csv")
+symptoms <- read_csv(file = gzfile("../data/01_symptoms.csv.gz"))
 
-vaccines <- read_csv(file = "../data/01_vaccines.csv",
+vaccines <- read_csv(file = gzfile("../data/01_vaccines.csv.gz"),
                      col_types = cols("VAX_DOSE_SERIES" = col_character()))
 
 
@@ -83,13 +83,163 @@ knitr::include_graphics("../doc/workflow.jpeg")
 ```
 
 
-## 01_load - Challenges and Solutions
+## 01_load - Challenges and Solutions 1
+
+CHALLENGE: Multiple large files.
+
+SOLUTION: keep them compressed and only decompress when reading into R:
+
+```{r message=FALSE, warning=FALSE, include=TRUE, eval = FALSE}
+# Read
+patients <- read_csv(file = gzfile("../data/01_patients.csv.gz"))
+
+# Clean
+patients_clean <- patients %>% ...
+
+# Write
+write_csv(x = patients, file = "../data/02_patients_clean.csv.gz")
+```
+
+
+## 01_load - Challenges and Solutions 2
+
+CHALLENGE: Wrong column types automatically assigned by R
+
+```{r message=FALSE, warning=TRUE, include=TRUE}
+patients <- read_csv(file = gzfile("../data/01_patients.csv.gz"))
+```
+
+SOLUTION: Manual assignment of column types
+
+```{r message=FALSE, warning=FALSE, include=TRUE}
+patients <- read_csv(file = gzfile("../data/01_patients.csv.gz"), 
+                     col_types = cols("BIRTH_DEFECT" = col_character(),
+                                      "X_STAY" = col_character(),
+                                      "RPT_DATE" = col_date(format="%Y-%m-%d"),
+                                      "V_FUNDBY" = col_character(),
+                                      "ER_VISIT" = col_character()))
+```
+
+
+## 01_load - Challenges and Solutions 3
+
+CHALLENGE: NA strings ("NA", "N/A", "Unknown", " "...)
+
+SOLUTION: 
+
+```{r message=FALSE, warning=FALSE, include=TRUE}
+patients <- read_csv(file = gzfile("../data/01_patients.csv.gz"),
+                     na = c("", " ", 
+                                "NA", "N/A", "na", "Na", "n/a", "N/a", 
+                                "None", "none", "None.", "NONE",
+                                "unknown", "Unknown", "UNKNOWN", "U",
+                                "NO KNOWN", "no known", "No known", "No Known", 
+                                "None known", "none known", "NONE KNOWN", "None Known", 
+                                "None reported", "Not applicable",
+                                "No", "NO", "no"))
+```
 
 
 ## 02_clean - Challenges and Solutions
 
+I am aware of how horrible this table is :/
 
-## 03_augment - Challenges and Solutions
+
+| CHALLENGE                                                        | SOLUTION                                              |
+| ---------------------------------------------------------------- | ----------------------------------------------------- |
+| Unwanted columns                                                 | `select(-c())`                                        |
+| NAs that should be interpreted as "no"                           | `replace_na()`                                        |
+| Row duplications                                                 | `distinct()`                                          |
+| Individuals who got more than one vaccine type (generates noise) | `add_count(VAERS_ID) %>% filter(n==1) %>% select(-n)` |
+
+
+
+## 03_augment - Challenges and Solutions 1
+
+CHALLENGE: Some columns contain long string descriptions that need to be turned into something tidy. For example, ALLERGIES:
+
+``` {r message=TRUE, warning=FALSE, include=FALSE}
+patients %>%
+  select(VAERS_ID, ALLERGIES) %>%
+  head(6)
+```
+
+
+SOLUTION: make categorical variable that states if patient has allergies or not
+
+``` {r message=FALSE, warning=FALSE, include=TRUE, eval = FALSE}
+patients %>%
+  mutate(HAS_ALLERGIES = case_when(grepl("^no.?$|^no |^none|^not|^non", 
+                                         ALLERGIES, 
+                                         ignore.case = TRUE) ~ 'N',
+                                 is.na(ALLERGIES) ~ 'N',
+                                 TRUE ~ 'Y'))
+```
+
+``` {r echo = FALSE}
+patients %>%
+  mutate(HAS_ALLERGIES = case_when(grepl("^no.?$|^no |^none|^not|^non", 
+                                         ALLERGIES, 
+                                         ignore.case = TRUE) ~ 'N',
+                                 is.na(ALLERGIES) ~ 'N',
+                                 TRUE ~ 'Y')) %>%
+  select(VAERS_ID, ALLERGIES, HAS_ALLERGIES) %>%
+  filter(VAERS_ID == '0916603' | 
+           VAERS_ID == '0916660' |
+           VAERS_ID == '0916604' | 
+           VAERS_ID == '0916685' | 
+           VAERS_ID == '0917437' )
+```
+
+## 03_augment - Challenges and Solutions 1
+
+Another example is OTHER_MEDS. Because it is not recommended to take antiinflamatory or steroid drugs before receiving a vaccine, we detect which individual have taken them to later make some analyses.
+
+``` {r message=FALSE, warning=FALSE, include=TRUE, eval = FALSE}
+patients %>%
+  mutate(TAKES_ANTIINFLAMATORY = case_when(grepl("ibuprofen|aspirin|celecoxib|diclofenac|diflunisal|etodolac|indomethacin", 
+                                                 OTHER_MEDS, 
+                                                 ignore.case = TRUE) ~ 'Y',
+                                           TRUE ~ 'N')) %>% 
+  mutate(TAKES_STEROIDS = case_when(grepl("steroid|betamethasone|prednisolone|dexamethasone|hydrocortisone", 
+                                          OTHER_MEDS, 
+                                          ignore.case = TRUE) ~ 'Y',
+                                    TRUE ~ 'N'))
+```
+
+
+``` {r echo = FALSE}
+patients %>%
+  mutate(TAKES_ANTIINFLAMATORY = case_when(grepl("ibuprofen|aspirin|celecoxib|diclofenac|diflunisal|etodolac|indomethacin", 
+                                                 OTHER_MEDS, 
+                                                 ignore.case = TRUE) ~ 'Y',
+                                           TRUE ~ 'N')) %>% 
+  mutate(TAKES_STEROIDS = case_when(grepl("steroid|betamethasone|prednisone|dexamethasone|hydrocortisone", 
+                                          OTHER_MEDS, 
+                                          ignore.case = TRUE) ~ 'Y',
+                                    TRUE ~ 'N')) %>%
+  select(VAERS_ID, OTHER_MEDS, TAKES_ANTIINFLAMATORY, TAKES_STEROIDS) %>%
+  filter(VAERS_ID == "0921732" | VAERS_ID == "0918421" | VAERS_ID == "0934539" | VAERS_ID == "0932980" | VAERS_ID == "0930055")
+```
+
+## 03_augment - Challenges and Solutions 2
+
+CHALLENGE: Symptoms are recorded in a way that difficults analysis
+
+``` {r echo=FALSE}
+symptoms %>%
+  select(VAERS_ID, SYMPTOM1, SYMPTOM2, SYMPTOM3, SYMPTOM4, SYMPTOM5) %>%
+  slice(20:24)
+```
+
+SOLUTION: 20 most common symptoms are found and turned into TRUE/FALSE columns
+
+``` {r message=FALSE, warning=FALSE, echo=FALSE}
+merged_data_wide <- read_csv(file = gzfile("../data/03_merged_data_wide.csv.gz"))
+merged_data_wide %>%
+  select(VAERS_ID, HEADACHE, PYREXIA, CHILLS, FATIGUE, PAIN, PAIN_IN_EXTREMITY, NAUSEA, DIZZINESS, MYALGIA, INJECTION_SITE_ERYTHEMA, INJECTION_SITE_PRURITUS, INJECTION_SITE_SWELLING, INJECTION_SITE_PAIN, ARTHRALGIA, DYSPNOEA, VOMITING, PRURITUS, DEATH, RASH, ASTHENIA) %>%
+  head(3)
+```
 
 
 ## 04_analysis
