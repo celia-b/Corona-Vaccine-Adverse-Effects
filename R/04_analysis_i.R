@@ -63,6 +63,16 @@ logistic_regression <- merged_data_wide %>%
 summary(logistic_regression)
 
 
+logistic_regression_interactions <- merged_data_wide %>%
+  glm(formula = DIED ~ 
+        (SEX + AGE_YRS + HOSPDAYS + SYMPTOMS_AFTER + HAS_ALLERGIES + HAS_ILLNESS + HAS_COVID)^2, 
+      family = binomial, 
+      data = .)
+
+summary(logistic_regression_interactions)
+
+
+
 ################# Modeling death vs presence/absence of symptoms ###############
 # Can be done like this:
 death_v_symptoms <- merged_data_wide %>%
@@ -81,6 +91,9 @@ death_v_symptoms <- merged_data_wide %>%
   glm(data = ., 
       formula = str_c("DEATH ~ ", str_c(symptoms, collapse = "+")), 
       family = binomial)
+
+summary(death_v_symptoms)
+
 
 # Visualize significant symptoms
 tidy(death_v_symptoms) %>%
@@ -669,7 +682,7 @@ age_vs_symptom_types_heatmap <- merged_data_long %>%
 chisq_func <- function(variable1, variable2) {
   variable1 <- enquo(variable1) 
   variable2 <- enquo(variable2) 
-  merged_data %>%
+  merged_data_wide %>%
     group_by(!!variable1, !!variable2) %>%
     summarise(n = n()) %>%
     spread(!!variable2, n) %>%  
