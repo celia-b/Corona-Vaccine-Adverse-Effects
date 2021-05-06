@@ -239,8 +239,7 @@ merged_data_long %>%
   mutate(total = sum(n)) %>%
   filter(SYMPTOM_VALUE == TRUE) %>%
   summarise(prop = n/total, .groups = "rowwise") %>%
-  ggplot(.,
-         aes(x = reorder(SYMPTOM, desc(prop)),
+  ggplot(aes(x = fct_reorder(SYMPTOM, desc(prop)),
              y = prop,
              fill = SEX)) +
   geom_bar(position = "dodge",
@@ -257,13 +256,12 @@ merged_data_long %>%
 # Bar plot showing the number of symptoms experienced by males and females. 
 # The counts are relative to the respective genders. 
 merged_data_long %>%
-  group_by(SEX) %>%
-  ggplot(.,
-         aes(x = N_SYMPTOMS,
+  ggplot(aes(x = N_SYMPTOMS,
              fill = SEX,
              stat(prop))) +
   geom_bar(position = "dodge") + 
-  scale_x_continuous(limits = c(0, 30)) + 
+  scale_x_continuous(limits = c(0, 30), 
+                     breaks = seq(0, 30, by = 5)) + 
   scale_y_continuous(labels = scales::percent) +
   scale_fill_discrete(name = "Sex", 
                       labels = c("Females", "Males")) +
@@ -276,9 +274,10 @@ merged_data_long %>%
 
 ############### VACCINE MANUFACTURER VS NUMBER/TYPES OF SYMPTOMS ###############
 
+# Total number of symptoms by vaccine manufacturer
+# Stacked bar chart
 merged_data_long %>%
-  ggplot(.,
-         aes(x = N_SYMPTOMS,
+  ggplot(aes(x = N_SYMPTOMS,
              fill = VAX_MANU,
              stat(prop))) +
   geom_bar(position = "stack") + 
@@ -291,29 +290,15 @@ merged_data_long %>%
   theme_classic()
 
 
-merged_data_long %>%
-  ggplot(., 
-         aes(N_SYMPTOMS,
-             fill = VAX_MANU)) +
-  geom_density(alpha = 0.3, 
-               adjust = 2.5) +
-  scale_x_continuous(limits = c(0, 30)) + 
-  scale_y_continuous(labels = scales::percent) +
-  ggtitle("Total number of symptoms by vaccine manufacturer") +
-  labs(fill = "Vaccine manufacturer") +
-  xlab("Number of symptoms") + 
-  ylab("Relative occurence") + 
-  theme_classic()
-
-
+# Relative occurence of top 20 symptoms by manufacturer
+# Non-stacked bar chart
 merged_data_long %>%
   count(VAX_MANU, SYMPTOM, SYMPTOM_VALUE) %>%
-  group_by(SYMPTOM, VAX_MANU) %>%
+  group_by(VAX_MANU, SYMPTOM) %>%
   mutate(total = sum(n)) %>%
   filter(SYMPTOM_VALUE == TRUE) %>%
   summarise(prop = n/total, .groups = "rowwise") %>%
-  ggplot(.,
-         aes(x = reorder(SYMPTOM, desc(prop)),
+  ggplot(aes(x = reorder(SYMPTOM, desc(prop)),
              y = prop,
              fill = VAX_MANU)) +
   geom_bar(position = "dodge",
@@ -325,6 +310,145 @@ merged_data_long %>%
   ggtitle("Relative occurence of top 20 symptoms by manufacturer") +
   xlab("Symptoms") + 
   ylab("Relative occurence")
+
+
+
+####################### VACCINE MANUFACTURER VS DEATH ########################
+
+merged_data_long %>%
+  count(VAX_MANU, DIED) %>%
+  group_by(VAX_MANU) %>%
+  mutate(total = sum(n)) %>%
+  filter(DIED == "Y") %>%
+  summarise(prop = n/total, .groups = "rowwise") %>%
+  ggplot(.,
+         aes(x = fct_reorder(VAX_MANU, desc(prop)),
+             y = prop,
+             fill = VAX_MANU)) +
+  geom_bar(position = "dodge",
+           stat = "identity") +
+  theme_classic() +
+  theme(legend.position = "none") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  scale_y_continuous(labels = scales::percent) +
+  ggtitle("Relative occurence of death by vaccine manufacturer") +
+  xlab("Vaccine manufacturer") +
+  ylab("Relative occurence of death") 
+
+
+merged_data_long %>%
+  count(VAX_MANU, L_THREAT) %>%
+  group_by(VAX_MANU) %>%
+  mutate(total = sum(n)) %>%
+  filter(L_THREAT == "Y") %>%
+  summarise(prop = n/total, .groups = "rowwise") %>%
+  ggplot(.,
+         aes(x = fct_reorder(VAX_MANU, desc(prop)),
+             y = prop,
+             fill = VAX_MANU)) +
+  geom_bar(position = "dodge",
+           stat = "identity") +
+  theme_classic() +
+  theme(legend.position = "none") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  scale_y_continuous(labels = scales::percent) +
+  ggtitle("Relative occurence of life threatening symptoms by vaccine manufacturer") +
+  xlab("Vaccine manufacturer") +
+  ylab("Relative occurence of life threatening symptoms") 
+
+
+###################### AGE VS NUMBER/TYPES OF SYMPTOMS ######################
+
+# Boxplot of number of symptoms vs age
+# Works - nothing important?
+merged_data_long %>%
+  drop_na(AGE_CLASS) %>%
+  ggplot(aes(x = AGE_CLASS,
+             y = N_SYMPTOMS)) +
+  geom_boxplot(outlier.shape = NA, 
+               fill = "sky blue", 
+               alpha = 0.8) +
+  scale_x_discrete(name = "Age groups (years)",
+                   labels = c("0-10", "10-20", "20-30", "30-40", "40-50", 
+                              "50-60", "60-70", "70-80", "80-90", "90-120")) +
+  scale_y_continuous(limits = c(0, 15), 
+                     name = "Number of symptoms") +
+  coord_flip() +
+  theme_classic()
+
+# Bar plot showing the number of symptoms by age
+# Stacked bar plot
+# Consider grouping number of symptoms? 
+# Change colors to blend together less
+merged_data_long %>%
+  drop_na(AGE_CLASS) %>%
+  ggplot(aes(x = N_SYMPTOMS,
+             fill = AGE_CLASS,
+             stat(prop))) +
+  geom_bar(position = "stack") + 
+  scale_x_continuous(limits = c(0, 30)) + 
+  scale_y_continuous(labels = scales::percent) +
+  scale_fill_discrete(name = "Age groups (years)", 
+                      labels = c("0-10", "10-20", "20-30", "30-40", "40-50",
+                                 "50-60", "60-70", "70-80", "80-90", "90-120")) +
+  ggtitle("Relative occurrence of number of symptoms by age") +
+  xlab("Number of symptoms") + 
+  ylab("Relative occurence") +
+  theme_classic()
+
+# Relative occurence of top 20 symptoms by age
+# Stacked bar plot
+# Consider making bigger groups?
+merged_data_long %>%
+  drop_na(AGE_CLASS) %>%
+  count(AGE_CLASS, SYMPTOM, SYMPTOM_VALUE) %>%
+  group_by(SYMPTOM, AGE_CLASS) %>%
+  mutate(total = sum(n)) %>%
+  filter(SYMPTOM_VALUE == TRUE) %>%
+  summarise(prop = n/total, .groups = "rowwise") %>%
+  arrange(SYMPTOM, desc(prop)) %>%
+  #head(58) %>% 
+  ggplot(aes(x = reorder(SYMPTOM, desc(prop)),
+             y = prop,
+             fill = AGE_CLASS)) +
+  geom_bar(position = "stack",
+           stat = "identity") +
+  #facet_wrap(~ AGE_CLASS) +
+  theme_classic() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  scale_y_continuous(labels = scales::percent) +
+  scale_fill_discrete(name = "Age groups (years)", 
+                      labels = c("0-10", "10-20", "20-30", "30-40", "40-50",
+                                 "50-60", "60-70", "70-80", "80-90", "90-120")) +
+  ggtitle("Relative occurence of top 20 symptoms by age") +
+  xlab("Symptoms") + 
+  ylab("Relative occurence")
+
+
+# Relative occurence of top 20 symptoms by age
+# heat map
+merged_data_long %>%
+  drop_na(AGE_CLASS) %>%
+  count(AGE_CLASS, SYMPTOM, SYMPTOM_VALUE) %>%
+  group_by(SYMPTOM, AGE_CLASS) %>%
+  mutate(total = sum(n)) %>%
+  filter(SYMPTOM_VALUE == TRUE) %>%
+  summarise(prop = n/total, 
+            .groups = "rowwise") %>%
+  ggplot(aes(x = AGE_CLASS, 
+             y = reorder(SYMPTOM, desc(prop)),
+             fill = prop)) +
+  geom_tile() +
+  theme_classic() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  scale_x_discrete(name = "Age (years)", 
+                   labels = c("0-10", "10-20", "20-30", "30-40", "40-50",
+                              "50-60", "60-70", "70-80", "80-90", "90-120")) +
+  ylab("Top 20 symptoms") +
+  labs(fill = "Relative occurence") +
+  ggtitle("Relative occurrence of top 20 symptoms by age")
+
+
 
 
 
