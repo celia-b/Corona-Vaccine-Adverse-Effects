@@ -44,9 +44,7 @@ symptoms <- merged_data_wide %>%
          INJECTION_SITE_ERYTHEMA, INJECTION_SITE_PRURITUS, INJECTION_SITE_SWELLING, 
          CHILLS, RASH, HEADACHE, INJECTION_SITE_PAIN, NAUSEA,PAIN, PYREXIA, MYALGIA,
          ARTHRALGIA, PRURITUS, ASTHENIA, VOMITING, DEATH) %>%
-  names() %>%
-  paste(collapse = "+")
-
+  names()
 
 
 # Model data --------------------------------------------------------------
@@ -77,16 +75,20 @@ death_v_symptoms <- merged_data_wide %>%
 # Or like this (symptoms defined in wrangle section):
 death_v_symptoms <- merged_data_wide %>%
   glm(data = ., 
-      formula = as.formula(paste("DEATH ~ ", symptoms)), 
+      formula = as.formula(paste("DEATH ~ ", paste(symptoms, collapse = "+"))), 
       family = binomial)
 
+
+# Visualize significant symptoms
 tidy(death_v_symptoms) %>%
   filter(term != "(Intercept)") %>%
   filter(p.value < 0.05) %>%
   ggplot(aes(x = fct_reorder(term, p.value),
              y = -log(p.value))) +
   geom_bar(stat = "identity") +
-  geom_hline(yintercept = -log(0.05), col = "red", linetype="dashed") +
+  geom_hline(yintercept = -log(0.05), 
+             col = "red", 
+             linetype="dashed") +
   theme_classic() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
   ggtitle("Symptoms significantly associated with death") +
