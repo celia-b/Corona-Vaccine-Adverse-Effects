@@ -264,7 +264,7 @@ merged_data_wide %>%
   count()
 
 prop_test(x = c(1191, 644), n = c(29127, 4306), 
-          p = NULL, alternative = "two.sided", correct = TRUE)
+          p = NULL, alternative = "two.sided", correct = TRUE) 
 
 
 # Out of the people who died, what proportion had covid at the time?
@@ -677,6 +677,7 @@ age_vs_symptom_types_heatmap <- merged_data_long %>%
 
 ## Proportion tests for DIED vs. different variables
 
+# Null hypothesis: the proportions are the same
 
 # Function that performs a Pearson's Chi-squared contingency table test between two variables
 chisq_func <- function(variable1, variable2) {
@@ -689,16 +690,31 @@ chisq_func <- function(variable1, variable2) {
     tibble() %>% 
     select(-!!variable1) %>% 
     chisq.test() %>% 
-    glance()
+    tidy()
 }  
 
-tab <- chisq_func(DIED, SEX) 
-chisq_func(DIED, HAS_COVID)
-chisq_func(DIED, HAD_COVID)
-chisq_func(DIED, HAS_ILLNESS)
+# Run different Chi-squared tests
+chisq_func(DIED, HAS_ILLNESS)           # p-value = 2.79e-187
+chisq_func(DIED, SEX)                   # p-value = 1.40e-183
+chisq_func(DIED, HAS_COVID)             # p-value = 1.23e-9
+chisq_func(DIED, HAD_COVID)             # p-value = 0.139
+chisq_func(DIED, HAS_ALLERGIES)         # p-value = 0.316
+chisq_func(DIED, HOSPITAL)              # p-value = 0.0000000277
+chisq_func(DIED, L_THREAT)              # p-value = 0.0138 
+chisq_func(DIED, PRIOR_ADVERSE)         # p-value = 1.66e-15
+chisq_func(DIED, TAKES_ANTIINFLAMATORY) # p-value = 3.95e-20
+chisq_func(DIED, TAKES_STEROIDS)        # p-value = 0.00205
+  
+# Using the infer library, it can be done like this:
+chisq_test(merged_data_wide, DIED ~ HAS_ILLNESS)
 
-# Using the infer library
-chisq_test(merged_data, DIED ~ HAS_ILLNESS)
+
+# How to make a contingency table:
+merged_data_wide %>%
+  group_by(DIED, TAKES_ANTIINFLAMATORY) %>%
+  summarise(n = n()) %>%
+  spread(DIED, n) %>%  
+  tibble() 
 
 
 
