@@ -6,6 +6,10 @@ rm(list = ls())
 library("tidyverse")
 library("patchwork")
 library("scales")
+library("infer")
+library("broom")
+library("purr")
+
 
 
 # Define functions --------------------------------------------------------
@@ -319,6 +323,38 @@ merged_data_long %>%
   xlab("Symptoms") + 
   ylab("Relative occurence")
 
+
+
+
+
+
+
+############################# STATISTICS ###############################
+
+## Proportion tests for DIED vs. different variables
+
+
+# Function that performs a Pearson's Chi-squared contingency table test between two variables
+chisq_func <- function(variable1, variable2) {
+  variable1 <- enquo(variable1) 
+  variable2 <- enquo(variable2) 
+  merged_data %>%
+    group_by(!!variable1, !!variable2) %>%
+    summarise(n = n()) %>%
+    spread(!!variable2, n) %>%  
+    tibble() %>% 
+    select(-!!variable1) %>% 
+    chisq.test() %>% 
+    glance()
+}  
+
+tab <- chisq_func(DIED, SEX) 
+chisq_func(DIED, HAS_COVID)
+chisq_func(DIED, HAD_COVID)
+chisq_func(DIED, HAS_ILLNESS)
+
+# Using the infer library
+chisq_test(merged_data, DIED ~ HAS_ILLNESS)
 
 
 
