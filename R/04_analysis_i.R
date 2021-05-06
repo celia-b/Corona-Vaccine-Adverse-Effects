@@ -742,6 +742,13 @@ merged_data_wide %>%
        y = "Proportion")
 
 
+merged_data_wide %>%
+  ggplot(aes(x = DIED, fill = HAS_COVID)) +
+  geom_bar(position = "fill") +
+  labs(title = "Visualization of Contingency Table",
+       x = "DIED",
+       y = "Proportion")
+
 # Make some mosaic plots?
 
 
