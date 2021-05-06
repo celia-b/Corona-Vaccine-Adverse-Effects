@@ -25,6 +25,8 @@ merged_data_long <- read_csv(file = gzfile("data/03_merged_data_long.csv.gz"),
                                               VAX_DOSE_SERIES = col_character()))
 
 # Wrangle data ------------------------------------------------------------
+
+# Convert variables to factors
 merged_data_wide <- merged_data_wide %>% 
   mutate(DIED = as.factor(DIED), 
          SEX = as.factor(SEX), 
@@ -32,12 +34,16 @@ merged_data_wide <- merged_data_wide %>%
          HAS_ILLNESS = as.factor(HAS_ILLNESS), 
          HAS_COVID = as.factor(HAS_COVID))
 
+# Convert variables to factors
 merged_data_long <- merged_data_long %>%
   mutate(SYMPTOMS = as.factor(SYMPTOM), 
          SYMPTOM_VALUE = as.factor(SYMPTOM_VALUE))
 
 
 # Model data --------------------------------------------------------------
+
+# Modeling death outcome vs sex, age, n hospital days, n days before symptoms, 
+# presence of allergies, presence of illness, presence of COVID
 logistic_regression <- merged_data_wide %>%
   glm(formula = DIED ~ 
         SEX + AGE_YRS + HOSPDAYS + SYMPTOMS_AFTER + HAS_ALLERGIES + HAS_ILLNESS + HAS_COVID, 
@@ -45,6 +51,8 @@ logistic_regression <- merged_data_wide %>%
       data = .)
 
 summary(logistic_regression)
+
+
 
 # The "estimate" column is the log-odds ratio, so we must interpret them as follows:
 # 1. If the variable is categorical, like HAS_ILLNESS, an estimate of 9.877e-01 for the "Y" group
