@@ -143,6 +143,7 @@ symptoms_after_age <- merged_data_wide %>%
   labs(fill = "Age class")
 
 
+
 # Putting them together
 (symptoms_after + symptoms_after_age) + 
   plot_annotation(title = 'Days after vaccination when symptoms appear',
@@ -483,6 +484,35 @@ merged_data_long %>%
   ylab("Relative occurence")
 
 
+
+###################### AGE DISTRIBUTION OF PEOPLE WHO ... ######################
+
+# Total people
+merged_data_wide %>%
+  ggplot(aes(x = AGE_YRS, y = ..density..)) +
+  geom_histogram(bins = 116) +
+  geom_density(color = "blue") +
+  labs(title = "Age distribution of subjects in the dataset", 
+       x = "Age (years)",
+       y = "Proportion")
+
+# People who died -- > Not accounting for different age group sizes
+merged_data_wide %>%
+  filter(DIED == "Y") %>%
+  drop_na() %>%
+  ggplot(aes(AGE_YRS)) +
+  geom_density()
+
+# People who had to go to the hospital after vaccination 
+# -- > Not accounting for different age group sizes
+merged_data_wide %>%
+  filter(HOSPITAL == "Y") %>%
+  drop_na() %>%
+  ggplot(aes(AGE_YRS)) +
+  geom_density()
+
+
+
 ##################### Principal component analysis #############################
 
 # Change all variables I need to numeric and do PCA
@@ -621,10 +651,6 @@ merged_data_long %>%
 
 
 
-
-
-
->>>>>>> 9ab903ad1d4b6728017eccee3466907908f1ba51
 
 # Write data --------------------------------------------------------------
 write_tsv(...)
