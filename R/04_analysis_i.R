@@ -26,16 +26,6 @@ merged_data_long <- read_csv(file = gzfile("data/03_merged_data_long.csv.gz"))
 
 
 # Wrangle data ------------------------------------------------------------
-
-
-
-
-# Model data ----------------------------------------------------------
-#my_data_clean_aug %>% ...
-
-
-
-# Wrangle data ------------------------------------------------------------
 #my_data_clean_aug %>% ...
 
 
@@ -443,6 +433,9 @@ merged_data_long %>%
   ylab("Top 20 symptoms") +
   labs(fill = "Relative occurence") +
   ggtitle("Relative occurrence of top 20 symptoms by age")
+
+
+
 
 
 
