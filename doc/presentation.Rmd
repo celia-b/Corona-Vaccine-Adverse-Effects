@@ -11,7 +11,9 @@ output:
 
 ```{r include=FALSE}
 library(tidyverse)
+library(knitr)
 ```
+
 
 
 ## Overview of presentation
@@ -34,19 +36,17 @@ library(tidyverse)
   - A guide to variable names
 
 ```{r message=TRUE, warning=TRUE, include=FALSE}
-patients <- read_csv(file = "../data/01_patients.csv", 
+patients <- read_csv(file = gzfile("../data/01_patients.csv.gz"), 
                      col_types = cols("BIRTH_DEFECT" = col_character(),
                                       "X_STAY" = col_character(),
                                       "RPT_DATE" = col_date(format="%Y-%m-%d"),
                                       "V_FUNDBY" = col_character(),
                                       "ER_VISIT" = col_character()))
 
-symptoms <- read_csv(file = "../data/01_symptoms.csv")
+symptoms <- read_csv(file = gzfile("../data/01_symptoms.csv.gz"))
 
-vaccines <- read_csv(file = "../data/01_vaccines.csv",
+vaccines <- read_csv(file = gzfile("../data/01_vaccines.csv.gz"),
                      col_types = cols("VAX_DOSE_SERIES" = col_character()))
-
-
 ```
 
 
@@ -63,7 +63,7 @@ head(patients, 3)
 VACCINES.CSV: Contains information about the received vaccine
 
 ```{r echo=FALSE}
-as_tibble(vaccines) %>% head(., 3)
+vaccines %>% head(., 3)
 ```
 
 
@@ -78,8 +78,8 @@ head(symptoms, 3)
 
 ## Project workflow
 
-```{r pressure, echo=FALSE, out.width = '75%'}
-knitr::include_graphics("../doc/workflow.jpeg")
+```{r pressure, echo = FALSE, out.width = "75%"}
+include_graphics("../doc/workflow.jpeg")
 ```
 
 
@@ -92,8 +92,71 @@ knitr::include_graphics("../doc/workflow.jpeg")
 ## 03_augment - Challenges and Solutions
 
 
-## 04_analysis
-Graphs
+## 04_analysis - sex vs. number of symptoms
+
+```{r nsymptoms_v_sex, echo = FALSE, out.width = "450px", out.height= "450px"}
+include_graphics("../results/nsymptoms_v_sex.png")
+```
+
+
+## 04_analysis - sex vs. types of symptoms
+
+```{r symptom_types_v_sex, echo = FALSE, out.width = "450px", out.height= "450px"}
+include_graphics("../results/symptom_types_v_sex.png")
+```
+
+
+## 04_analysis - vaccine manufacturer vs. number of symptoms
+
+```{r nsymptoms_v_manu, echo = FALSE, out.width = "450px", out.height= "450px"}
+include_graphics("../results/nsymptoms_v_manu.png")
+```
+
+
+## 04_analysis - vaccine manufacturer vs. types of symptoms 
+
+```{r symptom_types_v_manu, echo = FALSE, out.width = "450px", out.height= "450px"}
+include_graphics("../results/symptom_types_v_manu.png")
+```
+
+
+## 04_analysis - vaccine manufacturer vs. life threatening symptoms
+
+```{r manu_v_lthreat, echo = FALSE, out.width = "450px", out.height= "450px"}
+include_graphics("../results/manu_v_lthreat.png")
+```
+
+
+## 04_analysis - age vs. number of symptoms (boxplot)
+
+```{r age_v_nsymptoms_boxplot, echo = FALSE, out.width = "450px", out.height= "450px"}
+include_graphics("../results/age_v_nsymptoms_boxplot.png")
+```
+
+
+## 04_analysis - age vs. number of symptoms (stacked barplot)
+
+```{r age_v_nsymptoms_stacked, echo = FALSE, out.width = "450px", out.height= "450px"}
+include_graphics("../results/age_v_nsymptoms_stacked.png")
+```
+
+
+## 04_analysis - age vs. types of symptoms (stacked barplot)
+
+```{r age_vs_symptom_types_stacked, echo = FALSE, out.width = "450px", out.height= "450px"}
+include_graphics("../results/age_vs_symptom_types_stacked.png")
+```
+
+
+## 04_analysis - age vs. types of symptoms (heatmap)
+
+```{r age_vs_symptom_types_heatmap, echo = FALSE, out.width = "450px", out.height= "450px"}
+include_graphics("../results/age_vs_symptom_types_heatmap.png")
+```
+
+
+
+
 
 
 ## Conclusion and discussion

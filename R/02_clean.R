@@ -15,7 +15,7 @@ library("tidyverse")
 patients <- read_csv(file = gzfile("data/01_patients.csv.gz"), 
                      col_types = cols("BIRTH_DEFECT" = col_character(),
                                       "X_STAY" = col_character(),
-                                      "RPT_DATE" = col_date(format="%Y-%m-%d"),
+                                      "RPT_DATE" = col_date(format = "%Y-%m-%d"),
                                       "V_FUNDBY" = col_character(),
                                       "ER_VISIT" = col_character()))
 

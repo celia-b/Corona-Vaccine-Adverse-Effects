@@ -19,7 +19,6 @@ patients_raw <- read_csv(file = "data/_raw/2021VAERSDATA.csv",
                                           "V_FUNDBY" = col_character(),
                                           "ER_VISIT" = col_character(),
                                           "HOSPDAYS" = col_character()),
-                         
                          na = c("", " ", 
                                 "NA", "N/A", "na", "Na", "n/a", "N/a", 
                                 "None", "none", "None.", "NONE",
