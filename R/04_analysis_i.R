@@ -98,7 +98,7 @@ summary(death_v_symptoms)
 # Visualize significant symptoms
 tidy(death_v_symptoms) %>%
   filter(term != "(Intercept)") %>%
-  filter(p.value < 0.05) %>%
+  #filter(p.value < 0.05) %>%
   ggplot(aes(x = fct_reorder(term, p.value),
              y = -log(p.value))) +
   geom_bar(stat = "identity") +
@@ -139,8 +139,8 @@ symptoms_after <- merged_data_wide %>%
        y = "Relative ocurrence")
 
 
-## By age class --> I think we need less age classes
-# Also I'm not convinced this plot looks nice --> maybe facet_wrap it?
+## By age class
+# I'm not convinced this plot looks nice --> maybe facet_wrap it? make it into heatmap?
 symptoms_after_age <- merged_data_wide %>%
   select(VAERS_ID, AGE_CLASS, SEX, SYMPTOMS_AFTER, VAX_MANU) %>%
   arrange(SYMPTOMS_AFTER) %>%
@@ -159,7 +159,7 @@ symptoms_after_age <- merged_data_wide %>%
 
 
 
-# Putting them together
+# Patchwork
 (symptoms_after + symptoms_after_age) + 
   plot_annotation(title = 'Days after vaccination when symptoms appear',
                   subtitle = NULL,
@@ -239,66 +239,6 @@ n_days_manu <- merged_data_wide %>%
   labs(fill = "Manufacturer")
 
 n_days_manu
-
-
-
-######################## DEATH RATE ###############################
-# Out of the people who died, what proportion were already sick?
-merged_data_wide %>%
-  select(VAERS_ID, AGE_CLASS, SEX, DIED, HAS_ILLNESS, VAX_MANU) %>%
-  filter(DIED == 'Y') %>%
-  ggplot(aes(HAS_ILLNESS)) + 
-  geom_bar() +
-  coord_flip()
-
-# How much more likely is it to die when you were already sick when 
-# taking the vaccine vs when you were healthy? --> DO STATISTICAL ANALYSIS
-merged_data_wide %>%
-  select(VAERS_ID, AGE_CLASS, SEX, DIED, HAS_ILLNESS, VAX_MANU) %>%
-  group_by(HAS_ILLNESS) %>%
-  count()
-
-merged_data_wide %>%
-  select(VAERS_ID, AGE_CLASS, SEX, DIED, HAS_ILLNESS, VAX_MANU) %>%
-  group_by(HAS_ILLNESS, DIED) %>%
-  count()
-
-prop_test(x = c(1191, 644), n = c(29127, 4306), 
-          p = NULL, alternative = "two.sided", correct = TRUE) 
-
-
-# Out of the people who died, what proportion had covid at the time?
-merged_data_wide %>%
-  select(VAERS_ID, AGE_CLASS, SEX, DIED, HAS_COVID, VAX_MANU) %>%
-  filter(DIED == 'Y') %>%
-  ggplot(aes(HAS_COVID)) + 
-  geom_bar() +
-  coord_flip()
-
-
-# How much more likely is it to die when you had covid while 
-# taking the vaccine vs when you were healthy? --> DO STATISTICAL ANALYSIS
-merged_data_wide %>%
-  select(VAERS_ID, AGE_CLASS, SEX, DIED, HAS_COVID, VAX_MANU) %>%
-  group_by(HAS_COVID) %>%
-  count()
-
-merged_data_wide %>%
-  select(VAERS_ID, AGE_CLASS, SEX, DIED, HAS_COVID, VAX_MANU) %>%
-  group_by(HAS_COVID, DIED) %>%
-  count()
-
-# How much less likely is it to die when you had covid in the past? 
-# --> DO STATISTICAL ANALYSIS
-merged_data_wide %>%
-  select(VAERS_ID, AGE_CLASS, SEX, DIED, HAD_COVID, VAX_MANU) %>%
-  group_by(HAD_COVID) %>%
-  count()
-
-merged_data_wide %>%
-  select(VAERS_ID, AGE_CLASS, SEX, DIED, HAD_COVID, VAX_MANU) %>%
-  group_by(HAD_COVID, DIED) %>%
-  count()
 
 
 #################### SEX VS NUMBER/TYPES OF SYMPTOMS ####################
