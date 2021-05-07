@@ -7,11 +7,10 @@ library("tidyverse")
 
 
 # Define functions --------------------------------------------------------
-#source(file = "R/99_project_functions.R")
+source(file = "R/99_project_functions.R")
 
 
 # Load data ---------------------------------------------------------------
-
 patients <- read_csv(file = gzfile("data/01_patients.csv.gz"), 
                      col_types = cols("BIRTH_DEFECT" = col_character(),
                                       "X_STAY" = col_character(),
@@ -44,7 +43,6 @@ patients_clean <- patients %>%
             RECOVD,
             L_THREAT)) %>% # Removed columns
   replace_na(list(DIED = "N",
-                  L_THREAT = "N",
                   HOSPITAL = "N",
                   DISABLE = "N",
                   OFC_VISIT = "N",

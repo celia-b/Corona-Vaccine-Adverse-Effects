@@ -7,11 +7,10 @@ library("tidyverse")
 
 
 # Define functions --------------------------------------------------------
-#source(file = "R/99_project_functions.R")
+source(file = "R/99_project_functions.R")
 
 
 # Load data ---------------------------------------------------------------
-
 patients_raw <- read_csv(file = "data/_raw/2021VAERSDATA.csv", 
                          col_types = cols("BIRTH_DEFECT" = col_character(),
                                           "X_STAY" = col_character(),
@@ -34,6 +33,8 @@ symptoms_raw <- read_csv(file = "data/_raw/2021VAERSSYMPTOMS.csv")
 vaccines_raw <- read_csv(file = "data/_raw/2021VAERSVAX.csv",
                          col_types = cols("VAX_DOSE_SERIES" = col_character()),
                          na = c("UNK", "N/A"))
+
+vaccines_raw %>% view()
 
 # Wrangle data ------------------------------------------------------------
  
