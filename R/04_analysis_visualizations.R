@@ -243,7 +243,7 @@ nsymptoms_v_age <- merged_data_long %>%
                               "50-60", "60-70", "70-80", "80-90", "90-120")) +
   scale_y_continuous(limits = c(0, 15), 
                      name = "Number of symptoms") +
-  ggtitle("Age vs number of symptoms") +
+  ggtitle("Age vs. number of symptoms") +
   scale_fill_viridis_d() +
   theme_half_open(font_size = 9, 
                   font_family = "serif") +
@@ -264,7 +264,7 @@ nsymptoms_v_sex <- merged_data_long %>%
   scale_y_continuous(limits = c(0, 15), 
                      name = "Number of symptoms") +
   coord_flip() +
-  ggtitle("Sex vs number of symptoms") +
+  ggtitle("Sex vs. number of symptoms") +
   scale_fill_viridis_d() +
   theme_half_open(font_size = 9, 
                   font_family = "serif") +
@@ -282,15 +282,15 @@ nsymptoms_v_manu <- merged_data_long %>%
   scale_y_continuous(limits = c(0, 15), 
                      name = "Number of symptoms") +
   coord_flip() +
-  ggtitle("Manufacturer vs number of symptoms") +
+  ggtitle("Manufacturer vs. number of symptoms") +
   scale_fill_viridis_d() +
   theme_half_open(font_size = 9, 
                   font_family = "serif, Times") +
   theme(legend.position = "none", 
-        plot.title = element_text(hjust = 0.5))
+        plot.title = element_text(hjust = 1))
 
 # Combine all number of symptom plots into one figure using patchwork
-nsymptoms_fig <- nsymptoms_v_age + nsymptoms_v_sex + nsymptoms_v_manu
+nsymptoms_age_sex <- nsymptoms_v_age + plot_spacer() + nsymptoms_v_sex
 
 
 ############################## TYPES OF SYMPTOMS ##############################
@@ -312,7 +312,7 @@ symptom_types_v_sex <- merged_data_long %>%
            width = 0.8) +
   scale_y_continuous(labels = scales::percent) +
   labs(fill = "Sex") +
-  ggtitle("Relative occurence of top 20 symptoms by sex") +
+  ggtitle("Sex vs. types of symptoms") +
   xlab("Symptoms") + 
   ylab("Relative occurence") +
   scale_fill_viridis_d() +
@@ -340,7 +340,7 @@ symptom_types_v_manu <- merged_data_long %>%
            stat = "identity") +
   scale_y_continuous(labels = scales::percent) +
   labs(fill = "Vaccine manufacturer") +
-  ggtitle("Relative occurence of top 20 symptoms by manufacturer") +
+  ggtitle("Manufacturer vs. types of symptoms") +
   xlab("Symptoms") + 
   ylab("Relative occurence") +
   scale_fill_viridis_d() +
@@ -371,7 +371,7 @@ symptom_types_v_age <- merged_data_long %>%
                               "50-60", "60-70", "70-80", "80-90", "90-120")) +
   ylab("Top 20 symptoms") +
   labs(fill = "Relative occurence") +
-  ggtitle("Relative occurrence of top 20 symptoms by age") +
+  ggtitle("Age vs. types of symptoms") +
   scale_fill_viridis_c() +
   theme_half_open(font_size = 9, 
                   font_family = "serif, Times") +
@@ -379,9 +379,6 @@ symptom_types_v_age <- merged_data_long %>%
                                    hjust = 1, 
                                    size = 10), 
         plot.title = element_text(hjust = 0.5))
-
-# Combine all symptom types plots into one figure using patchwork
-symptom_types_sex_manu_fig <- symptom_types_v_sex + symptom_types_v_manu
 
 
 ####################### VACCINE MANUFACTURER VS DEATH ########################
@@ -447,9 +444,12 @@ merged_data_wide %>%
 write_tsv(...)
 ggsave(...)
 
-ggsave(nsymptoms_fig, file = "results/nsymptoms_fig.png")
+ggsave(nsymptoms_age_sex, file = "results/nsymptoms_age_sex.png")
+ggsave(nsymptoms_v_manu, file = "results/nsymptoms_v_manu.png")
 ggsave(symptom_types_sex_manu_fig, file = "results/symptom_types_sex_manu_fig.png")
 ggsave(symptom_types_v_age, file = "results/symptom_types_v_age.png")
+ggsave(symptom_types_v_sex, file = "results/symptom_types_v_sex.png")
+ggsave(symptom_types_v_manu, file = "results/symptom_types_v_manu.png")
 ggsave(manu_v_death, file = "results/manu_v_death.png")
 
 

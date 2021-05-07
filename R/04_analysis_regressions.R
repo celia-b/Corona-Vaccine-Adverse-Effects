@@ -86,20 +86,26 @@ death_v_symptoms <- merged_data_wide %>%
 death_v_symptoms_model_fig <- tidy(death_v_symptoms) %>%
   filter(term != "(Intercept)") %>%
   ggplot(aes(x = fct_reorder(term, p.value),
-             y = -log(p.value))) +
+             y = -log(p.value),
+             fill = term)) +
   geom_bar(stat = "identity") +
   geom_hline(yintercept = -log(0.05), 
              linetype = "dashed", 
              color = "black") +
   xlab("Symptoms") + 
   ylab("-log(p-value)") +
+  ggtitle("P-values for death ~ symptoms association", 
+          subtitle = "Dashed line indicates a p-value of 0.05") +
   scale_fill_viridis_d() +
   theme_half_open(font_size = 9, 
                   font_family = "serif, Times") +
-  theme(axis.text.x = element_text(angle = 45, 
+  theme(legend.position = "none",
+        axis.text.x = element_text(angle = 45, 
                                    hjust = 1, 
-                                   size = 10), 
-        plot.title = element_text(hjust = 0.5))
+                                   size = 9), 
+        plot.title = element_text(hjust = 0.5),
+        plot.subtitle = element_text(hjust = 0.5),
+        plot.margin = margin(10, 10, 10, 35))
 
 
 # Takes some time to run!
