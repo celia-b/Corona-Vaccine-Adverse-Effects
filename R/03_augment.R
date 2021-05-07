@@ -7,7 +7,7 @@ library("tidyverse")
 
 
 # Define functions --------------------------------------------------------
-#source(file = "R/99_project_functions.R")
+source(file = "R/99_project_functions.R")
 
 
 # Load data ---------------------------------------------------------------
@@ -28,7 +28,7 @@ patients_clean_aug <- patients_clean %>%
                                          ALLERGIES, 
                                          ignore.case = TRUE) ~ "N",
                                  is.na(ALLERGIES) ~ "N",
-                                 TRUE ~ 'Y')) %>% 
+                                 TRUE ~ "Y")) %>% 
   select(-ALLERGIES) %>% 
   mutate(HAS_ILLNESS = case_when(grepl("^non-serological | ^Non-Hodgkin | ^Non Hodgkin | ^non-alcoholic | ^non systemic", 
                                        CUR_ILL, 
@@ -60,15 +60,15 @@ patients_clean_aug <- patients_clean %>%
                                     TRUE ~ "N")) %>% 
   select(-OTHER_MEDS) %>% 
   mutate(AGE_CLASS = case_when(AGE_YRS < 10 ~ "[0,10)",
-                               AGE_YRS >= 10 & AGE_YRS < 20 ~ "[10,20)",
-                               AGE_YRS >= 20 & AGE_YRS < 30 ~ "[20,30)",
-                               AGE_YRS >= 30 & AGE_YRS < 40 ~ "[30,40)",
-                               AGE_YRS >= 40 & AGE_YRS < 50 ~ "[40,50)",
-                               AGE_YRS >= 50 & AGE_YRS < 60 ~ "[50,60)",
-                               AGE_YRS >= 60 & AGE_YRS < 70 ~ "[60,70)",
-                               AGE_YRS >= 70 & AGE_YRS < 80 ~ "[70,80)",
-                               AGE_YRS >= 80 & AGE_YRS < 90 ~ "[80,90)",
-                               AGE_YRS >= 90 ~ "[90,120)")) %>% 
+                               AGE_YRS >= 10 & AGE_YRS < 20 ~ "[10, 20)",
+                               AGE_YRS >= 20 & AGE_YRS < 30 ~ "[20, 30)",
+                               AGE_YRS >= 30 & AGE_YRS < 40 ~ "[30, 40)",
+                               AGE_YRS >= 40 & AGE_YRS < 50 ~ "[40, 50)",
+                               AGE_YRS >= 50 & AGE_YRS < 60 ~ "[50, 60)",
+                               AGE_YRS >= 60 & AGE_YRS < 70 ~ "[60, 70)",
+                               AGE_YRS >= 70 & AGE_YRS < 80 ~ "[70, 80)",
+                               AGE_YRS >= 80 & AGE_YRS < 90 ~ "[80, 90)",
+                               AGE_YRS >= 90 ~ "[90, 120)")) %>% # Should we change it to 90+ ?
   mutate(DIED_AFTER = DATEDIED - VAX_DATE) %>% # --> DIRTY FORMAT: figure out how to change it
   rename(SYMPTOMS_AFTER = NUMDAYS) %>% 
   select(-c(VAX_DATE, DATEDIED, ONSET_DATE, TODAYS_DATE)) 
@@ -82,12 +82,13 @@ symptoms_clean_long <- symptoms_clean %>%
   pivot_longer(cols = -VAERS_ID, 
                names_to = "symptom_num", 
                values_to = "symptom", 
-               values_drop_na = TRUE)
+               values_drop_na = TRUE) %>%
+  select(-symptom_num)
 
 # Extract the 20 symptoms that most commonly occur as a vector
 top_20_vec <- symptoms_clean_long %>%
   count(symptom, sort = TRUE) %>% # count symptom occurrence, sort by highest occurrence
-  head(20) %>%
+  head(22) %>%
   pluck("symptom") # convert symptoms column from tibble into vector 
 
 # Use tibble with columns VAERS_ID and each of the top 20 symptoms. 
@@ -115,7 +116,6 @@ symptoms_all_IDs <- symptoms_clean %>%
 # Join this column with tibble containing symptom columns. 
 # The final tibble contains IDs, total number of symptoms and top 20 symptoms. 
 symptoms_clean_aug <- symptoms_clean_long %>%
-  select(VAERS_ID, symptom) %>%
   group_by(VAERS_ID) %>%
   count(sort = FALSE) %>% # count number of symptoms per ID
   rename(n_symptoms = n) %>%

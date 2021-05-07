@@ -12,9 +12,8 @@ library("purrr")
 library("infer")
 
 
-
 # Define functions --------------------------------------------------------
-#source(file = "R/99_project_functions.R")
+source(file = "R/99_project_functions.R")
 
 
 # Load data ---------------------------------------------------------------
@@ -50,6 +49,7 @@ symptoms <- merged_data_wide %>%
   names()
 
 
+<<<<<<< HEAD:R/04_analysis_i.R
 # Model data --------------------------------------------------------------
 
 ######### Modeling death outcome vs sex, age, n hospital days, n days before 
@@ -121,6 +121,8 @@ tidy(death_v_symptoms) %>%
 #    exp(6.024e-02) = 1.062091 units change in the odds ratio.
 
 
+=======
+>>>>>>> 7c4c77d4862a0f8b3ac11d660d29ca9cbf9fd4d1:R/04_analysis_visualizations.R
 
 # Visualise data ----------------------------------------------------------
 
@@ -150,8 +152,8 @@ symptoms_after_age <- merged_data_wide %>%
   geom_bar(position = "dodge") +
   #scale_y_continuous(labels = percent) +
   labs(#subtitle = "Grouping by age class",
-       x = "Days after vaccination",
-       y = "Relative ocurrence") +
+    x = "Days after vaccination",
+    y = "Relative ocurrence") +
   theme(axis.text.y = element_blank(),
         axis.ticks.y = element_blank(),
         axis.title.y = element_blank()) +
@@ -279,7 +281,7 @@ symptom_types_v_sex <- merged_data_long %>%
            stat = "identity") +
   scale_y_continuous(labels = scales::percent) +
   scale_fill_discrete(name = "Sex", 
-       labels = c("Females", "Males")) +
+                      labels = c("Females", "Males")) +
   ggtitle("Relative occurence of top 20 symptoms by sex") +
   xlab("Symptoms") + 
   ylab("Relative occurence") +
@@ -445,145 +447,6 @@ age_vs_symptom_types_stacked <- merged_data_long %>%
 
 
 
-###################### AGE DISTRIBUTION OF PEOPLE WHO ... ######################
-
-# Total people
-merged_data_wide %>%
-  ggplot(aes(x = AGE_YRS, y = ..density..)) +
-  geom_histogram(bins = 116) +
-  geom_density(color = "blue") +
-  labs(title = "Age distribution of subjects in the dataset", 
-       x = "Age (years)",
-       y = "Proportion")
-
-# People who died -- > Not accounting for different age group sizes
-merged_data_wide %>%
-  filter(DIED == "Y") %>%
-  drop_na() %>%
-  ggplot(aes(AGE_YRS)) +
-  geom_density()
-
-# People who had to go to the hospital after vaccination 
-# -- > Not accounting for different age group sizes
-merged_data_wide %>%
-  filter(HOSPITAL == "Y") %>%
-  drop_na() %>%
-  ggplot(aes(AGE_YRS)) +
-  geom_density()
-
-
-
-##################### Principal component analysis #############################
-
-# Change all variables I need to numeric and do PCA
-pca_fit <- merged_data_wide %>% 
-  mutate (DIED = case_when (DIED == 'N'~ 0,
-                            DIED == 'Y'~ 1)) %>%
-  mutate (L_THREAT = case_when (L_THREAT == 'N'~ 0,
-                                L_THREAT == 'Y'~ 1)) %>%
-  mutate (HOSPITAL = case_when (HOSPITAL == 'N'~ 0,
-                                HOSPITAL == 'Y'~ 1)) %>%
-  mutate (DISABLE = case_when (DISABLE == 'N'~ 0,
-                                DISABLE == 'Y'~ 1)) %>%
-  mutate (ER_ED_VISIT = case_when (ER_ED_VISIT == 'N'~ 0,
-                                ER_ED_VISIT == 'Y'~ 1)) %>%
-  mutate (DYSPNOEA = case_when (DYSPNOEA == FALSE ~ 0,
-                                DYSPNOEA == TRUE ~ 1)) %>%
-  mutate (PAIN_IN_EXTREMITY = case_when (PAIN_IN_EXTREMITY == FALSE ~ 0,
-                                PAIN_IN_EXTREMITY == TRUE ~ 1)) %>%
-  mutate (DIZZINESS = case_when (DIZZINESS == FALSE ~ 0,
-                                DIZZINESS == TRUE ~ 1)) %>%
-  mutate (FATIGUE = case_when (FATIGUE == FALSE ~ 0,
-                                FATIGUE == TRUE ~ 1)) %>%
-  mutate (INJECTION_SITE_ERYTHEMA = case_when (INJECTION_SITE_ERYTHEMA == FALSE ~ 0,
-                                INJECTION_SITE_ERYTHEMA == TRUE ~ 1)) %>%
-  mutate (INJECTION_SITE_PRURITUS = case_when (INJECTION_SITE_PRURITUS == FALSE ~ 0,
-                                               INJECTION_SITE_PRURITUS == TRUE ~ 1)) %>%
-  mutate (INJECTION_SITE_SWELLING = case_when (INJECTION_SITE_SWELLING == FALSE ~ 0,
-                                               INJECTION_SITE_SWELLING == TRUE ~ 1)) %>%
-  mutate (CHILLS = case_when (CHILLS == FALSE ~ 0,
-                               CHILLS == TRUE ~ 1)) %>%
-  mutate (RASH = case_when (RASH == FALSE ~ 0,
-                               RASH == TRUE ~ 1)) %>%
-  mutate (HEADACHE = case_when (HEADACHE == FALSE ~ 0,
-                               HEADACHE == TRUE ~ 1)) %>%
-  mutate (INJECTION_SITE_PAIN = case_when (INJECTION_SITE_PAIN == FALSE ~ 0,
-                               INJECTION_SITE_PAIN == TRUE ~ 1)) %>%
-  mutate (NAUSEA = case_when (NAUSEA == FALSE ~ 0,
-                               NAUSEA == TRUE ~ 1)) %>%
-  mutate (PAIN = case_when (PAIN == FALSE ~ 0,
-                               PAIN == TRUE ~ 1)) %>%
-  mutate (PYREXIA = case_when (PYREXIA == FALSE ~ 0,
-                               PYREXIA == TRUE ~ 1)) %>%
-  mutate (MYALGIA = case_when (MYALGIA == FALSE ~ 0,
-                               MYALGIA == TRUE ~ 1)) %>%
-  mutate (ARTHRALGIA = case_when (ARTHRALGIA == FALSE ~ 0,
-                               ARTHRALGIA == TRUE ~ 1)) %>%
-  mutate (PRURITUS = case_when (PRURITUS == FALSE ~ 0,
-                               PRURITUS == TRUE ~ 1)) %>%
-  mutate (ASTHENIA = case_when (ASTHENIA == FALSE ~ 0,
-                               ASTHENIA == TRUE ~ 1)) %>%
-  mutate (VOMITING = case_when (VOMITING == FALSE ~ 0,
-                               VOMITING == TRUE ~ 1)) %>% # didn't add death bc it's already in DIED
-  select (DIED, L_THREAT, HOSPITAL, DISABLE, ER_ED_VISIT, SYMPTOMS_AFTER,
-          N_SYMPTOMS, DYSPNOEA, PAIN_IN_EXTREMITY, DIZZINESS, FATIGUE, 
-          INJECTION_SITE_ERYTHEMA, INJECTION_SITE_PRURITUS, INJECTION_SITE_SWELLING,
-          CHILLS, RASH, HEADACHE, INJECTION_SITE_PAIN, NAUSEA, PAIN, PYREXIA, 
-          MYALGIA, ARTHRALGIA, PRURITUS, ASTHENIA, VOMITING) %>%
-  drop_na(SYMPTOMS_AFTER) %>% # there are NAs in this column
-  select(where(is.numeric)) %>% # retain only numeric columns
-  scale() %>% # scale data
-  prcomp(center = TRUE) # do PCA
-
-# instead of doing this the NAs in SYMPTOMS_AFTER should be removed in 
-# 02_clean??
-classes <- merged_data_wide %>% 
-  drop_na(SYMPTOMS_AFTER) %>%
-  select (VAX_MANU)  
-
-# PC1 vs PC2 biplot
-pca_fit %>%
-  augment(classes) %>% 
-  ggplot(aes(.fittedPC1, .fittedPC2, color = VAX_MANU)) + 
-  geom_point(size = 0.5) +
-  labs(x = 'PC1', y = 'PC2') +
-  scale_color_viridis_d(name = "MANUFACTURER", option = "D") +
-  theme_half_open(font_size = 9, font_family = "serif, Times") +
-  background_grid() 
-  
-# define arrow style for plotting
-arrow_style <- arrow(
-  angle = 10, ends = "first", type = "open", length = grid::unit(5, "pt")
-)
-
-# plot rotation matrix
-pca_fit %>%
-  tidy(matrix = "rotation") %>%
-  pivot_wider(names_from = "PC", names_prefix = "PC", values_from = "value") %>%
-  ggplot(aes(PC1, PC2)) +
-  geom_segment(xend = 0, yend = 0, arrow = arrow_style) +
-  geom_text(
-    aes(label = column),
-    hjust = 0, nudge_x = 0.05, 
-    color = "#904C2F",
-    size = 2.5) +
-  xlim(-.75, .75) + ylim(-.75, .75) +
-  coord_fixed() + # fix aspect ratio to 1:1
-  theme_minimal_grid(10)
-
-# scree plot
-pca_fit %>%
-  tidy(matrix = "eigenvalues") %>%
-  ggplot(aes(PC, percent)) +
-  geom_col(fill = "#56B4E9", alpha = 0.8) +
-  labs(y = "explained variance") +
-  scale_x_continuous(breaks = 1:26) +
-  scale_y_continuous(
-    labels = scales::percent_format(),
-    expand = expansion(mult = c(0, 0.01))
-  ) +
-  theme_minimal_hgrid(10)
-
 # Relative occurence of top 20 symptoms by age
 # heat map
 age_vs_symptom_types_heatmap <- merged_data_long %>%
@@ -610,86 +473,32 @@ age_vs_symptom_types_heatmap <- merged_data_long %>%
 
 
 
+###################### AGE DISTRIBUTION OF PEOPLE WHO ... ######################
 
-
-
-############################# STATISTICS ###############################
-
-## Proportion tests for DIED vs. different variables
-
-# Null hypothesis: the proportions are the same
-# Assumptions:
-
-#Data in contingency table is presented in counts (not in percent)
-#All cells contain more than 5 observations
-#Each observation contributes to one group only
-#Groups are independent
-#The variables under study are categorical
-#The sample is, supposedly, reasonably random
-
-
-# Function that performs a Pearson's Chi-squared contingency table test between two variables
-chisq_func <- function(variable1, variable2) {
-  variable1 <- enquo(variable1) 
-  variable2 <- enquo(variable2) 
-  merged_data_wide %>%
-    group_by(!!variable1, !!variable2) %>%
-    summarise(n = n()) %>%
-    spread(!!variable2, n) %>%  
-    tibble() %>% 
-    select(-!!variable1) %>% 
-    chisq.test() %>% 
-    tidy()
-}  
-
-# Run different Chi-squared tests
-chisq_func(DIED, HAS_ILLNESS)           # p-value = 2.79e-187
-chisq_func(DIED, SEX)                   # p-value = 1.40e-183
-chisq_func(DIED, HAS_COVID)             # p-value = 1.23e-9
-chisq_func(DIED, HAD_COVID)             # p-value = 0.139
-chisq_func(DIED, HAS_ALLERGIES)         # p-value = 0.316
-chisq_func(DIED, HOSPITAL)              # p-value = 0.0000000277
-chisq_func(DIED, L_THREAT)              # p-value = 0.0138 
-chisq_func(DIED, PRIOR_ADVERSE)         # p-value = 1.66e-15
-chisq_func(DIED, TAKES_ANTIINFLAMATORY) # p-value = 3.95e-20
-chisq_func(DIED, TAKES_STEROIDS)        # p-value = 0.00205
-  
-# Using the infer library, it can be done like this:
-chisq_test(merged_data_wide, DIED ~ HAS_ILLNESS)
-
-
-# How to make a contingency table:
+# Total people
 merged_data_wide %>%
-  group_by(DIED, TAKES_ANTIINFLAMATORY) %>%
-  summarise(n = n()) %>%
-  spread(DIED, n) %>%  
-  tibble() 
-
-
-# Visualizations
-merged_data_wide %>%
-  ggplot(aes(x = DIED, fill = HAS_ILLNESS)) +
-  geom_bar(position = "fill") +
-  labs(title = "Visualization of Contingency Table",
-       x = "DIED",
+  ggplot(aes(x = AGE_YRS, y = ..density..)) +
+  geom_histogram(bins = 116) +
+  geom_density(color = "blue") +
+  labs(title = "Age distribution of subjects in the dataset", 
+       x = "Age (years)",
        y = "Proportion")
 
+# People who died -- > Not accounting for different age group sizes
 merged_data_wide %>%
-  ggplot(aes(x = DIED, fill = SEX)) +
-  geom_bar(position = "fill") +
-  labs(title = "Visualization of Contingency Table",
-       x = "DIED",
-       y = "Proportion")
+  filter(DIED == "Y") %>%
+  drop_na() %>%
+  ggplot(aes(AGE_YRS)) +
+  geom_density()
 
-
+# People who had to go to the hospital after vaccination 
+# -- > Not accounting for different age group sizes
 merged_data_wide %>%
-  ggplot(aes(x = DIED, fill = HAS_COVID)) +
-  geom_bar(position = "fill") +
-  labs(title = "Visualization of Contingency Table",
-       x = "DIED",
-       y = "Proportion")
+  filter(HOSPITAL == "Y") %>%
+  drop_na() %>%
+  ggplot(aes(AGE_YRS)) +
+  geom_density()
 
-# Make some mosaic plots?
 
 
 
