@@ -9,6 +9,8 @@ library("patchwork")
 library("scales")
 library("broom")
 library("purrr")
+library("infer")
+
 
 
 # Define functions --------------------------------------------------------
@@ -61,6 +63,16 @@ logistic_regression <- merged_data_wide %>%
 summary(logistic_regression)
 
 
+logistic_regression_interactions <- merged_data_wide %>%
+  glm(formula = DIED ~ 
+        (SEX + AGE_YRS + HOSPDAYS + SYMPTOMS_AFTER + HAS_ALLERGIES + HAS_ILLNESS + HAS_COVID)^2, 
+      family = binomial, 
+      data = .)
+
+summary(logistic_regression_interactions)
+# Some of the main effects are not significant anymore
+
+
 ################# Modeling death vs presence/absence of symptoms ###############
 # Can be done like this:
 death_v_symptoms <- merged_data_wide %>%
@@ -79,6 +91,9 @@ death_v_symptoms <- merged_data_wide %>%
   glm(data = ., 
       formula = str_c("DEATH ~ ", str_c(symptoms, collapse = "+")), 
       family = binomial)
+
+summary(death_v_symptoms)
+
 
 # Visualize significant symptoms
 tidy(death_v_symptoms) %>%
@@ -249,7 +264,7 @@ merged_data_wide %>%
   count()
 
 prop_test(x = c(1191, 644), n = c(29127, 4306), 
-          p = NULL, alternative = "two.sided", correct = TRUE)
+          p = NULL, alternative = "two.sided", correct = TRUE) 
 
 
 # Out of the people who died, what proportion had covid at the time?
@@ -593,7 +608,7 @@ pca_fit %>%
   geom_point(size = 0.5) +
   labs(x = 'PC1', y = 'PC2') +
   scale_color_viridis_d(name = "MANUFACTURER", option = "D") +
-  theme_half_open(font_size = 9, font_family = "serif,Times") +
+  theme_half_open(font_size = 9, font_family = "serif, Times") +
   background_grid() 
   
 # define arrow style for plotting
@@ -652,6 +667,89 @@ age_vs_symptom_types_heatmap <- merged_data_long %>%
   theme_classic() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1),
         plot.title = element_text(hjust = 0.5))
+
+
+
+
+
+
+############################# STATISTICS ###############################
+
+## Proportion tests for DIED vs. different variables
+
+# Null hypothesis: the proportions are the same
+# Assumptions:
+
+#Data in contingency table is presented in counts (not in percent)
+#All cells contain more than 5 observations
+#Each observation contributes to one group only
+#Groups are independent
+#The variables under study are categorical
+#The sample is, supposedly, reasonably random
+
+
+# Function that performs a Pearson's Chi-squared contingency table test between two variables
+chisq_func <- function(variable1, variable2) {
+  variable1 <- enquo(variable1) 
+  variable2 <- enquo(variable2) 
+  merged_data_wide %>%
+    group_by(!!variable1, !!variable2) %>%
+    summarise(n = n()) %>%
+    spread(!!variable2, n) %>%  
+    tibble() %>% 
+    select(-!!variable1) %>% 
+    chisq.test() %>% 
+    tidy()
+}  
+
+# Run different Chi-squared tests
+chisq_func(DIED, HAS_ILLNESS)           # p-value = 2.79e-187
+chisq_func(DIED, SEX)                   # p-value = 1.40e-183
+chisq_func(DIED, HAS_COVID)             # p-value = 1.23e-9
+chisq_func(DIED, HAD_COVID)             # p-value = 0.139
+chisq_func(DIED, HAS_ALLERGIES)         # p-value = 0.316
+chisq_func(DIED, HOSPITAL)              # p-value = 0.0000000277
+chisq_func(DIED, L_THREAT)              # p-value = 0.0138 
+chisq_func(DIED, PRIOR_ADVERSE)         # p-value = 1.66e-15
+chisq_func(DIED, TAKES_ANTIINFLAMATORY) # p-value = 3.95e-20
+chisq_func(DIED, TAKES_STEROIDS)        # p-value = 0.00205
+  
+# Using the infer library, it can be done like this:
+chisq_test(merged_data_wide, DIED ~ HAS_ILLNESS)
+
+
+# How to make a contingency table:
+merged_data_wide %>%
+  group_by(DIED, TAKES_ANTIINFLAMATORY) %>%
+  summarise(n = n()) %>%
+  spread(DIED, n) %>%  
+  tibble() 
+
+
+# Visualizations
+merged_data_wide %>%
+  ggplot(aes(x = DIED, fill = HAS_ILLNESS)) +
+  geom_bar(position = "fill") +
+  labs(title = "Visualization of Contingency Table",
+       x = "DIED",
+       y = "Proportion")
+
+merged_data_wide %>%
+  ggplot(aes(x = DIED, fill = SEX)) +
+  geom_bar(position = "fill") +
+  labs(title = "Visualization of Contingency Table",
+       x = "DIED",
+       y = "Proportion")
+
+
+merged_data_wide %>%
+  ggplot(aes(x = DIED, fill = HAS_COVID)) +
+  geom_bar(position = "fill") +
+  labs(title = "Visualization of Contingency Table",
+       x = "DIED",
+       y = "Proportion")
+
+# Make some mosaic plots?
 
 
 
