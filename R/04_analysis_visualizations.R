@@ -287,7 +287,7 @@ nsymptoms_v_manu <- merged_data_long %>%
   theme_half_open(font_size = 9, 
                   font_family = "serif, Times") +
   theme(legend.position = "none", 
-        plot.title = element_text(hjust = 1))
+        plot.title = element_text(hjust = 0.5))
 
 # Combine all number of symptom plots into one figure using patchwork
 nsymptoms_age_sex <- nsymptoms_v_age + plot_spacer() + nsymptoms_v_sex

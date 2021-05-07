@@ -193,7 +193,7 @@ patients %>%
 
 ## 03_augment - Challenges and Solutions 1
 
-Another example is OTHER_MEDS. Because it is not recommended to take antiinflamatory or steroid drugs before receiving a vaccine, we detect which individual have taken them to later make some analyses.
+Another example is OTHER_MEDS. Because it is not recommended to take antiinflammatory or steroid drugs before receiving a vaccine, we detect which individual have taken them to later make some analyses.
 
 ``` {r message=FALSE, warning=FALSE, include=TRUE, eval = FALSE}
 patients %>%
