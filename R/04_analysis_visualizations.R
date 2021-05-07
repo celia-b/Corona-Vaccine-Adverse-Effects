@@ -50,7 +50,6 @@ symptoms <- merged_data_wide %>%
   names()
 
 
-
 # Visualise data ----------------------------------------------------------
 
 ######################## SYMPTOMS AFTER N DAYS ############################
@@ -68,8 +67,8 @@ symptoms_after <- merged_data_wide %>%
        y = "Relative ocurrence")
 
 
-## By age class --> I think we need less age classes
-# Also I'm not convinced this plot looks nice --> maybe facet_wrap it?
+## By age class
+# I'm not convinced this plot looks nice --> maybe facet_wrap it? make it into heatmap?
 symptoms_after_age <- merged_data_wide %>%
   select(VAERS_ID, AGE_CLASS, SEX, SYMPTOMS_AFTER, VAX_MANU) %>%
   arrange(SYMPTOMS_AFTER) %>%
@@ -88,7 +87,7 @@ symptoms_after_age <- merged_data_wide %>%
 
 
 
-# Putting them together
+# Patchwork
 (symptoms_after + symptoms_after_age) + 
   plot_annotation(title = 'Days after vaccination when symptoms appear',
                   subtitle = NULL,
@@ -169,7 +168,6 @@ n_days_manu <- merged_data_wide %>%
 n_days_manu
 
 
-
 ######################## DEATH RATE ###############################
 # Out of the people who died, what proportion were already sick?
 merged_data_wide %>%
@@ -229,7 +227,7 @@ merged_data_wide %>%
   count()
 
 
-######################### NUMBER OF TYPES OF SYMPTOMS #########################
+############################# NUMBER OF SYMPTOMS #############################
 
 # Boxplot showing number of symptoms vs age
 nsymptoms_v_age <- merged_data_long %>%
@@ -291,8 +289,9 @@ nsymptoms_v_manu <- merged_data_long %>%
   theme(legend.position = "none", 
         plot.title = element_text(hjust = 0.5))
 
-# Combine all number of symptom plots into one figure
+# Combine all number of symptom plots into one figure using patchwork
 nsymptoms_fig <- nsymptoms_v_age + nsymptoms_v_sex + nsymptoms_v_manu
+
 
 ############################## TYPES OF SYMPTOMS ##############################
 
@@ -381,11 +380,15 @@ symptom_types_v_age <- merged_data_long %>%
                                    size = 10), 
         plot.title = element_text(hjust = 0.5))
 
-# Combine all symptom types plots into one figure
+# Combine all symptom types plots into one figure using patchwork
 symptom_types_sex_manu_fig <- symptom_types_v_sex + symptom_types_v_manu
 
 
 ####################### VACCINE MANUFACTURER VS DEATH ########################
+
+# Plot vaccine manufacturer vs death as bar plot. 
+# Counts of deaths per group (per vaccine) are relative to the number of 
+# subjects in the group. 
 manu_v_death <- merged_data_long %>%
   count(VAX_MANU, DIED) %>%
   group_by(VAX_MANU) %>%
