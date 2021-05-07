@@ -95,6 +95,20 @@ death_v_symptoms <- merged_data_wide %>%
 summary(death_v_symptoms)
 
 
+# Takes some time to run!
+death_v_symptoms_interactions <- merged_data_wide %>%
+  glm(data = ., 
+      formula = DIED ~ 
+        (DYSPNOEA + PAIN_IN_EXTREMITY + DIZZINESS + FATIGUE + 
+        INJECTION_SITE_ERYTHEMA + INJECTION_SITE_PRURITUS + 
+        INJECTION_SITE_SWELLING + CHILLS + RASH + HEADACHE + INJECTION_SITE_PAIN +
+        NAUSEA + PAIN + PYREXIA + MYALGIA + ARTHRALGIA + PRURITUS + ASTHENIA + 
+        VOMITING)^2, 
+      family = binomial)
+
+summary(death_v_symptoms_interactions)
+
+
 # Visualize significant symptoms
 tidy(death_v_symptoms) %>%
   filter(term != "(Intercept)") %>%
@@ -713,14 +727,15 @@ chisq_func(DIED, L_THREAT)              # p-value = 0.0138
 chisq_func(DIED, PRIOR_ADVERSE)         # p-value = 1.66e-15
 chisq_func(DIED, TAKES_ANTIINFLAMATORY) # p-value = 3.95e-20
 chisq_func(DIED, TAKES_STEROIDS)        # p-value = 0.00205
-  
+chisq_func(DIED, VAX_MANU)              # p-value = 1.83e-10
+
 # Using the infer library, it can be done like this:
 chisq_test(merged_data_wide, DIED ~ HAS_ILLNESS)
 
 
 # How to make a contingency table:
 merged_data_wide %>%
-  group_by(DIED, TAKES_ANTIINFLAMATORY) %>%
+  group_by(DIED, VAX_MANU) %>%
   summarise(n = n()) %>%
   spread(DIED, n) %>%  
   tibble() 
@@ -744,6 +759,13 @@ merged_data_wide %>%
 
 merged_data_wide %>%
   ggplot(aes(x = DIED, fill = HAS_COVID)) +
+  geom_bar(position = "fill") +
+  labs(title = "Visualization of Contingency Table",
+       x = "DIED",
+       y = "Proportion")
+
+merged_data_wide %>%
+  ggplot(aes(x = DIED, fill = VAX_MANU)) +
   geom_bar(position = "fill") +
   labs(title = "Visualization of Contingency Table",
        x = "DIED",
