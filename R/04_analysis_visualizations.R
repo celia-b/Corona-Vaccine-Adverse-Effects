@@ -448,7 +448,7 @@ write_tsv(...)
 ggsave(...)
 
 ggsave(nsymptoms_fig, file = "results/nsymptoms_fig.png")
-ggsave(symptom_types_fig, file = "results/symptom_types_fig.png")
+ggsave(symptom_types_sex_manu_fig, file = "results/symptom_types_sex_manu_fig.png")
 ggsave(symptom_types_v_age, file = "results/symptom_types_v_age.png")
 ggsave(manu_v_death, file = "results/manu_v_death.png")
 

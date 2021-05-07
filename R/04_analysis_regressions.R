@@ -10,6 +10,7 @@ library("scales")
 library("broom")
 library("purrr")
 library("infer")
+library("viridis")
 
 
 # Define functions --------------------------------------------------------
@@ -70,8 +71,7 @@ logistic_regression_interactions <- merged_data_wide %>%
       family = binomial, 
       data = .)
 
-summary(logistic_regression_interactions)
-# Some of the main effects are not significant anymore
+summary(logistic_regression_interactions) # Some of the main effects are not significant anymore
 
 
 ################# Modeling death vs presence/absence of symptoms ###############
@@ -90,12 +90,16 @@ death_v_symptoms_model_fig <- tidy(death_v_symptoms) %>%
   geom_bar(stat = "identity") +
   geom_hline(yintercept = -log(0.05), 
              linetype = "dashed", 
-             color = "red") +
-  theme_classic() +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
-  scale_linetype_manual(name = "limit") +
+             color = "black") +
   xlab("Symptoms") + 
-  ylab("-log(p-value)")
+  ylab("-log(p-value)") +
+  scale_fill_viridis_d() +
+  theme_half_open(font_size = 9, 
+                  font_family = "serif, Times") +
+  theme(axis.text.x = element_text(angle = 45, 
+                                   hjust = 1, 
+                                   size = 10), 
+        plot.title = element_text(hjust = 0.5))
 
 
 # Takes some time to run!
