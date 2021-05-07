@@ -40,7 +40,9 @@ patients_clean <- patients %>%
             V_FUNDBY, 
             BIRTH_DEFECT,
             SPLTTYPE,
-            RECVDATE)) %>% # Removed columns
+            RECVDATE, 
+            RECOVD,
+            L_THREAT)) %>% # Removed columns
   replace_na(list(DIED = "N",
                   L_THREAT = "N",
                   HOSPITAL = "N",
@@ -67,7 +69,7 @@ vaccines_clean <- vaccines %>%
   select (-n) %>% # remove count column ###
   filter(VAX_MANU != "UNKNOWN MANUFACTURER") %>% # Remove rows with unknown vaccine manufacturer
   mutate(VAX_MANU = recode(VAX_MANU, "PFIZER\\BIONTECH" = "PFIZER-BIONTECH")) %>% # Rename PFIZER\\BIONTECH for consistency
-  select(-c(VAX_NAME)) # Redundant column
+  select(-c(VAX_NAME, VAX_LOT)) # Redundant column
   
 
 
