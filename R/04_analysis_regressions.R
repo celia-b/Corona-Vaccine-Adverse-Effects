@@ -75,25 +75,27 @@ summary(logistic_regression_interactions)
 
 
 ################# Modeling death vs presence/absence of symptoms ###############
-# Can be done like this:
-death_v_symptoms <- merged_data_wide %>%
-  glm(data = ., 
-      formula = DIED ~ 
-        DYSPNOEA + PAIN_IN_EXTREMITY + DIZZINESS + FATIGUE + 
-        INJECTION_SITE_ERYTHEMA + INJECTION_SITE_PRURITUS + 
-        INJECTION_SITE_SWELLING + CHILLS + RASH + HEADACHE + INJECTION_SITE_PAIN +
-        NAUSEA + PAIN + PYREXIA + MYALGIA + ARTHRALGIA + PRURITUS + ASTHENIA + 
-        VOMITING, 
-      family = binomial)
 
-
-# Or like this (symptoms defined in wrangle section):
+# Make logistic model of death vs all symptoms
 death_v_symptoms <- merged_data_wide %>%
   glm(data = ., 
       formula = str_c("DEATH ~ ", str_c(symptoms, collapse = "+")), 
       family = binomial)
 
-summary(death_v_symptoms)
+# Visualize significant symptoms
+death_v_symptoms_model_fig <- tidy(death_v_symptoms) %>%
+  filter(term != "(Intercept)") %>%
+  ggplot(aes(x = fct_reorder(term, p.value),
+             y = -log(p.value))) +
+  geom_bar(stat = "identity") +
+  geom_hline(yintercept = -log(0.05), 
+             linetype = "dashed", 
+             color = "red") +
+  theme_classic() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  scale_linetype_manual(name = "limit") +
+  xlab("Symptoms") + 
+  ylab("-log(p-value)")
 
 
 # Takes some time to run!
@@ -109,24 +111,6 @@ death_v_symptoms_interactions <- merged_data_wide %>%
 
 summary(death_v_symptoms_interactions)
 
-
-# Visualize significant symptoms
-tidy(death_v_symptoms) %>%
-  filter(term != "(Intercept)") %>%
-  filter(p.value < 0.05) %>%
-  ggplot(aes(x = fct_reorder(term, p.value),
-             y = -log(p.value))) +
-  geom_bar(stat = "identity") +
-  geom_hline(yintercept = -log(0.05), 
-             col = "red", 
-             linetype="dashed") +
-  theme_classic() +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
-  ggtitle("Symptoms significantly associated with death") +
-  xlab("Symptoms") + 
-  ylab("-log(p-value)")
-
-
 # The "estimate" column is the log-odds ratio, so we must interpret them as follows:
 # 1. If the variable is categorical, like HAS_ILLNESS, an estimate of 9.877e-01 for the "Y" group
 #    means that this group is exp(9.877e-01) = 2.685052 times more likely to die after taking 
@@ -141,5 +125,9 @@ tidy(death_v_symptoms) %>%
 # Write data --------------------------------------------------------------
 write_tsv(...)
 ggsave(...)
+
+ggsave(death_v_symptoms_model_fig, file = "results/death_v_symptoms_model_fig.png")
+
+
 
 

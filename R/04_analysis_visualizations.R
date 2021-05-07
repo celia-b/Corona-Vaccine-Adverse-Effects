@@ -10,6 +10,7 @@ library("scales")
 library("broom")
 library("purrr")
 library("infer")
+library("viridis")
 
 
 # Define functions --------------------------------------------------------
@@ -142,7 +143,6 @@ merged_data_wide %>%
   group_by(AGE_CLASS) %>%
   count()
 
-
 ## By manufacturer --> Again problematic because of small sample size in Janssen
 merged_data_wide %>%
   select(VAERS_ID, AGE_CLASS, SEX, DIED_AFTER, VAX_MANU) %>%
@@ -229,31 +229,76 @@ merged_data_wide %>%
   count()
 
 
-#################### SEX VS NUMBER/TYPES OF SYMPTOMS ####################
+######################### NUMBER OF TYPES OF SYMPTOMS #########################
 
-# Bar plot showing the number of symptoms experienced by males and females. 
-# The counts are relative to the respective genders. 
+# Boxplot showing number of symptoms vs age
+nsymptoms_v_age <- merged_data_long %>%
+  drop_na(AGE_CLASS) %>%
+  ggplot(aes(x = AGE_CLASS,
+             y = N_SYMPTOMS, 
+             fill = AGE_CLASS)) +
+  geom_boxplot(outlier.shape = NA, 
+               alpha = 0.8) +
+  coord_flip() +
+  scale_x_discrete(name = "Age groups (years)",
+                   labels = c("0-10", "10-20", "20-30", "30-40", "40-50", 
+                              "50-60", "60-70", "70-80", "80-90", "90-120")) +
+  scale_y_continuous(limits = c(0, 15), 
+                     name = "Number of symptoms") +
+  ggtitle("Age vs number of symptoms") +
+  scale_fill_viridis_d() +
+  theme_half_open(font_size = 9, 
+                  font_family = "serif") +
+  theme(legend.position = "none", 
+        plot.title = element_text(hjust = 0.5))
+
+
+# Boxplot showing total number of symptoms by sex
 nsymptoms_v_sex <- merged_data_long %>%
-  filter(!is.na(SEX)) %>%
-  ggplot(aes(x = N_SYMPTOMS,
-             fill = SEX,
-             stat(prop))) +
-  geom_bar(position = "dodge") + 
-  scale_x_continuous(limits = c(0, 30), 
-                     breaks = seq(0, 30, by = 5)) + 
-  scale_y_continuous(labels = scales::percent) +
-  scale_fill_discrete(name = "Sex", 
-                      labels = c("Females", "Males")) +
-  ggtitle("Relative occurrence of number of symptoms by sex") +
-  xlab("Number of symptoms") + 
-  ylab("Relative occurence") +
-  theme_classic() +
-  theme(plot.title = element_text(hjust = 0.5)) # center title 
+  drop_na(SEX) %>%
+  ggplot(aes(x = SEX,
+             y = N_SYMPTOMS, 
+             fill = SEX)) +
+  geom_boxplot(outlier.shape = NA, 
+               alpha = 0.8) +
+  scale_x_discrete(name = "Sex",
+                   labels = c("Females", "Males")) +
+  scale_y_continuous(limits = c(0, 15), 
+                     name = "Number of symptoms") +
+  coord_flip() +
+  ggtitle("Sex vs number of symptoms") +
+  scale_fill_viridis_d() +
+  theme_half_open(font_size = 9, 
+                  font_family = "serif") +
+  theme(legend.position = "none", 
+        plot.title = element_text(hjust = 0.5))
 
+# Boxplot showing total number of symptoms by vaccine manufacturer
+nsymptoms_v_manu <- merged_data_long %>%
+  ggplot(aes(x = VAX_MANU,
+             y = N_SYMPTOMS, 
+             fill = VAX_MANU)) +
+  geom_boxplot(outlier.shape = NA, 
+               alpha = 0.8) +
+  scale_x_discrete(name = "Vaccine manufacturer") +
+  scale_y_continuous(limits = c(0, 15), 
+                     name = "Number of symptoms") +
+  coord_flip() +
+  ggtitle("Manufacturer vs number of symptoms") +
+  scale_fill_viridis_d() +
+  theme_half_open(font_size = 9, 
+                  font_family = "serif, Times") +
+  theme(legend.position = "none", 
+        plot.title = element_text(hjust = 0.5))
 
-# Bar plot showing the relative occurrence of the top 20 symptoms by sex. 
-# As there is not an equal number of males and females in the study, the
-# counts are relative to the respective sex. 
+# Combine all number of symptom plots into one figure
+nsymptoms_fig <- nsymptoms_v_age + nsymptoms_v_sex + nsymptoms_v_manu
+
+############################## TYPES OF SYMPTOMS ##############################
+
+# Bar chart showing relative occurrence of the top 20 symptoms by sex. 
+# Symptom counts are relative to the number of individuals from the respective sex, 
+# as there are more females than males in the dataset.
 symptom_types_v_sex <- merged_data_long %>%
   count(SEX, SYMPTOM, SYMPTOM_VALUE) %>%
   group_by(SYMPTOM, SEX) %>%
@@ -263,40 +308,26 @@ symptom_types_v_sex <- merged_data_long %>%
   ggplot(aes(x = fct_reorder(SYMPTOM, desc(prop)),
              y = prop,
              fill = SEX)) +
-  geom_bar(position = "dodge",
-           stat = "identity") +
+  geom_bar(position = position_dodge2(width = 1.5),
+           stat = "identity",
+           width = 0.8) +
   scale_y_continuous(labels = scales::percent) +
-  scale_fill_discrete(name = "Sex", 
-                      labels = c("Females", "Males")) +
+  labs(fill = "Sex") +
   ggtitle("Relative occurence of top 20 symptoms by sex") +
   xlab("Symptoms") + 
   ylab("Relative occurence") +
-  theme_classic() +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1, size = 10), 
-        plot.title = element_text(hjust = 0.5)) # center title 
+  scale_fill_viridis_d() +
+  theme_half_open(font_size = 9, 
+                  font_family = "serif, Times") +
+  theme(axis.text.x = element_text(angle = 45, 
+                                   hjust = 1, 
+                                   size = 10), 
+        plot.title = element_text(hjust = 0.5))
+        
 
-
-############### VACCINE MANUFACTURER VS NUMBER/TYPES OF SYMPTOMS ###############
-
-# Total number of symptoms by vaccine manufacturer
-# Stacked bar chart
-nsymptoms_v_manu <- merged_data_long %>%
-  ggplot(aes(x = N_SYMPTOMS,
-             fill = VAX_MANU,
-             stat(prop))) +
-  geom_bar(position = "stack") + 
-  scale_x_continuous(limits = c(0, 20)) + 
-  scale_y_continuous(labels = scales::percent) +
-  ggtitle("Total number of symptoms by vaccine manufacturer") +
-  labs(fill = "Vaccine manufacturer") +
-  xlab("Number of symptoms") + 
-  ylab("Relative occurence") +
-  theme_classic() +
-  theme(plot.title = element_text(hjust = 0.5)) # center title 
-
-
-# Relative occurence of top 20 symptoms by manufacturer
-# Non-stacked bar chart
+# Bar chart showing relative occurrence of the top 20 symptoms by manufacturer. 
+# Symptom counts are relative to the number of individuals vaccinated with the 
+# respective vaccine. 
 symptom_types_v_manu <- merged_data_long %>%
   count(VAX_MANU, SYMPTOM, SYMPTOM_VALUE) %>%
   group_by(VAX_MANU, SYMPTOM) %>%
@@ -306,136 +337,25 @@ symptom_types_v_manu <- merged_data_long %>%
   ggplot(aes(x = reorder(SYMPTOM, desc(prop)),
              y = prop,
              fill = VAX_MANU)) +
-  geom_bar(position = "dodge",
+  geom_bar(position = position_dodge2(width = 1.5),
            stat = "identity") +
   scale_y_continuous(labels = scales::percent) +
   labs(fill = "Vaccine manufacturer") +
   ggtitle("Relative occurence of top 20 symptoms by manufacturer") +
   xlab("Symptoms") + 
   ylab("Relative occurence") +
-  theme_classic() +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1, size = 10),
-        plot.title = element_text(hjust = 0.5)) # center title 
-
-
-
-####################### VACCINE MANUFACTURER VS DEATH ########################
-
-manu_v_death <- merged_data_long %>%
-  count(VAX_MANU, DIED) %>%
-  group_by(VAX_MANU) %>%
-  mutate(total = sum(n)) %>%
-  filter(DIED == "Y") %>%
-  summarise(prop = n/total, .groups = "rowwise") %>%
-  ggplot(.,
-         aes(x = fct_reorder(VAX_MANU, desc(prop)),
-             y = prop,
-             fill = VAX_MANU)) +
-  geom_bar(position = "dodge",
-           stat = "identity") +
-  scale_y_continuous(labels = scales::percent) +
-  ggtitle("Relative occurence of death by vaccine manufacturer") +
-  xlab("Vaccine manufacturer") +
-  ylab("Relative occurence of death") +
-  theme_classic() +
-  theme(legend.position = "none",
-        axis.text.x = element_text(angle = 45, hjust = 1),
+  scale_fill_viridis_d() +
+  theme_half_open(font_size = 9, 
+                  font_family = "serif, Times") +
+  theme(axis.text.x = element_text(angle = 45, 
+                                   hjust = 1, 
+                                   size = 10), 
         plot.title = element_text(hjust = 0.5))
 
-manu_v_lthreat <- merged_data_long %>%
-  count(VAX_MANU, L_THREAT) %>%
-  group_by(VAX_MANU) %>%
-  mutate(total = sum(n)) %>%
-  filter(L_THREAT == "Y") %>%
-  summarise(prop = n/total, .groups = "rowwise") %>%
-  ggplot(.,
-         aes(x = fct_reorder(VAX_MANU, desc(prop)),
-             y = prop,
-             fill = VAX_MANU)) +
-  geom_bar(position = "dodge",
-           stat = "identity") +
-  scale_y_continuous(labels = scales::percent) +
-  ggtitle("Relative occurence of life threatening symptoms by vaccine manufacturer") +
-  xlab("Vaccine manufacturer") +
-  ylab("Relative occurence of life threatening symptoms") +
-  theme_classic() +
-  theme(legend.position = "none",
-        axis.text.x = element_text(angle = 45, hjust = 1), 
-        plot.title = element_text(hjust = 0.5)) # center title
 
-
-###################### AGE VS NUMBER/TYPES OF SYMPTOMS ######################
-
-# Boxplot of number of symptoms vs age
-# Works - nothing important?
-age_v_nsymptoms_boxplot <- merged_data_long %>%
-  drop_na(AGE_CLASS) %>%
-  ggplot(aes(x = AGE_CLASS,
-             y = N_SYMPTOMS)) +
-  geom_boxplot(outlier.shape = NA, 
-               fill = "sky blue", 
-               alpha = 0.8) +
-  scale_x_discrete(name = "Age groups (years)",
-                   labels = c("0-10", "10-20", "20-30", "30-40", "40-50", 
-                              "50-60", "60-70", "70-80", "80-90", "90-120")) +
-  scale_y_continuous(limits = c(0, 15), 
-                     name = "Number of symptoms") +
-  coord_flip() +
-  theme_classic() +
-  theme(plot.title = element_text(hjust = 0.5)) # center title
-
-# Bar plot showing the number of symptoms by age
-# Stacked bar plot
-# Consider grouping number of symptoms? 
-# Change colors to blend together less
-age_v_nsymptoms_stacked <- merged_data_long %>%
-  drop_na(AGE_CLASS) %>%
-  ggplot(aes(x = N_SYMPTOMS,
-             fill = AGE_CLASS,
-             stat(prop))) +
-  geom_bar(position = "stack") + 
-  scale_x_continuous(limits = c(0, 30)) + 
-  scale_y_continuous(labels = scales::percent) +
-  scale_fill_discrete(name = "Age groups (years)", 
-                      labels = c("0-10", "10-20", "20-30", "30-40", "40-50",
-                                 "50-60", "60-70", "70-80", "80-90", "90-120")) +
-  ggtitle("Relative occurrence of number of symptoms by age") +
-  xlab("Number of symptoms") + 
-  ylab("Relative occurence") +
-  theme_classic() +
-  theme(plot.title = element_text(hjust = 0.5)) # center title
-
-# Relative occurence of top 20 symptoms by age
-# Stacked bar plot
-# Consider making bigger groups?
-age_vs_symptom_types_stacked <- merged_data_long %>%
-  drop_na(AGE_CLASS) %>%
-  count(AGE_CLASS, SYMPTOM, SYMPTOM_VALUE) %>%
-  group_by(SYMPTOM, AGE_CLASS) %>%
-  mutate(total = sum(n)) %>%
-  filter(SYMPTOM_VALUE == TRUE) %>%
-  summarise(prop = n/total, .groups = "rowwise") %>%
-  ggplot(aes(x = reorder(SYMPTOM, desc(prop)),
-             y = prop,
-             fill = AGE_CLASS)) +
-  geom_bar(position = "stack",
-           stat = "identity") +
-  scale_y_continuous(labels = scales::percent) +
-  scale_fill_discrete(name = "Age groups (years)", 
-                      labels = c("0-10", "10-20", "20-30", "30-40", "40-50",
-                                 "50-60", "60-70", "70-80", "80-90", "90-120")) +
-  ggtitle("Relative occurence of top 20 symptoms by age") +
-  xlab("Symptoms") + 
-  ylab("Relative occurence") +
-  theme_classic() +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1, size = 10), 
-        plot.title = element_text(hjust = 0.5)) # center title
-
-
-
-# Relative occurence of top 20 symptoms by age
-# heat map
-age_vs_symptom_types_heatmap <- merged_data_long %>%
+# Heatmap showing the relative occurence of top 20 symptoms by age. 
+# Counts are relative to the number of people in the respective age groups.
+symptom_types_v_age <- merged_data_long %>%
   drop_na(AGE_CLASS) %>%
   count(AGE_CLASS, SYMPTOM, SYMPTOM_VALUE) %>%
   group_by(SYMPTOM, AGE_CLASS) %>%
@@ -453,9 +373,41 @@ age_vs_symptom_types_heatmap <- merged_data_long %>%
   ylab("Top 20 symptoms") +
   labs(fill = "Relative occurence") +
   ggtitle("Relative occurrence of top 20 symptoms by age") +
-  theme_classic() +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+  scale_fill_viridis_c() +
+  theme_half_open(font_size = 9, 
+                  font_family = "serif, Times") +
+  theme(axis.text.x = element_text(angle = 45, 
+                                   hjust = 1, 
+                                   size = 10), 
         plot.title = element_text(hjust = 0.5))
+
+# Combine all symptom types plots into one figure
+symptom_types_sex_manu_fig <- symptom_types_v_sex + symptom_types_v_manu
+
+
+####################### VACCINE MANUFACTURER VS DEATH ########################
+manu_v_death <- merged_data_long %>%
+  count(VAX_MANU, DIED) %>%
+  group_by(VAX_MANU) %>%
+  mutate(total = sum(n)) %>%
+  filter(DIED == "Y") %>%
+  summarise(prop = n/total, .groups = "rowwise") %>%
+  ggplot(.,
+         aes(x = fct_reorder(VAX_MANU, desc(prop)),
+             y = prop,
+             fill = VAX_MANU)) +
+  geom_bar(position = "dodge",
+           stat = "identity") +
+  scale_y_continuous(labels = scales::percent) +
+  ggtitle("Relative occurence of death by vaccine manufacturer") +
+  xlab("Vaccine manufacturer") +
+  ylab("Relative occurence of death") +
+  coord_flip() +
+  scale_fill_viridis_d() +
+  theme_half_open(font_size = 9, 
+                  font_family = "serif, Times") +
+  theme(legend.position = "none", 
+        plot.title = element_text(hjust = 0.5)) # center title
 
 
 
@@ -492,16 +444,10 @@ merged_data_wide %>%
 write_tsv(...)
 ggsave(...)
 
-ggsave(nsymptoms_v_sex, file = "results/nsymptoms_v_sex.png")
-ggsave(symptom_types_v_sex, file = "results/symptom_types_v_sex.png")
-ggsave(nsymptoms_v_manu, file = "results/nsymptoms_v_manu.png")
-ggsave(symptom_types_v_manu, file = "results/symptom_types_v_manu.png")
-ggsave(manu_v_lthreat, file = "results/manu_v_lthreat.png")
-ggsave(age_v_nsymptoms_boxplot, file = "results/age_v_nsymptoms_boxplot.png")
-ggsave(age_v_nsymptoms_stacked, file = "results/age_v_nsymptoms_stacked.png")
-ggsave(age_vs_symptom_types_stacked, file = "results/age_vs_symptom_types_stacked.png")
-ggsave(age_vs_symptom_types_heatmap, file = "results/age_vs_symptom_types_heatmap.png")
-
+ggsave(nsymptoms_fig, file = "results/nsymptoms_fig.png")
+ggsave(symptom_types_fig, file = "results/symptom_types_fig.png")
+ggsave(symptom_types_v_age, file = "results/symptom_types_v_age.png")
+ggsave(manu_v_death, file = "results/manu_v_death.png")
 
 
 

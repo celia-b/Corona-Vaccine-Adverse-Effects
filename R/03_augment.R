@@ -88,7 +88,7 @@ symptoms_clean_long <- symptoms_clean %>%
 # Extract the 20 symptoms that most commonly occur as a vector
 top_20_vec <- symptoms_clean_long %>%
   count(symptom, sort = TRUE) %>% # count symptom occurrence, sort by highest occurrence
-  head(22) %>%
+  head(20) %>%
   pluck("symptom") # convert symptoms column from tibble into vector 
 
 # Use tibble with columns VAERS_ID and each of the top 20 symptoms. 

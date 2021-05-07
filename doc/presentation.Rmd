@@ -15,6 +15,15 @@ library(knitr)
 ```
 
 
+ggsave(nsymptoms_fig, file = "nsymptoms_fig .png")
+ggsave(symptom_types_fig, file = "results/symptom_types_fig.png")
+ggsave(symptom_types_v_age, file = "results/symptom_types_v_age.png")
+ggsave(manu_v_death, file = "results/manu_v_death.png")
+ggsave(death_v_symptoms_model_fig, file = "results/death_v_symptoms_model_fig.png")
+
+
+
+
 
 ## Overview of presentation
 1. Introduction to COVID-19 World Vaccine Adverse Reactions Dataset
