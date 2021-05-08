@@ -28,7 +28,8 @@ merged_data_wide <- read_csv(file = gzfile("data/03_merged_data_wide.csv.gz"),
 merged_data_long <- read_csv(file = gzfile("data/03_merged_data_long.csv.gz"), 
                              col_types = cols(HOSPDAYS = col_integer(),
                                               DIED_AFTER = col_integer(), 
-                                              VAX_DOSE_SERIES = col_character()))
+                                              VAX_DOSE_SERIES = col_character(),
+                                              DIED = col_character()))
 
 # Wrangle data ------------------------------------------------------------
 
@@ -92,20 +93,18 @@ death_v_symptoms_model_fig <- tidy(death_v_symptoms) %>%
   geom_hline(yintercept = -log(0.05), 
              linetype = "dashed", 
              color = "black") +
-  xlab("Symptoms") + 
-  ylab("-log(p-value)") +
-  ggtitle("P-values for death ~ symptoms association", 
-          subtitle = "Dashed line indicates a p-value of 0.05") +
   scale_fill_viridis_d() +
-  theme_half_open(font_size = 9, 
-                  font_family = "serif, Times") +
-  theme(legend.position = "none",
-        axis.text.x = element_text(angle = 45, 
+  labs(title = "P-values for death ~ symptoms association",
+       subtitle = "Dashed line indicates a p-value of 0.05",
+       x = "Symptoms",
+       y = "-log(p-value)",
+       fill = "Sex") +
+  theme_minimal(base_family = "Avenir") +
+  theme(axis.text.x = element_text(angle = 45, 
                                    hjust = 1, 
                                    size = 9), 
         plot.title = element_text(hjust = 0.5),
-        plot.subtitle = element_text(hjust = 0.5),
-        plot.margin = margin(10, 10, 10, 35))
+        plot.margin = margin(10, 10, 10, 10))
 
 
 # Takes some time to run!

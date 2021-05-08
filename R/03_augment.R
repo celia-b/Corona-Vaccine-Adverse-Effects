@@ -139,8 +139,12 @@ vaccines_clean_aug <- vaccines_clean
 merged_data_wide <- patients_clean_aug %>%
   inner_join(symptoms_clean_aug, by = "VAERS_ID") %>%
   inner_join(vaccines_clean_aug, by = "VAERS_ID") %>%
-  mutate(DIED = case_when(DEATH == TRUE ~ "Y"),
-         DEATH = case_when(DIED == "Y" ~ TRUE))
+  mutate(DIED = case_when(DIED == "Y" ~ "Y",
+                          DEATH == TRUE ~ "Y",
+                          TRUE ~ "N"),
+         DEATH = case_when(DEATH == TRUE ~ TRUE, 
+                           DIED == "Y" ~ TRUE,
+                           TRUE ~ FALSE))
 
 # Make long format tibble containing a symptoms column with all top 20 symptoms
 merged_data_long <- merged_data_wide %>%
