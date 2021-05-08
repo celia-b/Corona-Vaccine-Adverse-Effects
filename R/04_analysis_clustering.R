@@ -11,7 +11,6 @@ library("broom")
 library("purrr")
 library("infer")
 library("tidymodels")
-install.packages("tidymodels")
 
 
 # Define functions --------------------------------------------------------
@@ -149,25 +148,23 @@ scree_plot
 
 # K-means clustering  -----------------------------------------------------
 
-# need to keep working on it 
-# including binary variables
-kclust <- kmeans(numeric_symptoms, centers = 3)
-
-class_cluster <- augment(kclust, classes)
-
-class_cluster %>% ggplot(aes(.cluster, fill = VAX_MANU)) +
-  geom_bar(position = "dodge") 
-
-# only number of symptoms and symptoms_after
+# only number of symptoms and symptoms_after because it doesn't make sense
+# with binary variables 
 
 kclust <- numeric_symptoms %>%
   select (SYMPTOMS_AFTER, N_SYMPTOMS) %>% 
-  kmeans (centers = 3)
+  kmeans (centers = 3) %>% 
+  augment (numeric_symptoms) %>%
+  ggplot (aes (N_SYMPTOMS, SYMPTOMS_AFTER, color = .cluster)) +
+  geom_point()
+  
+by_vac_manu <- merged_data_wide %>% 
+  select (VAX_MANU, N_SYMPTOMS, SYMPTOMS_AFTER) %>%
+  drop_na() %>%
+  ggplot (aes (N_SYMPTOMS, SYMPTOMS_AFTER, color = VAX_MANU)) +
+  geom_point()
 
-class_cluster <- augment(kclust, classes)
-
-class_cluster %>% ggplot(aes(.cluster, fill = VAX_MANU)) +
-  geom_bar() 
+kmeans_comparison <- kclust + by_vac_manu
   
 # Write data --------------------------------------------------------------
 write_tsv(...)

@@ -11,6 +11,7 @@ library("broom")
 library("purrr")
 library("infer")
 library("viridis")
+library ("ggridges")
 
 
 # Define functions --------------------------------------------------------
@@ -126,6 +127,23 @@ symptoms_after_age <- merged_data_wide %>%
         axis.title.y = element_blank()) +
   labs(fill = "Age class")
 
+# Another way to visualize it 
+symptoms_after_v_agegroup <- merged_data_wide %>%
+  select(VAERS_ID, AGE_CLASS, SEX, SYMPTOMS_AFTER, VAX_MANU) %>%
+  arrange(SYMPTOMS_AFTER) %>%
+  filter(SYMPTOMS_AFTER < 15) %>%
+  drop_na(AGE_CLASS) %>%
+  ggplot(aes(x = SYMPTOMS_AFTER,
+             y = AGE_CLASS,
+             fill = AGE_CLASS)) +
+  geom_density_ridges(alpha = 0.5) +
+  scale_fill_viridis_d() +
+  labs(x = "Days after Vaccination",
+       y = "Age group (years)",
+       fill = "Age group",
+       title = "Days until symptom onset according to age group") +
+  theme_minimal(base_family = "Avenir", base_size = 12) +
+  theme(legend.position = "bottom")  
 
 
 # Patchwork
@@ -283,6 +301,23 @@ nsymptoms_v_manu <- merged_data_long %>%
 # Combine all number of symptom plots into one figure using patchwork
 nsymptoms_age_sex <- nsymptoms_v_age + nsymptoms_v_sex
 
+# total number of symptoms by vaccine manufacturer by sex
+symptoms_v_manu_v_sex <- merged_data_wide %>%
+  ggplot(aes(x = N_SYMPTOMS,
+                     y = VAX_MANU,
+                     fill = VAX_MANU)) +
+  geom_density_ridges(alpha = 0.5) +
+  scale_fill_viridis_d() +
+  labs(x = "Number of symptoms",
+       y = "Vaccine manufacturer",
+       title = "Distribution of the number of symptoms per pacient by vaccine manufacturer") +
+  theme_minimal(base_family = "Avenir", base_size = 12) +
+  theme(legend.position = "bottom")  #+
+  #facet_wrap(vars(SEX), ncol = 3)
+
+symptoms_v_manu_v_sex
+
+
 
 ############################## TYPES OF SYMPTOMS ##############################
 
@@ -439,6 +474,7 @@ ggsave(...)
 ggsave (age_dist, file = "results/age_dist.png")
 ggsave (sex_dist, file = "results/sex_dist.png")
 ggsave (vac_dist, file = "results/vac_dist.png")
+ggsave (symptoms_after_v_agegroup, file = "results/symptoms_after_v_agegroup.png")
 ggsave(nsymptoms_age_sex, file = "results/nsymptoms_age_sex.png")
 ggsave(nsymptoms_v_manu, file = "results/nsymptoms_v_manu.png")
 ggsave(symptom_types_v_age, file = "results/symptom_types_v_age.png")
