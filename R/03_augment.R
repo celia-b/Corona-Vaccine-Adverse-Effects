@@ -69,10 +69,12 @@ patients_clean_aug <- patients_clean %>%
                                AGE_YRS >= 70 & AGE_YRS < 80 ~ "[70, 80)",
                                AGE_YRS >= 80 & AGE_YRS < 90 ~ "[80, 90)",
                                AGE_YRS >= 90 ~ "[90, 120)")) %>% # Should we change it to 90+ ?
-  mutate(DIED_AFTER = DATEDIED - VAX_DATE) %>% # --> DIRTY FORMAT: figure out how to change it
+  mutate(DIED_AFTER = DATEDIED - VAX_DATE,
+         DIED_AFTER = str_trim(str_remove(DIED_AFTER, "days")), # remove spaces and letters
+         DIED_AFTER = as.integer(DIED_AFTER)) %>%
+  filter(DIED_AFTER >= 0 | is.na(DIED_AFTER)) %>% # Removes 21 rows
   rename(SYMPTOMS_AFTER = NUMDAYS) %>% 
-  select(-c(VAX_DATE, DATEDIED, ONSET_DATE, TODAYS_DATE)) 
-  
+  select(-c(VAX_DATE, DATEDIED, ONSET_DATE, TODAYS_DATE))
 
 
 ################################## SYMPTOMS ##################################

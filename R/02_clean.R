@@ -72,29 +72,28 @@ vaccines_clean <- vaccines %>%
 
 
 ## This is all exploration - I don't know if we should remove it
-'''
-sum(duplicated(vaccines)) # 30 duplicated rows in dataframe
+
+#sum(duplicated(vaccines)) # 30 duplicated rows in dataframe
 # There should not be any rows with the duplicates of VAERS_ID and VAX_LOT...
-vaccines %>% 
-  distinct(VAERS_ID, VAX_LOT) 
+#vaccines %>% 
+  #distinct(VAERS_ID, VAX_LOT) 
   
-vaccines %>% distinct(VAX_ROUTE) 
+#vaccines %>% distinct(VAX_ROUTE) 
 # All values OK
 
-vaccines %>% distinct(VAX_SITE)
+#vaccines %>% distinct(VAX_SITE)
 # All values OK
 
-pattern <- "COVID19\\s\\(COVID19\\s\\((\\w++\\-*\\w*)\\)"# Regular expression matching the name of the vaccine manufacturer
-vaccines <- vaccines %>% mutate(VAX_NAME_extracted = str_match(VAX_NAME, pattern)[,2]) #%>% select(VAX_NAME, VAX_NAME_extracted)
-vaccines <- vaccines %>% mutate(comparison = if_else(VAX_MANU == VAX_NAME_extracted, TRUE, FALSE)) 
+#pattern <- "COVID19\\s\\(COVID19\\s\\((\\w++\\-*\\w*)\\)"# Regular expression matching the name of the vaccine manufacturer
+#vaccines <- vaccines %>% mutate(VAX_NAME_extracted = str_match(VAX_NAME, pattern)[,2]) #%>% select(VAX_NAME, VAX_NAME_extracted)
+#vaccines <- vaccines %>% mutate(comparison = if_else(VAX_MANU == VAX_NAME_extracted, TRUE, FALSE)) 
 # Same number of rows:
-vaccines %>% count(comparison)
-nrow(vaccines)
+#vaccines %>% count(comparison)
+#nrow(vaccines)
 # VAX_MANU and VAX_NAME are matching so we can delete the following columns:
 # VAX_NAME, VAX_NAME_extracted, comparison
-vaccines <- vaccines %>%
-  select(-c("VAX_NAME", "VAX_NAME_extracted", "comparison"))
-'''
+#vaccines <- vaccines %>%
+  #select(-c("VAX_NAME", "VAX_NAME_extracted", "comparison"))
 
 ## DEAL WITH THIS AT SOME POINT
 
