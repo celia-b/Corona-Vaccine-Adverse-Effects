@@ -134,15 +134,20 @@ vaccines_clean_aug <- vaccines_clean
 
 ################################ MERGED TABLE ################################
 
+# Merge patients, symptoms, and vaccine data into one tibble
+# Make columns DIED and DEATH (symptom) identical
 merged_data_wide <- patients_clean_aug %>%
   inner_join(symptoms_clean_aug, by = "VAERS_ID") %>%
-  inner_join(vaccines_clean_aug, by = "VAERS_ID")
+  inner_join(vaccines_clean_aug, by = "VAERS_ID") %>%
+  mutate(DIED = case_when(DEATH == TRUE ~ "Y"),
+         DEATH = case_when(DIED == "Y" ~ TRUE))
 
 # Make long format tibble containing a symptoms column with all top 20 symptoms
 merged_data_long <- merged_data_wide %>%
   pivot_longer(cols = (top_20_vec %>% toupper(.) %>% gsub(" ", "_", .)), 
                names_to = "SYMPTOM", 
                values_to = "SYMPTOM_VALUE")
+  
 
 
 # Write data --------------------------------------------------------------

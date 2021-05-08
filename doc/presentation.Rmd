@@ -245,7 +245,7 @@ merged_data_wide %>%
 
 ## 04_analysis_visualizations - Age/sex vs. number of symptoms
 
-```{r nsymptoms_age_sex, echo = FALSE, out.width = "600px", out.height= "450px"}
+```{r nsymptoms_age_sex, echo = FALSE, out.width = "700px", out.height= "450px"}
 include_graphics("../results/nsymptoms_age_sex.png")
 ```
 

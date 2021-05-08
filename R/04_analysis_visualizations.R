@@ -27,7 +27,8 @@ merged_data_wide <- read_csv(file = gzfile("data/03_merged_data_wide.csv.gz"),
 merged_data_long <- read_csv(file = gzfile("data/03_merged_data_long.csv.gz"), 
                              col_types = cols(HOSPDAYS = col_integer(),
                                               DIED_AFTER = col_integer(), 
-                                              VAX_DOSE_SERIES = col_character()))
+                                              VAX_DOSE_SERIES = col_character(),
+                                              DIED = col_character()))
 
 # Wrangle data ------------------------------------------------------------
 
@@ -52,7 +53,7 @@ symptoms <- merged_data_wide %>%
 
 # Visualise data ----------------------------------------------------------
 
-######################## SYMPTOMS AFTER N DAYS ############################
+########################## SYMPTOMS AFTER N DAYS ##############################
 
 ## Distribution of the number of days after receiving the vaccine
 ## when symptoms appear.
@@ -168,7 +169,7 @@ n_days_manu <- merged_data_wide %>%
 n_days_manu
 
 
-######################## DEATH RATE ###############################
+############################## DEATH RATE #####################################
 # Out of the people who died, what proportion were already sick?
 merged_data_wide %>%
   select(VAERS_ID, AGE_CLASS, SEX, DIED, HAS_ILLNESS, VAX_MANU) %>%
@@ -176,55 +177,6 @@ merged_data_wide %>%
   ggplot(aes(HAS_ILLNESS)) + 
   geom_bar() +
   coord_flip()
-
-# How much more likely is it to die when you were already sick when 
-# taking the vaccine vs when you were healthy? --> DO STATISTICAL ANALYSIS
-merged_data_wide %>%
-  select(VAERS_ID, AGE_CLASS, SEX, DIED, HAS_ILLNESS, VAX_MANU) %>%
-  group_by(HAS_ILLNESS) %>%
-  count()
-
-merged_data_wide %>%
-  select(VAERS_ID, AGE_CLASS, SEX, DIED, HAS_ILLNESS, VAX_MANU) %>%
-  group_by(HAS_ILLNESS, DIED) %>%
-  count()
-
-prop_test(x = c(1191, 644), n = c(29127, 4306), 
-          p = NULL, alternative = "two.sided", correct = TRUE) 
-
-
-# Out of the people who died, what proportion had covid at the time?
-merged_data_wide %>%
-  select(VAERS_ID, AGE_CLASS, SEX, DIED, HAS_COVID, VAX_MANU) %>%
-  filter(DIED == 'Y') %>%
-  ggplot(aes(HAS_COVID)) + 
-  geom_bar() +
-  coord_flip()
-
-
-# How much more likely is it to die when you had covid while 
-# taking the vaccine vs when you were healthy? --> DO STATISTICAL ANALYSIS
-merged_data_wide %>%
-  select(VAERS_ID, AGE_CLASS, SEX, DIED, HAS_COVID, VAX_MANU) %>%
-  group_by(HAS_COVID) %>%
-  count()
-
-merged_data_wide %>%
-  select(VAERS_ID, AGE_CLASS, SEX, DIED, HAS_COVID, VAX_MANU) %>%
-  group_by(HAS_COVID, DIED) %>%
-  count()
-
-# How much less likely is it to die when you had covid in the past? 
-# --> DO STATISTICAL ANALYSIS
-merged_data_wide %>%
-  select(VAERS_ID, AGE_CLASS, SEX, DIED, HAD_COVID, VAX_MANU) %>%
-  group_by(HAD_COVID) %>%
-  count()
-
-merged_data_wide %>%
-  select(VAERS_ID, AGE_CLASS, SEX, DIED, HAD_COVID, VAX_MANU) %>%
-  group_by(HAD_COVID, DIED) %>%
-  count()
 
 
 ############################# NUMBER OF SYMPTOMS #############################
@@ -248,7 +200,8 @@ nsymptoms_v_age <- merged_data_long %>%
   theme_half_open(font_size = 9, 
                   font_family = "serif") +
   theme(legend.position = "none", 
-        plot.title = element_text(hjust = 0.5))
+        plot.title = element_text(hjust = 0.5),
+        plot.margin = margin(10, 20, 10, 10))
 
 
 # Boxplot showing total number of symptoms by sex
@@ -269,7 +222,8 @@ nsymptoms_v_sex <- merged_data_long %>%
   theme_half_open(font_size = 9, 
                   font_family = "serif") +
   theme(legend.position = "none", 
-        plot.title = element_text(hjust = 0.5))
+        plot.title = element_text(hjust = 0.5),
+        plot.margin = margin(10, 40, 10, 10))
 
 # Boxplot showing total number of symptoms by vaccine manufacturer
 nsymptoms_v_manu <- merged_data_long %>%
@@ -287,10 +241,11 @@ nsymptoms_v_manu <- merged_data_long %>%
   theme_half_open(font_size = 9, 
                   font_family = "serif, Times") +
   theme(legend.position = "none", 
-        plot.title = element_text(hjust = 0.5))
+        plot.title = element_text(hjust = 0.5),
+        plot.margin = margin(10, 10, 10, 10))
 
 # Combine all number of symptom plots into one figure using patchwork
-nsymptoms_age_sex <- nsymptoms_v_age + plot_spacer() + nsymptoms_v_sex
+nsymptoms_age_sex <- nsymptoms_v_age + nsymptoms_v_sex
 
 
 ############################## TYPES OF SYMPTOMS ##############################
@@ -303,7 +258,8 @@ symptom_types_v_sex <- merged_data_long %>%
   group_by(SYMPTOM, SEX) %>%
   mutate(total = sum(n)) %>%
   filter(SYMPTOM_VALUE == TRUE, !is.na(SEX)) %>%
-  summarise(prop = n/total, .groups = "rowwise") %>%
+  summarise(prop = n/total, 
+            .groups = "rowwise") %>%
   ggplot(aes(x = fct_reorder(SYMPTOM, desc(prop)),
              y = prop,
              fill = SEX)) +
@@ -320,8 +276,9 @@ symptom_types_v_sex <- merged_data_long %>%
                   font_family = "serif, Times") +
   theme(axis.text.x = element_text(angle = 45, 
                                    hjust = 1, 
-                                   size = 10), 
-        plot.title = element_text(hjust = 0.5))
+                                   size = 9), 
+        plot.title = element_text(hjust = 0.5),
+        plot.margin = margin(10, 10, 10, 10))
         
 
 # Bar chart showing relative occurrence of the top 20 symptoms by manufacturer. 
@@ -332,12 +289,14 @@ symptom_types_v_manu <- merged_data_long %>%
   group_by(VAX_MANU, SYMPTOM) %>%
   mutate(total = sum(n)) %>%
   filter(SYMPTOM_VALUE == TRUE) %>%
-  summarise(prop = n/total, .groups = "rowwise") %>%
+  summarise(prop = n/total, 
+            .groups = "rowwise") %>%
   ggplot(aes(x = reorder(SYMPTOM, desc(prop)),
              y = prop,
              fill = VAX_MANU)) +
   geom_bar(position = position_dodge2(width = 1.5),
-           stat = "identity") +
+           stat = "identity", 
+           width = 0.8) +
   scale_y_continuous(labels = scales::percent) +
   labs(fill = "Vaccine manufacturer") +
   ggtitle("Manufacturer vs. types of symptoms") +
@@ -348,8 +307,9 @@ symptom_types_v_manu <- merged_data_long %>%
                   font_family = "serif, Times") +
   theme(axis.text.x = element_text(angle = 45, 
                                    hjust = 1, 
-                                   size = 10), 
-        plot.title = element_text(hjust = 0.5))
+                                   size = 9), 
+        plot.title = element_text(hjust = 0.5),
+        plot.margin = margin(10, 10, 10, 10))
 
 
 # Heatmap showing the relative occurence of top 20 symptoms by age. 
@@ -378,7 +338,8 @@ symptom_types_v_age <- merged_data_long %>%
   theme(axis.text.x = element_text(angle = 45, 
                                    hjust = 1, 
                                    size = 10), 
-        plot.title = element_text(hjust = 0.5))
+        plot.title = element_text(hjust = 0.5),
+        plot.margin = margin(10, 10, 10, 10))
 
 
 ####################### VACCINE MANUFACTURER VS DEATH ########################
@@ -407,7 +368,8 @@ manu_v_death <- merged_data_long %>%
   theme_half_open(font_size = 9, 
                   font_family = "serif, Times") +
   theme(legend.position = "none", 
-        plot.title = element_text(hjust = 0.5)) # center title
+        plot.title = element_text(hjust = 0.5), # center title
+        plot.margin = margin(10, 10, 10, 10))
 
 
 
@@ -446,7 +408,6 @@ ggsave(...)
 
 ggsave(nsymptoms_age_sex, file = "results/nsymptoms_age_sex.png")
 ggsave(nsymptoms_v_manu, file = "results/nsymptoms_v_manu.png")
-ggsave(symptom_types_sex_manu_fig, file = "results/symptom_types_sex_manu_fig.png")
 ggsave(symptom_types_v_age, file = "results/symptom_types_v_age.png")
 ggsave(symptom_types_v_sex, file = "results/symptom_types_v_sex.png")
 ggsave(symptom_types_v_manu, file = "results/symptom_types_v_manu.png")
