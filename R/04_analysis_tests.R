@@ -52,6 +52,56 @@ symptoms <- merged_data_wide %>%
 
 # Model data --------------------------------------------------------------
 
+# How much more likely is it to die when you were already sick when 
+# taking the vaccine vs when you were healthy? --> DO STATISTICAL ANALYSIS
+merged_data_wide %>%
+  select(VAERS_ID, AGE_CLASS, SEX, DIED, HAS_ILLNESS, VAX_MANU) %>%
+  group_by(HAS_ILLNESS) %>%
+  count()
+
+merged_data_wide %>%
+  select(VAERS_ID, AGE_CLASS, SEX, DIED, HAS_ILLNESS, VAX_MANU) %>%
+  group_by(HAS_ILLNESS, DIED) %>%
+  count()
+
+prop_test(x = c(1191, 644), n = c(29127, 4306), 
+          p = NULL, alternative = "two.sided", correct = TRUE) 
+
+
+# Out of the people who died, what proportion had covid at the time?
+merged_data_wide %>%
+  select(VAERS_ID, AGE_CLASS, SEX, DIED, HAS_COVID, VAX_MANU) %>%
+  filter(DIED == 'Y') %>%
+  ggplot(aes(HAS_COVID)) + 
+  geom_bar() +
+  coord_flip()
+
+
+# How much more likely is it to die when you had covid while 
+# taking the vaccine vs when you were healthy? --> DO STATISTICAL ANALYSIS
+merged_data_wide %>%
+  select(VAERS_ID, AGE_CLASS, SEX, DIED, HAS_COVID, VAX_MANU) %>%
+  group_by(HAS_COVID) %>%
+  count()
+
+merged_data_wide %>%
+  select(VAERS_ID, AGE_CLASS, SEX, DIED, HAS_COVID, VAX_MANU) %>%
+  group_by(HAS_COVID, DIED) %>%
+  count()
+
+# How much less likely is it to die when you had covid in the past? 
+# --> DO STATISTICAL ANALYSIS
+merged_data_wide %>%
+  select(VAERS_ID, AGE_CLASS, SEX, DIED, HAD_COVID, VAX_MANU) %>%
+  group_by(HAD_COVID) %>%
+  count()
+
+merged_data_wide %>%
+  select(VAERS_ID, AGE_CLASS, SEX, DIED, HAD_COVID, VAX_MANU) %>%
+  group_by(HAD_COVID, DIED) %>%
+  count()
+
+
 
 ############################# STATISTICS ###############################
 

@@ -69,10 +69,12 @@ patients_clean_aug <- patients_clean %>%
                                AGE_YRS >= 70 & AGE_YRS < 80 ~ "[70, 80)",
                                AGE_YRS >= 80 & AGE_YRS < 90 ~ "[80, 90)",
                                AGE_YRS >= 90 ~ "[90, 120)")) %>% # Should we change it to 90+ ?
-  mutate(DIED_AFTER = DATEDIED - VAX_DATE) %>% # --> DIRTY FORMAT: figure out how to change it
+  mutate(DIED_AFTER = DATEDIED - VAX_DATE,
+         DIED_AFTER = str_trim(str_remove(DIED_AFTER, "days")), # remove spaces and letters
+         DIED_AFTER = as.integer(DIED_AFTER)) %>%
+  filter(DIED_AFTER >= 0 | is.na(DIED_AFTER)) %>% # Removes 21 rows
   rename(SYMPTOMS_AFTER = NUMDAYS) %>% 
-  select(-c(VAX_DATE, DATEDIED, ONSET_DATE, TODAYS_DATE)) 
-  
+  select(-c(VAX_DATE, DATEDIED, ONSET_DATE, TODAYS_DATE))
 
 
 ################################## SYMPTOMS ##################################
@@ -88,7 +90,7 @@ symptoms_clean_long <- symptoms_clean %>%
 # Extract the 20 symptoms that most commonly occur as a vector
 top_20_vec <- symptoms_clean_long %>%
   count(symptom, sort = TRUE) %>% # count symptom occurrence, sort by highest occurrence
-  head(22) %>%
+  head(20) %>%
   pluck("symptom") # convert symptoms column from tibble into vector 
 
 # Use tibble with columns VAERS_ID and each of the top 20 symptoms. 
@@ -132,15 +134,20 @@ vaccines_clean_aug <- vaccines_clean
 
 ################################ MERGED TABLE ################################
 
+# Merge patients, symptoms, and vaccine data into one tibble
+# Make columns DIED and DEATH (symptom) identical
 merged_data_wide <- patients_clean_aug %>%
   inner_join(symptoms_clean_aug, by = "VAERS_ID") %>%
-  inner_join(vaccines_clean_aug, by = "VAERS_ID")
+  inner_join(vaccines_clean_aug, by = "VAERS_ID") %>%
+  mutate(DIED = case_when(DEATH == TRUE ~ "Y"),
+         DEATH = case_when(DIED == "Y" ~ TRUE))
 
 # Make long format tibble containing a symptoms column with all top 20 symptoms
 merged_data_long <- merged_data_wide %>%
   pivot_longer(cols = (top_20_vec %>% toupper(.) %>% gsub(" ", "_", .)), 
                names_to = "SYMPTOM", 
                values_to = "SYMPTOM_VALUE")
+  
 
 
 # Write data --------------------------------------------------------------

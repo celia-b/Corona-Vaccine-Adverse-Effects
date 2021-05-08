@@ -15,7 +15,6 @@ library(knitr)
 ```
 
 
-
 ## Overview of presentation
 1. Introduction to COVID-19 World Vaccine Adverse Reactions Dataset
 2. Project work flow
@@ -191,9 +190,10 @@ patients %>%
            VAERS_ID == '0917437' )
 ```
 
+
 ## 03_augment - Challenges and Solutions 1
 
-Another example is OTHER_MEDS. Because it is not recommended to take antiinflamatory or steroid drugs before receiving a vaccine, we detect which individual have taken them to later make some analyses.
+Another example is OTHER_MEDS. Because it is not recommended to take antiinflammatory or steroid drugs before receiving a vaccine, we detect which individual have taken them to later make some analyses.
 
 ``` {r message=FALSE, warning=FALSE, include=TRUE, eval = FALSE}
 patients %>%
@@ -222,6 +222,7 @@ patients %>%
   filter(VAERS_ID == "0921732" | VAERS_ID == "0918421" | VAERS_ID == "0934539" | VAERS_ID == "0932980" | VAERS_ID == "0930055")
 ```
 
+
 ## 03_augment - Challenges and Solutions 2
 
 CHALLENGE: Symptoms are recorded in a way that difficults analysis
@@ -242,67 +243,54 @@ merged_data_wide %>%
 ```
 
 
-## 04_analysis - sex vs. number of symptoms
+## 04_analysis_visualizations - Age/sex vs. number of symptoms
 
-```{r nsymptoms_v_sex, echo = FALSE, out.width = "450px", out.height= "450px"}
-include_graphics("../results/nsymptoms_v_sex.png")
+```{r nsymptoms_age_sex, echo = FALSE, out.width = "700px", out.height= "450px"}
+include_graphics("../results/nsymptoms_age_sex.png")
 ```
 
 
-## 04_analysis - sex vs. types of symptoms
+## 04_analysis_visualizations - Vaccine manufacturer vs. number of symptoms
 
-```{r symptom_types_v_sex, echo = FALSE, out.width = "450px", out.height= "450px"}
-include_graphics("../results/symptom_types_v_sex.png")
-```
-
-
-## 04_analysis - vaccine manufacturer vs. number of symptoms
-
-```{r nsymptoms_v_manu, echo = FALSE, out.width = "450px", out.height= "450px"}
+```{r nsymptoms_v_manu, echo = FALSE, out.width = "500px", out.height= "400px"}
 include_graphics("../results/nsymptoms_v_manu.png")
 ```
 
 
-## 04_analysis - vaccine manufacturer vs. types of symptoms 
+## 04_analysis_visualizations - Age vs. types of symptoms
 
-```{r symptom_types_v_manu, echo = FALSE, out.width = "450px", out.height= "450px"}
+```{r symptom_types_v_age, echo = FALSE, out.width = "550px", out.height= "500px"}
+include_graphics("../results/symptom_types_v_age.png")
+```
+
+
+## 04_analysis_visualizations - Sex vs. symptom types 
+
+```{r symptom_types_v_sex, echo = FALSE, out.width = "650px", out.height= "500px"}
+include_graphics("../results/symptom_types_v_sex.png")
+```
+
+
+## 04_analysis_visualizations - Vaccine manufacturer vs. types of symptoms
+
+```{r symptom_types_v_manu, echo = FALSE, out.width = "650px", out.height= "500px"}
 include_graphics("../results/symptom_types_v_manu.png")
 ```
 
 
-## 04_analysis - vaccine manufacturer vs. life threatening symptoms
+## 04_analysis_visualizations - vaccine manufacturer vs. death
 
-```{r manu_v_lthreat, echo = FALSE, out.width = "450px", out.height= "450px"}
-include_graphics("../results/manu_v_lthreat.png")
+```{r manu_v_death, echo = FALSE, out.width = "500px", out.height= "400px"}
+include_graphics("../results/manu_v_death.png")
 ```
 
 
-## 04_analysis - age vs. number of symptoms (boxplot)
+## 04_analysis_modeling - logistic model of death vs. top 20 symptoms
 
-```{r age_v_nsymptoms_boxplot, echo = FALSE, out.width = "450px", out.height= "450px"}
-include_graphics("../results/age_v_nsymptoms_boxplot.png")
+```{r death_v_symptoms_model, echo = FALSE, out.width = "500px", out.height= "450px"}
+include_graphics("../results/death_v_symptoms_model_fig.png")
 ```
 
-
-## 04_analysis - age vs. number of symptoms (stacked barplot)
-
-```{r age_v_nsymptoms_stacked, echo = FALSE, out.width = "450px", out.height= "450px"}
-include_graphics("../results/age_v_nsymptoms_stacked.png")
-```
-
-
-## 04_analysis - age vs. types of symptoms (stacked barplot)
-
-```{r age_vs_symptom_types_stacked, echo = FALSE, out.width = "450px", out.height= "450px"}
-include_graphics("../results/age_vs_symptom_types_stacked.png")
-```
-
-
-## 04_analysis - age vs. types of symptoms (heatmap)
-
-```{r age_vs_symptom_types_heatmap, echo = FALSE, out.width = "450px", out.height= "450px"}
-include_graphics("../results/age_vs_symptom_types_heatmap.png")
-```
 
 
 
