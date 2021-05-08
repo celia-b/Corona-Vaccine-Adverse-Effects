@@ -3,18 +3,10 @@
 /cloud/project/R/01_load.R="AB686080"
 /cloud/project/R/02_clean.R="35ADBA43"
 /cloud/project/R/03_augment.R="6C17A1CB"
-<<<<<<< HEAD
 /cloud/project/R/04_analysis_clustering.R="2F3E599D"
-/cloud/project/R/04_analysis_visualizations.R="4D4402E6"
-=======
-<<<<<<< HEAD
-/cloud/project/R/04_analysis_clustering.R="1AA8D327"
 /cloud/project/R/04_analysis_regressions.R="8EF3C78A"
 /cloud/project/R/04_analysis_tests.R="DEA3CB65"
-/cloud/project/R/04_analysis_visualizations.R="14C32E54"
-=======
->>>>>>> e06567bda644694ba09ef305c6be9e8f1a74ff86
->>>>>>> 9c41620f99c13edffe5069ad5852bac2d49e7f8a
+/cloud/project/R/04_analysis_visualizations.R="4D4402E6"
 /cloud/project/R/99_project_functions.R="AF81B0BE"
 /cloud/project/doc/presentation.Rmd="6D654948"
 /cloud/project/results/placeholder.R="66139699"

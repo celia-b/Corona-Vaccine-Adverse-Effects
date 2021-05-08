@@ -320,6 +320,24 @@ include_graphics("../results/manu_v_death.png")
 include_graphics("../results/death_v_symptoms_model_fig.png")
 ```
 
+## 04_analysis_clustering - PCA biplot
+
+```{r biplot, echo = FALSE, out.width = "695px", out.height= "340px"}
+include_graphics("../results/biplot.png")
+```
+
+## 04_analysis_clustering - Rotation matrix
+
+```{r rotation_matrix, echo = FALSE, out.width = "695px", out.height= "340px"}
+include_graphics("../results/rotation_matrix.png")
+```
+
+## 04_analysis_clustering - Scree plot
+
+```{r scree_plot, echo = FALSE, out.width = "695px", out.height= "340px"}
+include_graphics("../results/scree_plot.png")
+```
+
 
 
 
