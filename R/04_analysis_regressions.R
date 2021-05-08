@@ -78,19 +78,19 @@ summary(logistic_regression_interactions) # Some of the main effects are not sig
 ################# Modeling death vs presence/absence of symptoms ###############
 
 # Make logistic model of death vs all symptoms
-death_v_symptoms <- merged_data_wide %>%
+death_v_symptoms_model <- merged_data_wide %>%
   glm(data = ., 
       formula = str_c("DEATH ~ ", str_c(symptoms, collapse = "+")), 
-      family = binomial)
+      family = binomial) %>% summary
 
 # Visualize significant symptoms
-death_v_symptoms_model_fig <- tidy(death_v_symptoms) %>%
+death_v_symptoms_model_fig <- tidy(death_v_symptoms_model) %>%
   filter(term != "(Intercept)") %>%
   ggplot(aes(x = fct_reorder(term, p.value),
              y = -log(p.value),
              fill = term)) +
   geom_bar(stat = "identity") +
-  geom_hline(yintercept = -log(0.05), 
+  geom_hline(yintercept = -log(0.05),
              linetype = "dashed", 
              color = "black") +
   scale_fill_viridis_d() +

@@ -301,7 +301,12 @@ Important verbs and tools used:
 - patchwork package
 - viridis package
 
+<<<<<<< HEAD
 ## 04_analysis_visualizations - Age, sex and vaccine manufacturer distribution
+=======
+
+## 04_analysis_visualizations - Age distribution
+>>>>>>> ac91dc28505cd1bc3d92503e4ed1471e59a0af5b
 
 ```{r age_dist, echo = FALSE, out.width = "600px", out.height= "450px"}
 include_graphics("../results/age_dist.png")
@@ -374,12 +379,21 @@ Important verbs and tools used:
 - broom: tidy(), glance()
 
 
+
 ## 04_analysis_modeling - logistic model of death vs. top 20 symptoms
 
-```{r death_v_symptoms_model, echo = FALSE, out.width = "500px", out.height= "450px"}
+```{r eval=FALSE, echo=TRUE, results = "hide", error=FALSE, message=FALSE, warning=FALSE, results = 'hide'}
+death_v_symptoms_model <- merged_data_wide %>%
+  glm(data = ., 
+      formula = str_c("DEATH ~ ", str_c(symptoms, collapse = "+")), 
+      family = binomial)
+```
+
+```{r death_v_symptoms_model, echo = FALSE, out.width = "450px", out.height= "350px"}
 include_graphics("../results/death_v_symptoms_model_fig.png")
 ```
 
+16 out of 19 symptoms are significant in the model - confounding factors?
 
 
 # 04_analysis_tests 

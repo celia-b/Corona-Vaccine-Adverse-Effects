@@ -153,7 +153,6 @@ merged_data_long <- merged_data_wide %>%
                values_to = "SYMPTOM_VALUE")
   
 
-
 # Write data --------------------------------------------------------------
 write_csv(x = patients_clean_aug,
           file = "data/03_patients_clean_aug.csv.gz")
