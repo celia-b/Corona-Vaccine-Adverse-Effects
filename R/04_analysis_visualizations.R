@@ -228,7 +228,7 @@ nsymptoms_v_age <- merged_data_long %>%
              y = N_SYMPTOMS, 
              fill = AGE_CLASS)) +
   geom_boxplot(outlier.shape = NA, 
-               alpha = 0.8) +
+               alpha = 0.6) +
   scale_y_continuous(limits = c(0, 15)) +
   scale_x_discrete(labels = c("0-10", "10-20", "20-30", "30-40", "40-50",
                               "50-60", "60-70", "70-80", "80-90", "90+")) +
@@ -249,7 +249,7 @@ nsymptoms_v_sex <- merged_data_long %>%
              y = N_SYMPTOMS, 
              fill = SEX)) +
   geom_boxplot(outlier.shape = NA, 
-               alpha = 0.8) +
+               alpha = 0.6) +
   scale_y_continuous(limits = c(0, 15)) +
   coord_flip() +
   scale_fill_viridis_d() +
@@ -268,7 +268,7 @@ nsymptoms_v_manu <- merged_data_long %>%
              y = N_SYMPTOMS, 
              fill = VAX_MANU)) +
   geom_boxplot(outlier.shape = NA, 
-               alpha = 0.8) +
+               alpha = 0.6) +
   scale_y_continuous(limits = c(0, 15)) +
   coord_flip() +
   scale_fill_viridis_d() +
@@ -391,7 +391,8 @@ manu_v_death <- merged_data_wide %>%
              y = prop,
              fill = VAX_MANU)) +
   geom_bar(position = "dodge",
-           stat = "identity") +
+           stat = "identity",
+           alpha = 0.8) +
   scale_y_continuous(labels = scales::percent) +
   coord_flip() +
   scale_fill_viridis_d() +
@@ -437,9 +438,9 @@ merged_data_wide %>%
 write_tsv(...)
 ggsave(...)
 
-ggsave (age_dist, file = "results/age_dist.png")
-ggsave (sex_dist, file = "results/sex_dist.png")
-ggsave (vac_dist, file = "results/vac_dist.png")
+ggsave(age_dist, file = "results/age_dist.png")
+ggsave(sex_dist, file = "results/sex_dist.png")
+ggsave(vac_dist, file = "results/vac_dist.png")
 ggsave(nsymptoms_age_sex, file = "results/nsymptoms_age_sex.png")
 ggsave(nsymptoms_v_manu, file = "results/nsymptoms_v_manu.png")
 ggsave(symptom_types_v_age, file = "results/symptom_types_v_age.png")

@@ -50,12 +50,10 @@ patients_clean <- patients %>%
   mutate(AGE_YRS = as.integer(AGE_YRS)) # Age to integers
 
 
-
 ################################## SYMPTOMS ##################################
 # Remove symptom versions
 symptoms_clean <- symptoms %>%
   select(VAERS_ID, SYMPTOM1, SYMPTOM2, SYMPTOM3, SYMPTOM4, SYMPTOM5)
-
 
 
 ################################## VACCINES ##################################

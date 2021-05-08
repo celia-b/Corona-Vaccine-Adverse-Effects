@@ -52,30 +52,39 @@ symptoms <- merged_data_wide %>%
 
 # Model data --------------------------------------------------------------
 
-# How much more likely is it to die when you were already sick when 
+# How much more likely are you to die when you were already sick when 
 # taking the vaccine vs when you were healthy? --> DO STATISTICAL ANALYSIS
+
+# Count number of people with illness
 merged_data_wide %>%
   select(VAERS_ID, AGE_CLASS, SEX, DIED, HAS_ILLNESS, VAX_MANU) %>%
   group_by(HAS_ILLNESS) %>%
   count()
 
+# Count number of people that had illness and died
 merged_data_wide %>%
   select(VAERS_ID, AGE_CLASS, SEX, DIED, HAS_ILLNESS, VAX_MANU) %>%
   group_by(HAS_ILLNESS, DIED) %>%
   count()
 
-prop_test(x = c(1191, 644), n = c(29127, 4306), 
-          p = NULL, alternative = "two.sided", correct = TRUE) 
+# Test whether the proportion of people that died w/o an illness is 
+# sig. different from the proportion of people that died w/ an illness
+
+# OBS: CORRECT THESE NUMBERS BECAUSE NUMBER OF PEOPLE DIED HAS CHANGED!
+prop_test(x = c(1191, 644), 
+          n = c(29127, 4306), 
+          p = NULL, 
+          alternative = "two.sided", 
+          correct = TRUE) 
 
 
 # Out of the people who died, what proportion had covid at the time?
 merged_data_wide %>%
   select(VAERS_ID, AGE_CLASS, SEX, DIED, HAS_COVID, VAX_MANU) %>%
-  filter(DIED == 'Y') %>%
+  filter(DIED == "Y") %>%
   ggplot(aes(HAS_COVID)) + 
   geom_bar() +
   coord_flip()
-
 
 # How much more likely is it to die when you had covid while 
 # taking the vaccine vs when you were healthy? --> DO STATISTICAL ANALYSIS
@@ -109,14 +118,12 @@ merged_data_wide %>%
 
 # Null hypothesis: the proportions are the same
 # Assumptions:
-
-#Data in contingency table is presented in counts (not in percent)
-#All cells contain more than 5 observations
-#Each observation contributes to one group only
-#Groups are independent
-#The variables under study are categorical
-#The sample is, supposedly, reasonably random
-
+  # Data in contingency table is presented in counts (not in percent)
+  # All cells contain more than 5 observations
+  # Each observation contributes to one group only
+  # Groups are independent
+  # The variables under study are categorical
+  # The sample is, supposedly, reasonably random
 
 # Function that performs a Pearson's Chi-squared contingency table test between two variables
 chisq_func <- function(variable1, variable2) {
@@ -125,7 +132,7 @@ chisq_func <- function(variable1, variable2) {
   merged_data_wide %>%
     group_by(!!variable1, !!variable2) %>%
     summarise(n = n()) %>%
-    spread(!!variable2, n) %>%  
+    spread(!!variable2, n) %>%  # use pivot_wider instead :)
     tibble() %>% 
     select(-!!variable1) %>% 
     chisq.test() %>% 
