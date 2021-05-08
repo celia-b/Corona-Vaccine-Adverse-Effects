@@ -59,16 +59,12 @@ patients_clean_aug <- patients_clean %>%
                                           ignore.case = TRUE) ~ "Y",
                                     TRUE ~ "N")) %>% 
   select(-OTHER_MEDS) %>% 
-  mutate(AGE_CLASS = case_when(AGE_YRS < 10 ~ "[0,10)",
-                               AGE_YRS >= 10 & AGE_YRS < 20 ~ "[10, 20)",
-                               AGE_YRS >= 20 & AGE_YRS < 30 ~ "[20, 30)",
-                               AGE_YRS >= 30 & AGE_YRS < 40 ~ "[30, 40)",
-                               AGE_YRS >= 40 & AGE_YRS < 50 ~ "[40, 50)",
-                               AGE_YRS >= 50 & AGE_YRS < 60 ~ "[50, 60)",
-                               AGE_YRS >= 60 & AGE_YRS < 70 ~ "[60, 70)",
-                               AGE_YRS >= 70 & AGE_YRS < 80 ~ "[70, 80)",
-                               AGE_YRS >= 80 & AGE_YRS < 90 ~ "[80, 90)",
-                               AGE_YRS >= 90 ~ "[90, 120)")) %>% # Should we change it to 90+ ?
+  mutate(AGE_CLASS = case_when(AGE_YRS < 15 ~ "[0,15)",
+                               AGE_YRS >= 15 & AGE_YRS < 25 ~ "[15, 25)",
+                               AGE_YRS >= 25 & AGE_YRS < 40 ~ "[25, 40)",
+                               AGE_YRS >= 40 & AGE_YRS < 60 ~ "[40, 60)",
+                               AGE_YRS >= 60 & AGE_YRS < 80 ~ "[60, 80)",
+                               AGE_YRS >= 80 ~ "80+")) %>% # Should we change it to 90+ ?
   mutate(DIED_AFTER = DATEDIED - VAX_DATE,
          DIED_AFTER = str_trim(str_remove(DIED_AFTER, "days")), # remove spaces and letters
          DIED_AFTER = as.integer(DIED_AFTER)) %>%
