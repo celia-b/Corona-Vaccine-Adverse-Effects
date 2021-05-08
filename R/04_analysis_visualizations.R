@@ -202,8 +202,6 @@ nsymptoms_v_age <- merged_data_long %>%
         plot.title = element_text(hjust = 0.5),
         plot.margin = margin(10, 20, 10, 10))
 
-
-
 # Boxplot showing total number of symptoms by sex
 nsymptoms_v_sex <- merged_data_long %>%
   drop_na(SEX) %>%
@@ -303,7 +301,7 @@ symptom_types_v_manu <- merged_data_long %>%
   theme_minimal(base_family = "Avenir") +
   theme(axis.text.x = element_text(angle = 45, 
                                    hjust = 1, 
-                                   size = 9), 
+                                   size = 8), 
         plot.title = element_text(hjust = 0.5),
         plot.margin = margin(10, 10, 10, 10))
 

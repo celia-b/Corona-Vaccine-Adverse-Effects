@@ -285,7 +285,7 @@ include_graphics("../results/symptom_types_v_sex.png")
 
 ## 04_analysis_visualizations - Vaccine manufacturer vs. types of symptoms
 
-```{r symptom_types_v_manu, echo = FALSE, out.width = "650px", out.height= "500px"}
+```{r symptom_types_v_manu, echo = FALSE, out.width = "800px", out.height= "500px"}
 include_graphics("../results/symptom_types_v_manu.png")
 ```
 

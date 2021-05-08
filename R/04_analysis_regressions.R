@@ -100,11 +100,13 @@ death_v_symptoms_model_fig <- tidy(death_v_symptoms) %>%
        y = "-log(p-value)",
        fill = "Sex") +
   theme_minimal(base_family = "Avenir") +
-  theme(axis.text.x = element_text(angle = 45, 
+  theme(legend.position = "none", 
+        axis.text.x = element_text(angle = 45, 
                                    hjust = 1, 
                                    size = 9), 
         plot.title = element_text(hjust = 0.5),
-        plot.margin = margin(10, 10, 10, 10))
+        plot.subtitle = element_text(hjust = 0.5),
+        plot.margin = margin(10, 10, 10, 20))
 
 
 # Takes some time to run!
