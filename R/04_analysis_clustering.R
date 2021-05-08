@@ -11,6 +11,7 @@ library("broom")
 library("purrr")
 library("infer")
 library("tidymodels")
+install.packages("tidymodels")
 
 
 # Define functions --------------------------------------------------------
@@ -150,7 +151,7 @@ scree_plot
 
 # need to keep working on it 
 # including binary variables
-kclust <- kmeans (numeric_symptoms, centers = 3)
+kclust <- kmeans(numeric_symptoms, centers = 3)
 
 class_cluster <- augment(kclust, classes)
 

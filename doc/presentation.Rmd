@@ -18,9 +18,12 @@ library(knitr)
 ## Overview of presentation
 1. Introduction to COVID-19 World Vaccine Adverse Reactions Dataset
 2. Project work flow
-3. Challenges and solutions - Load, Clean and Augment
+3. Challenges, solutions and tools used - Load, Clean and Augment
 4. Data analysis
 5. Conclusion and discussion
+
+
+# COVID-19 World Vaccine Adverse Reactions
 
 
 ## COVID-19 World Vaccine Adverse Reactions
@@ -82,9 +85,21 @@ include_graphics("../doc/workflow.jpeg")
 ```
 
 
+# 01_load
+
+## 01_load - Important tools used
+Important verbs and tools used to solve challenges:
+
+- readr: read_csv(), write_csv()
+- always saving files gzipped
+- dealing with string NAs (include here?)
+- specifying column types (include here?)
+
+
+
 ## 01_load - Challenges and Solutions 1
 
-**CHALLENGE:** Multiple large files.
+**CHALLENGE:** Multiple large files
 
 **SOLUTION:** Keep them compressed and only decompress when reading into R:
 
@@ -141,6 +156,16 @@ patients <- read_csv(file = gzfile("../data/01_patients.csv.gz"),
 ```
 
 
+
+# 02_clean
+
+## 02_clean - Important tools used
+Important verbs and tools used to solve challenges:
+
+- dplyr: filter(), select(), distinct(), mutate()
+- tidyr: replace_na()
+
+
 ## 02_clean - Challenges and Solutions 1
 
 I am aware of how horrible this table is :/
@@ -155,14 +180,24 @@ I am aware of how horrible this table is :/
 
 
 
-## 03_augment - Challenges and Solutions 2
+# 03_augment
 
+## 03_augment - Important tools used
+Important verbs and tools used to solve challenges:
+
+- dplyr: filter(), select(), mutate(), case_when(), arrange(), group_by(), count(), distinct(), summarise(), drop_na(), rename()
+- tidyr: pivot_longer(), pivot_wider(), inner_join(), full_join(), pluck() 
+- stringr: regular expressions, str_c(), str_replace(), str_replace()
+- Anything else?
+
+
+## 03_augment - Challenges and Solutions 1
 **CHALLENGE:** Some columns contain long string descriptions that need to be turned into something tidy
 
 **SOLUTION:** Make categorical variable
 
 
-## 03_augment - Challenges and Solutions 2
+## 03_augment - Challenges and Solutions 1
 **Example:** ALLERGIES column:
 ``` {r message=TRUE, warning=FALSE, include=FALSE}
 patients %>%
@@ -197,7 +232,7 @@ patients %>%
 ```
 
 
-## 03_augment - Challenges and Solutions 2
+## 03_augment - Challenges and Solutions 1
 **Another example:** OTHER_MEDS column
 
 Detect individuals that have taken anti-inflammatory or steroid drugs before vaccine (not recommended):
@@ -233,8 +268,7 @@ patients %>%
 ```
 
 
-
-## 03_augment - Challenges and Solutions 3
+## 03_augment - Challenges and Solutions 2
 
 **CHALLENGE:** Symptoms are recorded in a way that makes later analysis difficult
 
@@ -252,6 +286,20 @@ merged_data_wide %>%
   select(VAERS_ID, HEADACHE, PYREXIA, CHILLS, FATIGUE, PAIN, PAIN_IN_EXTREMITY, NAUSEA, DIZZINESS, MYALGIA, INJECTION_SITE_ERYTHEMA, INJECTION_SITE_PRURITUS, INJECTION_SITE_SWELLING, INJECTION_SITE_PAIN, ARTHRALGIA, DYSPNOEA, VOMITING, PRURITUS, DEATH, RASH, ASTHENIA) %>%
   head(3)
 ```
+
+
+
+# 04_analysis_visualizations
+
+## 04_analysis_visualizations - Important tools used
+Important verbs and tools used:
+
+- ggplot()
+- geom_bar(), geom_boxplot(), geom_tile(), geom_segment()
+- scales()
+- fct_reorder()
+- patchwork package
+- viridis package
 
 ## 04_analysis_visualizations - Age distribution
 
@@ -314,11 +362,43 @@ include_graphics("../results/manu_v_death.png")
 ```
 
 
+
+
+# 04_analysis_regressions
+
+## 04_analysis_regressions - Important tools used
+Important verbs and tools used:
+
+- glm()
+- broom: tidy(), glance()
+
+
 ## 04_analysis_modeling - logistic model of death vs. top 20 symptoms
 
 ```{r death_v_symptoms_model, echo = FALSE, out.width = "500px", out.height= "450px"}
 include_graphics("../results/death_v_symptoms_model_fig.png")
 ```
+
+
+
+# 04_analysis_tests 
+
+## 04_analysis_tests - Important tools used
+Important verbs and tools used:
+- prop_test()
+- chisq.test()
+
+
+
+# 04_analysis_clustering
+
+## 04_analysis_clustering - Important tools used
+Important verbs and tools used:
+
+- prcomp()
+- kmeans()
+- tidymodels: (used for what?)
+
 
 ## 04_analysis_clustering - PCA biplot
 
@@ -337,8 +417,6 @@ include_graphics("../results/rotation_matrix.png")
 ```{r scree_plot, echo = FALSE, out.width = "695px", out.height= "340px"}
 include_graphics("../results/scree_plot.png")
 ```
-
-
 
 
 
