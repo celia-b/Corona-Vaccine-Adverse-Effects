@@ -99,7 +99,7 @@ pca_fit <- numeric_symptoms %>%
   prcomp(center = TRUE) # do PCA
 
 # PC1 vs PC2 biplot
-pca_fit %>%
+biplot <- pca_fit %>%
   augment(classes) %>% 
   ggplot(aes(.fittedPC1, .fittedPC2, color = VAX_MANU)) + 
   geom_point(size = 0.5) +
@@ -108,12 +108,14 @@ pca_fit %>%
   theme_half_open(font_size = 9, font_family = "Avenir") +
   background_grid() 
   
+biplot
+
 # define arrow style for plotting
 arrow_style <- arrow(angle = 10, ends = "first", type = "open", 
                      length = grid::unit(5, "pt"))
 
 # plot rotation matrix
-pca_fit %>%
+rotation_matrix <- pca_fit %>%
   tidy(matrix = "rotation") %>%
   pivot_wider(names_from = "PC", names_prefix = "PC", values_from = "value") %>%
   ggplot(aes(PC1, PC2)) +
@@ -127,8 +129,10 @@ pca_fit %>%
   coord_fixed() + # fix aspect ratio to 1:1
   theme_minimal_grid(10)
 
+rotation_matrix
+
 # scree plot
-pca_fit %>%
+scree_plot <- pca_fit %>%
   tidy(matrix = "eigenvalues") %>%
   ggplot(aes(PC, percent)) +
   geom_col(fill = "#56B4E9", alpha = 0.8) +
@@ -139,6 +143,8 @@ pca_fit %>%
     expand = expansion(mult = c(0, 0.01))
   ) +
   theme_minimal_hgrid(10)
+
+scree_plot
 
 # K-means clustering  -----------------------------------------------------
 
@@ -166,5 +172,8 @@ class_cluster %>% ggplot(aes(.cluster, fill = VAX_MANU)) +
 write_tsv(...)
 ggsave(...)
 
+ggsave (biplot, file = "results/biplot.png")
+ggsave (rotation_matrix, file = "results/rotation_matrix.png")
+ggsave (scree_plot, file = "results/scree_plot.png")
 
 

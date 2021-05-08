@@ -253,6 +253,23 @@ merged_data_wide %>%
   head(3)
 ```
 
+## 04_analysis_visualizations - Age distribution
+
+```{r age_dist, echo = FALSE, out.width = "500px", out.height= "400px"}
+include_graphics("../results/age_dist.png")
+```
+
+## 04_analysis_visualizations - Sex distribution
+
+```{r sex_dist, echo = FALSE, out.width = "500px", out.height= "400px"}
+include_graphics("../results/sex_dist.png")
+```
+
+## 04_analysis_visualizations - Vaccine manufacturer distribution
+
+```{r vac_dist, echo = FALSE, out.width = "500px", out.height= "400px"}
+include_graphics("../results/vac_dist.png")
+```
 
 
 ## 04_analysis_visualizations - Age/sex vs. number of symptoms
@@ -301,6 +318,24 @@ include_graphics("../results/manu_v_death.png")
 
 ```{r death_v_symptoms_model, echo = FALSE, out.width = "500px", out.height= "450px"}
 include_graphics("../results/death_v_symptoms_model_fig.png")
+```
+
+## 04_analysis_clustering - PCA biplot
+
+```{r biplot, echo = FALSE, out.width = "695px", out.height= "340px"}
+include_graphics("../results/biplot.png")
+```
+
+## 04_analysis_clustering - Rotation matrix
+
+```{r rotation_matrix, echo = FALSE, out.width = "695px", out.height= "340px"}
+include_graphics("../results/rotation_matrix.png")
+```
+
+## 04_analysis_clustering - Scree plot
+
+```{r scree_plot, echo = FALSE, out.width = "695px", out.height= "340px"}
+include_graphics("../results/scree_plot.png")
 ```
 
 
