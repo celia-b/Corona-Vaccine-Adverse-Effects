@@ -99,7 +99,7 @@ pca_fit <- numeric_symptoms %>%
   prcomp(center = TRUE) # do PCA
 
 # PC1 vs PC2 biplot
-pca_fit %>%
+biplot <- pca_fit %>%
   augment(classes) %>% 
   ggplot(aes(.fittedPC1, .fittedPC2, color = VAX_MANU)) + 
   geom_point(size = 0.5) +
@@ -108,6 +108,8 @@ pca_fit %>%
   theme_half_open(font_size = 9, font_family = "Avenir") +
   background_grid() 
   
+biplot
+
 # define arrow style for plotting
 arrow_style <- arrow(angle = 10, ends = "first", type = "open", 
                      length = grid::unit(5, "pt"))

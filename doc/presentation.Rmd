@@ -242,6 +242,23 @@ merged_data_wide %>%
   head(3)
 ```
 
+## 04_analysis_visualizations - Age distribution
+
+```{r age_dist, echo = FALSE, out.width = "500px", out.height= "400px"}
+include_graphics("../results/age_dist.png")
+```
+
+## 04_analysis_visualizations - Sex distribution
+
+```{r sex_dist, echo = FALSE, out.width = "500px", out.height= "400px"}
+include_graphics("../results/sex_dist.png")
+```
+
+## 04_analysis_visualizations - Vaccine manufacturer distribution
+
+```{r vac_dist, echo = FALSE, out.width = "500px", out.height= "400px"}
+include_graphics("../results/vac_dist.png")
+```
 
 ## 04_analysis_visualizations - Age/sex vs. number of symptoms
 
