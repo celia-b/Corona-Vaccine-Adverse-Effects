@@ -35,19 +35,21 @@ symptoms <- merged_data_wide %>%
 
 # Convert symptom related variables to numeric
 numeric_symptoms <- merged_data_wide %>% 
-  mutate(DIED = case_when (DIED == "N"~ 0,
-                           DIED == "Y"~ 1)) %>%
   mutate(HOSPITAL = case_when (HOSPITAL == "N"~ 0,
                                HOSPITAL == "Y"~ 1)) %>%
   mutate(DISABLE = case_when (DISABLE == "N"~ 0,
                               DISABLE == "Y"~ 1)) %>%
+  mutate(ER_ED_VISIT = case_when (ER_ED_VISIT == "N"~ 0,
+                              ER_ED_VISIT == "Y"~ 1)) %>%
   mutate_if(is.logical, as.numeric) %>%
-  select(all_of(symptoms)) %>%
+  select(all_of(symptoms), HOSPITAL, DISABLE, 
+         ER_ED_VISIT, SYMPTOMS_AFTER, N_SYMPTOMS) %>%
   drop_na()
 
 # Get classes (vaccine manufacturer)
 classes <- merged_data_wide %>% 
-  drop_na(all_of(symptoms)) %>%
+  drop_na(all_of(symptoms), HOSPITAL, DISABLE, 
+          ER_ED_VISIT, SYMPTOMS_AFTER, N_SYMPTOMS) %>%
   select(VAX_MANU)
 
 
@@ -124,6 +126,8 @@ by_vac_manu <- merged_data_wide %>%
   geom_point()
 
 kmeans_comparison <- kclust + by_vac_manu
+
+kmeans_comparison
   
 # Write data --------------------------------------------------------------
 write_tsv(...)

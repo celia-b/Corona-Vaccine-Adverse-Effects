@@ -472,16 +472,14 @@ merged_data_wide %>%
 write_tsv(...)
 ggsave(...)
 
-<<<<<<< HEAD
+
 ggsave (age_dist, file = "results/age_dist.png")
 ggsave (sex_dist, file = "results/sex_dist.png")
 ggsave (vac_dist, file = "results/vac_dist.png")
 ggsave (symptoms_after_v_agegroup, file = "results/symptoms_after_v_agegroup.png")
-=======
 ggsave(age_dist, file = "results/age_dist.png")
 ggsave(sex_dist, file = "results/sex_dist.png")
 ggsave(vac_dist, file = "results/vac_dist.png")
->>>>>>> ac91dc28505cd1bc3d92503e4ed1471e59a0af5b
 ggsave(nsymptoms_age_sex, file = "results/nsymptoms_age_sex.png")
 ggsave(nsymptoms_v_manu, file = "results/nsymptoms_v_manu.png")
 ggsave(symptom_types_v_age, file = "results/symptom_types_v_age.png")

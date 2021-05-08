@@ -301,9 +301,8 @@ Important verbs and tools used:
 - patchwork package
 - viridis package
 
-<<<<<<< HEAD
+
 ## 04_analysis_visualizations - Age, sex and vaccine manufacturer distribution
-=======
 
 ## 04_analysis_visualizations - Age distribution
 >>>>>>> ac91dc28505cd1bc3d92503e4ed1471e59a0af5b
