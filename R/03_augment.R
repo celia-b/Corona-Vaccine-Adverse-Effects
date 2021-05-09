@@ -22,7 +22,7 @@ vaccines_clean <- read_csv(file = gzfile("data/02_vaccines_clean.csv.gz"),
 
 # Wrangle data ------------------------------------------------------------
 
-################################### PATIENTS ###################################
+## PATIENTS ---------------------------------------------------------------
 patients_clean_aug <- patients_clean %>%
   mutate(HAS_ALLERGIES = case_when(ALLERGIES == "NONE" ~ "N",
                                    TRUE ~ "Y")) %>% 
@@ -65,7 +65,7 @@ patients_clean_aug <- patients_clean %>%
   select(-c(VAX_DATE, DATEDIED, ONSET_DATE, TODAYS_DATE))
 
 
-################################## SYMPTOMS ##################################
+## SYMPTOMS -------------------------------------------------------------
 
 # Convert symptoms into long format
 symptoms_clean_long <- symptoms_clean %>%
@@ -110,12 +110,12 @@ symptoms_clean_aug <- symptoms_clean_long %>%
   setNames(toupper(names(.))) %>%
   ungroup()
 
-################################## VACCINES ##################################
+## VACCINES --------------------------------------------------------------
 
 vaccines_clean_aug <- vaccines_clean
 
 
-################################ MERGED TABLE ################################
+## MERGED TABLE ----------------------------------------------------------
 
 # Merge patients, symptoms, and vaccine data into one tibble
 # Make columns DIED and DEATH (symptom) identical

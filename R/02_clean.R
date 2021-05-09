@@ -26,7 +26,7 @@ vaccines <- read_csv(file = gzfile("data/01_vaccines.csv.gz"),
 
 # Wrangle data ------------------------------------------------------------
 
-################################## PATIENTS ##################################
+## PATIENTS ---------------------------------------------------------------
 patients_clean <- patients %>%
   select(-c(CAGE_YR, 
             CAGE_MO,
@@ -64,13 +64,13 @@ patients_clean <- patients %>%
                              TRUE ~ CUR_ILL))
   
 
-################################## SYMPTOMS ##################################
+## SYMPTOMS ---------------------------------------------------------------
 # Remove symptom versions
 symptoms_clean <- symptoms %>%
   select(VAERS_ID, SYMPTOM1, SYMPTOM2, SYMPTOM3, SYMPTOM4, SYMPTOM5)
 
 
-################################## VACCINES ##################################
+## VACCINES ---------------------------------------------------------------
 vaccines_clean <- vaccines %>%
   filter(VAX_TYPE == "COVID19") %>%
   distinct() %>%
