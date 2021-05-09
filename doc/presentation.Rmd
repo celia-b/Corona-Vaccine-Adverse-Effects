@@ -7,7 +7,14 @@ output:
   ioslides_presentation:
     widescreen: true
     smaller: true
+header-includes:
+  - \usepackage{multicol}
+  - \setlength{\columnsep}{18pt}
 ---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
 
 ```{r include=FALSE}
 library(tidyverse)
@@ -18,9 +25,11 @@ library(knitr)
 ## Overview of presentation
 1. Introduction to COVID-19 World Vaccine Adverse Reactions Dataset
 2. Project work flow
-3. Challenges, solutions and tools used - Load, Clean and Augment
-4. Data analysis
-5. Conclusion and discussion
+3. Project methods: important packages and verbs used
+4. Challenges and solutions - Load, Clean and Augment
+5. Visualizations
+6. Modeling
+7. Conclusion and discussion
 
 
 # COVID-19 World Vaccine Adverse Reactions
@@ -52,7 +61,6 @@ vaccines <- read_csv(file = gzfile("../data/01_vaccines.csv.gz"),
 ```
 
 
-
 ## COVID-19 World Vaccine Adverse Reactions
 **PATIENTS.CSV**: Contains information about the individuals that received the vaccines
 
@@ -77,23 +85,76 @@ head(symptoms, 3)
 ```
 
 
-
 ## Project workflow
 
-```{r pressure, echo = FALSE, out.width = "75%"}
+```{r workflow, echo = FALSE, out.width = "60%", out.extra = 'style = "float:right; padding:10px"'}
 include_graphics("../doc/workflow.jpeg")
 ```
 
+1. Load data sets (patients, vaccines, symptoms)
+2. Clean each data set individually
+3. Augment and merge the data sets
+4. Make visualizations
+5. Do modeling
 
-# 01_load
 
-## 01_load - Important tools used
-Important verbs and tools used to solve challenges:
+## Project methods - Important packages and verbs
+<style>
+.column-left{
+  float: left;
+  width: 28%;
+  text-align: left;
+  margin: 0 4.5%;
+}
 
-- readr: read_csv(), write_csv()
-- always saving files gzipped
-- dealing with string NAs (include here?)
-- specifying column types (include here?)
+.column-center{
+  display: inline-block;
+  width: 28%;
+  text-align: left;
+}
+.column-right{
+  float: right;
+  width: 28%;
+  text-align: left;
+}
+</style>
+
+
+<div class="column-left">
+**Load and clean**
+
+- **readr**: read_csv(), write_csv()
+- **dyplyr**: filter(), select(), distinct(), mutate()
+- **tidyr**: replace_na()
+</div>
+
+
+<div class="column-center">
+**Augment**
+
+  - **dplyr**: filter(), select(), mutate(), case_when(), arrange(), group_by(), count(), distinct(), summarise(), drop_na(), rename()
+  - **tidyr**: pivot_longer(), pivot_wider(), inner_join(), full_join(), pluck() 
+  - **stringr**: regular expressions, str_c(), str_replace(), str_replace()
+</div>
+
+
+<div class="column-right">
+**Visualizations and modeling**
+
+- **ggplot**: geom_bar(), geom_boxplot(), geom_tile(), geom_segment(), theme_minimal()
+- **forcats**: fct_reorder()
+- **scales**
+- **patchwork**
+- **viridis**
+- **stats (?)**: glm(), prcomp()
+- **broom**: tidy(), glance()
+- **purrr**: map(), nest(), ungroup()
+</div>
+
+
+## 04_analysis_visualizations - Important tools used
+Important verbs and tools used:
+
 
 
 
@@ -159,13 +220,6 @@ patients <- read_csv(file = gzfile("../data/01_patients.csv.gz"),
 
 # 02_clean
 
-## 02_clean - Important tools used
-Important verbs and tools used to solve challenges:
-
-- dplyr: filter(), select(), distinct(), mutate()
-- tidyr: replace_na()
-
-
 ## 02_clean - Challenges and Solutions 1
 
 I am aware of how horrible this table is :/
@@ -181,15 +235,6 @@ I am aware of how horrible this table is :/
 
 
 # 03_augment
-
-## 03_augment - Important tools used
-Important verbs and tools used to solve challenges:
-
-- dplyr: filter(), select(), mutate(), case_when(), arrange(), group_by(), count(), distinct(), summarise(), drop_na(), rename()
-- tidyr: pivot_longer(), pivot_wider(), inner_join(), full_join(), pluck() 
-- stringr: regular expressions, str_c(), str_replace(), str_replace()
-- Anything else?
-
 
 ## 03_augment - Challenges and Solutions 1
 **CHALLENGE:** Some columns contain long string descriptions that need to be turned into something tidy
@@ -291,16 +336,6 @@ merged_data_wide %>%
 
 # 04_analysis_visualizations
 
-## 04_analysis_visualizations - Important tools used
-Important verbs and tools used:
-
-- ggplot()
-- geom_bar(), geom_boxplot(), geom_tile(), geom_segment()
-- scales()
-- fct_reorder()
-- patchwork package
-- viridis package
-
 
 ## 04_analysis_visualizations - Age, sex and vaccine manufacturer distribution
 
@@ -385,13 +420,6 @@ include_graphics("../results/manu_v_death.png")
 
 
 # 04_analysis_regressions
-
-## 04_analysis_regressions - Important tools used
-Important verbs and tools used:
-
-- glm()
-- broom: tidy(), glance()
-
 
 
 ## 04_analysis_modeling - Logistic regression: death ~ patient profile
