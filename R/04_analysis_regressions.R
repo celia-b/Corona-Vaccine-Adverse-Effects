@@ -49,38 +49,99 @@ symptoms <- top_n_symptoms(data = symptoms_clean, n = 20) %>%
   capitalize()
 
 
-# Model data --------------------------------------------------------------
+# Model data -------------------------------------------------------------
 
-######### Modeling death outcome vs sex, age, n hospital days, n days before 
-# symptoms presence of allergies, presence of illness, presence of COVID ######
-logistic_regression <- merged_data_wide %>%
+
+# Logistic regressions are fit for categorical outcome variables like DIED (Y/N)
+
+# The "estimate" column is the log-odds ratio, so we must interpret them as follows:
+# 1. If the variable is categorical, like HAS_ILLNESS, an estimate of 9.877e-01 for the "Y" group
+#    means that this group is exp(9.877e-01) = 2.685052 times more likely to die after taking 
+#    the vaccine than the reference 'N' group.
+# 2. If the variable is continuous, like HOSPDAYS, an estimate of 6.024e-02
+#    means that, holding all else constant, one unit change in HOSPDAYS will have 
+#    exp(6.024e-02) = 1.062091 units change in the odds ratio.
+
+
+## Logistic regression 1 -------------------------------------------------
+# Modeling death outcome vs patient profile
+# (sex, age, allergies, current illness, current Covid-19, past Covid-19)
+death_v_profile_model <- merged_data_wide %>%
   glm(formula = DIED ~ 
-        SEX + AGE_YRS + HOSPDAYS + SYMPTOMS_AFTER + HAS_ALLERGIES + HAS_ILLNESS + HAS_COVID, 
+        SEX + AGE_YRS + HAS_ALLERGIES + HAS_ILLNESS + HAS_COVID + HAD_COVID, 
       family = binomial, 
-      data = .)
-
-summary(logistic_regression)
-
-
-logistic_regression_interactions <- merged_data_wide %>%
-  glm(formula = DIED ~ 
-        (SEX + AGE_YRS + HOSPDAYS + SYMPTOMS_AFTER + HAS_ALLERGIES + HAS_ILLNESS + HAS_COVID)^2, 
-      family = binomial, 
-      data = .)
-
-summary(logistic_regression_interactions) # Some of the main effects are not significant anymore
+      data = .) %>%
+  tidy() %>%
+  mutate(odds_ratio = exp(estimate)) 
 
 
-################# Modeling death vs presence/absence of symptoms ###############
+### LogReg Visualization 1.1 ---------------------------------------------
+death_v_profile_model_fig_pval <- death_v_profile_model %>%
+  filter(term != "(Intercept)") %>%
+  ggplot(aes(x = fct_reorder(term, p.value),
+             y = -log(p.value),
+             fill = term)) +
+  geom_bar(stat = "identity") +
+  geom_hline(yintercept = -log(0.05),
+             linetype = "dashed", 
+             color = "black") +
+  scale_x_discrete(labels = c("Age", "Has illness", "Is male", "Has allergies", "Has Covid-19", "Had Covid-19")) +
+  scale_fill_viridis_d() +
+  labs(title = "P-values for death ~ patient profile association",
+       subtitle = "Dashed line indicates a p-value of 0.05",
+       x = "Profile features",
+       y = "-log(p-value)") +
+  theme_minimal(base_family = "Avenir") +
+  theme(legend.position = "none", 
+        axis.text.x = element_text(angle = 45, 
+                                   hjust = 1, 
+                                   size = 9), 
+        plot.title = element_text(hjust = 0.5),
+        plot.subtitle = element_text(hjust = 0.5),
+        plot.margin = margin(10, 10, 10, 20))
 
-# Make logistic model of death vs all symptoms
+
+### LogReg Visualization 1.2 ---------------------------------------------
+death_v_profile_model_fig_odds <- death_v_profile_model %>%
+  filter(p.value < 0.05) %>%
+  filter(term != "(Intercept)") %>%
+  ggplot(aes(x = fct_reorder(term, estimate),
+             y = estimate,
+             fill = term)) +
+  geom_bar(stat = "identity") +
+  geom_hline(yintercept = 0,
+             linetype = "dashed", 
+             color = "black") +
+  scale_x_discrete(labels = c("Age", "Has illness", "Is male")) +
+  scale_fill_viridis_d() +
+  labs(title = "Log-Odds ratio for death ~ patient profile association",
+       subtitle = "A Log-Odds ratio above 0 means the feature is more common in patients who die",
+       x = "Profile features",
+       y = "Log-Odds Ratio",
+       caption = "Only features with a p-value < 0.05 are shown.") +
+  theme_minimal(base_family = "Avenir") +
+  theme(legend.position = "none", 
+        axis.text.x = element_text(angle = 45, 
+                                   hjust = 1, 
+                                   size = 9), 
+        plot.title = element_text(hjust = 0.5),
+        plot.subtitle = element_text(hjust = 0.5),
+        plot.margin = margin(10, 10, 10, 20))
+
+
+
+## Logistic Regression 2 ----------------------------------------------
+# Modeling death outcome vs presence/absence of 20 most common symptoms 
 death_v_symptoms_model <- merged_data_wide %>%
   glm(formula = str_c("DEATH ~ ", 
                       str_c(symptoms, collapse = "+")), 
-      family = binomial)
+      family = binomial) %>%
+  tidy() %>%
+  mutate(odds_ratio = exp(estimate))
+  
 
-# Visualize significant symptoms
-death_v_symptoms_model_fig <- tidy(death_v_symptoms_model) %>%
+### LogReg Visualization 2.1 -----------------------------------------
+death_v_symptoms_model_fig_pval <- death_v_symptoms_model %>%
   filter(term != "(Intercept)") %>%
   ggplot(aes(x = fct_reorder(term, p.value),
              y = -log(p.value),
@@ -93,8 +154,38 @@ death_v_symptoms_model_fig <- tidy(death_v_symptoms_model) %>%
   labs(title = "P-values for death ~ symptoms association",
        subtitle = "Dashed line indicates a p-value of 0.05",
        x = "Symptoms",
-       y = "-log(p-value)",
-       fill = "Sex") +
+       y = "-log(p-value)") +
+  theme_minimal(base_family = "Avenir") +
+  theme(legend.position = "none", 
+        axis.text.x = element_text(angle = 45, 
+                                   hjust = 1, 
+                                   size = 9), 
+        plot.title = element_text(hjust = 0.5),
+        plot.subtitle = element_text(hjust = 0.5),
+        plot.margin = margin(10, 10, 10, 20))
+
+### LogReg Visualization 2.2 -----------------------------------------
+death_v_symptoms_model_fig_odds <- death_v_symptoms_model %>%
+  filter(p.value < 0.05) %>%
+  filter(term != "(Intercept)") %>%
+  ggplot(aes(x = fct_reorder(term, estimate),
+             y = estimate,
+             fill = term)) +
+  geom_bar(stat = "identity") +
+  geom_hline(yintercept = 0,
+             linetype = "dashed", 
+             color = "black") +
+  scale_x_discrete(labels = c("PRURITUS", "RASH", "DIZZINESS", "ARTHRALGIA", 
+                              "HEADACHE", "MYALGIA", "PAIN IN EXTREMITY", 
+                              "INJECTION SITE PAIN", "CHILLS", "PAIN", 
+                              "NAUSEA", "PYREXIA", "FATIGUE", "ASTHENIA", 
+                              "DYSPNOEA", "VOMITING")) +
+  scale_fill_viridis_d() +
+  labs(title = "Log-Odds ratio for death ~ symptoms association",
+       subtitle = "A Log-Odds ratio above 0 means the symtom is more common in patients who die",
+       x = "Symptoms",
+       y = "Log-Odds ratio",
+       caption = "Only symptoms with a p-value < 0.05 are shown.") +
   theme_minimal(base_family = "Avenir") +
   theme(legend.position = "none", 
         axis.text.x = element_text(angle = 45, 
@@ -105,7 +196,24 @@ death_v_symptoms_model_fig <- tidy(death_v_symptoms_model) %>%
         plot.margin = margin(10, 10, 10, 20))
 
 
-# Takes some time to run!
+
+
+## Interactions -----------------------------------------------
+# Interactions between profile features
+# I think this doesn't make sense because some variables are categorical
+# and some continuous, so the interpretation becomes messy
+logreg_profile_interactions <- merged_data_wide %>%
+  glm(formula = DIED ~ 
+        (SEX + AGE_YRS + HAS_ALLERGIES + HAS_ILLNESS + HAS_COVID)^2, 
+      family = binomial, 
+      data = .) %>%
+  tidy() %>%
+  mutate(odds_ratio = exp(estimate))
+
+logreg_profile_interactions %>%
+  filter(p.value < 0.05)
+
+# Maybe this one makes more sense
 death_v_symptoms_interactions <- merged_data_wide %>%
   glm(formula = DIED ~ 
         (DYSPNOEA + PAIN_IN_EXTREMITY + DIZZINESS + FATIGUE + 
@@ -117,22 +225,31 @@ death_v_symptoms_interactions <- merged_data_wide %>%
 
 summary(death_v_symptoms_interactions)
 
-# The "estimate" column is the log-odds ratio, so we must interpret them as follows:
-# 1. If the variable is categorical, like HAS_ILLNESS, an estimate of 9.877e-01 for the "Y" group
-#    means that this group is exp(9.877e-01) = 2.685052 times more likely to die after taking 
-#    the vaccine than the reference 'N' group.
-# 2. If the variable is continuous, like HOSPDAYS, an estimate of 6.024e-02
-#    means that, holding all else constant, one unit change in HOSPDAYS will have 
-#    exp(6.024e-02) = 1.062091 units change in the odds ratio.
-
-
-
 
 # Write data --------------------------------------------------------------
-write_tsv(...)
-ggsave(...)
+# Death vs. patient profile
+write_csv(death_v_profile_model, 
+          file = "results/death_v_profile_model.csv")
+ggsave(death_v_profile_model_fig_pval, 
+       file = "results/death_v_profile_model_fig_pval.png",
+       height = 5,
+       width = 10)
+ggsave(death_v_profile_model_fig_odds, 
+       file = "results/death_v_profile_model_fig_odds.png",
+       height = 5,
+       width = 10)
 
-ggsave(death_v_symptoms_model_fig, file = "results/death_v_symptoms_model_fig.png")
+# Death vs. symptoms
+write_csv(death_v_symptoms_model, 
+          file = "results/death_v_symptoms_model.csv")
+ggsave(death_v_symptoms_model_fig_pval, 
+       file = "results/death_v_symptoms_model_fig_pval.png",
+       height = 5,
+       width = 10)
+ggsave(death_v_symptoms_model_fig_odds, 
+       file = "results/death_v_symptoms_model_fig_odds.png",
+       height = 5,
+       width = 10)
 
 
 

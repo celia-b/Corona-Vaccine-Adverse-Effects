@@ -47,7 +47,20 @@ patients_clean <- patients %>%
                   DISABLE = "N",
                   OFC_VISIT = "N",
                   ER_ED_VISIT = "N")) %>% # Handled NAs that are actually "No"
-  mutate(AGE_YRS = as.integer(AGE_YRS)) # Age to integers
+  mutate(ALLERGIES = case_when(grepl("^no.?$|^no|^none|^not|^non|^-$|^?$", 
+                                   ALLERGIES, 
+                                   ignore.case = TRUE) ~ 'NONE',
+                               is.na(ALLERGIES) ~ 'NONE',
+                               TRUE ~ ALLERGIES)) %>%
+  mutate(CUR_ILL = case_when(grepl("^non-serological|^Non-Hodgkin|^Non Hodgkin|^non-alcoholic|^non systemic", 
+                                   CUR_ILL, 
+                                   ignore.case = TRUE) ~ CUR_ILL,
+                             grepl("^no.?$|^no|^none|^not|^non|none$|^zero$|^0$|^-$|^?$", 
+                                   CUR_ILL, 
+                                   ignore.case = TRUE) ~ 'NONE',
+                             is.na(CUR_ILL) ~ 'NONE',
+                             TRUE ~ CUR_ILL))
+  
 
 
 ################################## SYMPTOMS ##################################

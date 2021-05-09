@@ -24,25 +24,15 @@ vaccines_clean <- read_csv(file = gzfile("data/02_vaccines_clean.csv.gz"),
 
 ################################### PATIENTS ###################################
 patients_clean_aug <- patients_clean %>%
-  mutate(HAS_ALLERGIES = case_when(grepl("^no.?$ | ^no | ^none | ^not | ^non", 
-                                         ALLERGIES, 
-                                         ignore.case = TRUE) ~ "N",
-                                 is.na(ALLERGIES) ~ "N",
-                                 TRUE ~ "Y")) %>% 
+  mutate(HAS_ALLERGIES = case_when(ALLERGIES == "NONE" ~ "N",
+                                   TRUE ~ "Y")) %>% 
   select(-ALLERGIES) %>% 
-  mutate(HAS_ILLNESS = case_when(grepl("^non-serological | ^Non-Hodgkin | ^Non Hodgkin | 
-                                       ^non-alcoholic | ^non systemic", 
-                                       CUR_ILL, 
-                                       ignore.case = TRUE) ~ "Y",
-                                 grepl("^no.?$ | ^no | ^none | ^not | ^non", 
-                                       CUR_ILL, 
-                                       ignore.case = TRUE) ~ "N",
-                                 is.na(CUR_ILL) ~ "N",
+  mutate(HAS_ILLNESS = case_when(CUR_ILL == "NONE" ~ "N",
                                  TRUE ~ "Y")) %>% 
   mutate(HAS_COVID = case_when(grepl("covid",
                                      CUR_ILL,
                                      ignore.case = TRUE) ~ "Y",
-                               TRUE ~ "N")) %>% 
+                               TRUE ~ "N")) %>%
   mutate(HAD_COVID = case_when(grepl("covid",
                                      HISTORY,
                                      ignore.case = TRUE) ~ "Y",
@@ -68,11 +58,11 @@ patients_clean_aug <- patients_clean %>%
                                AGE_YRS >= 25 & AGE_YRS < 40 ~ "[25, 40)",
                                AGE_YRS >= 40 & AGE_YRS < 60 ~ "[40, 60)",
                                AGE_YRS >= 60 & AGE_YRS < 80 ~ "[60, 80)",
-                               AGE_YRS >= 80 ~ "80+")) %>% # Should we change it to 90+ ?
+                               AGE_YRS >= 80 ~ "80+")) %>%
   mutate(DIED_AFTER = DATEDIED - VAX_DATE,
          DIED_AFTER = str_trim(str_remove(DIED_AFTER, "days")), # remove spaces and letters
          DIED_AFTER = as.integer(DIED_AFTER)) %>%
-  filter(DIED_AFTER >= 0 | is.na(DIED_AFTER)) %>% # Removes 21 rows
+  filter(DIED_AFTER >= 0 | is.na(DIED_AFTER)) %>%
   rename(SYMPTOMS_AFTER = NUMDAYS) %>% 
   select(-c(VAX_DATE, DATEDIED, ONSET_DATE, TODAYS_DATE))
 
