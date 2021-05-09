@@ -4,14 +4,7 @@ rm(list = ls())
 
 # Load libraries ----------------------------------------------------------
 library("tidyverse")
-library("cowplot")
-library("patchwork")
-library("scales")
 library("broom")
-library("purrr")
-library("infer")
-library("tidymodels")
-
 
 # Define functions --------------------------------------------------------
 source(file = "R/99_project_functions.R")
@@ -57,7 +50,7 @@ pca_fit <- numeric_symptoms %>%
   prcomp(scale = TRUE, 
          center = TRUE)
 
-# PC1 vs PC2 biplot
+## PC1 vs PC2 biplot -----------------------------------------------------------
 biplot <- pca_fit %>%
   augment(classes) %>% 
   ggplot(aes(x = .fittedPC1, 
@@ -71,8 +64,8 @@ biplot <- pca_fit %>%
                         option = "D") +
   theme_minimal(base_family = "Avenir") +
   theme(plot.title = element_text(hjust = 0.5))
-  
-biplot
+
+## Rotation matrix -------------------------------------------------------------
 
 # define arrow style for plotting rotation matrix
 arrow_style <- arrow(angle = 10, 
@@ -104,7 +97,7 @@ rotation_matrix <- pca_fit %>%
                 base_size = 10) +
   theme(plot.title = element_text(hjust = 0.5))
 
-rotation_matrix
+## Scree plot ------------------------------------------------------------------
 
 # Use tidy() from broom to get eigenvalues and use these to make scree plot
 scree_plot <- pca_fit %>%
@@ -112,7 +105,7 @@ scree_plot <- pca_fit %>%
   ggplot(aes(x = PC, 
              y = percent)) +
   geom_col(alpha = 0.7, 
-           fill = "#56B4E9") +
+           fill = "#00846b") +
   labs(title = "Scree plot",
        subtitle = "Percentage of variance explained by each principal component",
        y = "Explained variance") +
@@ -124,32 +117,8 @@ scree_plot <- pca_fit %>%
                 base_size = 10) +
   theme(plot.title = element_text(hjust = 0))
 
-
-scree_plot
-
-# K-means clustering  -----------------------------------------------------
-
-# only number of symptoms and symptoms_after because it doesn't make sense
-# with binary variables 
-
-kclust <- numeric_symptoms %>%
-  select (SYMPTOMS_AFTER, N_SYMPTOMS) %>% 
-  kmeans (centers = 3) %>% 
-  augment (numeric_symptoms) %>%
-  ggplot (aes (N_SYMPTOMS, SYMPTOMS_AFTER, color = .cluster)) +
-  geom_point()
   
-by_vac_manu <- merged_data_wide %>% 
-  select (VAX_MANU, N_SYMPTOMS, SYMPTOMS_AFTER) %>%
-  drop_na() %>%
-  ggplot (aes (N_SYMPTOMS, SYMPTOMS_AFTER, color = VAX_MANU)) +
-  geom_point()
-
-kmeans_comparison <- kclust + by_vac_manu
-
-kmeans_comparison
-  
-# Write data --------------------------------------------------------------
+# Write data -------------------------------------------------------------------
 
 # Save biplot, rotation matrix plot and scree plot
 ggsave(biplot, 
