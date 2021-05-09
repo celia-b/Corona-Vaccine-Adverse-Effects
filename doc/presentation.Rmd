@@ -394,14 +394,74 @@ Important verbs and tools used:
 
 
 
-## 04_analysis_modeling - logistic model of death vs. top 20 symptoms
+## 04_analysis_modeling - Logistic regression: death ~ patient profile
 
-```{r eval=FALSE, echo=TRUE, results = "hide", error=FALSE, message=FALSE, warning=FALSE, results = 'hide'}
-death_v_symptoms_model <- merged_data_wide %>%
-  glm(data = ., 
-      formula = str_c("DEATH ~ ", str_c(symptoms, collapse = "+")), 
-      family = binomial)
+Include code?
+
+```{r death_v_profile_model, eval=TRUE, echo=FALSE, error=FALSE, message=FALSE, warning=FALSE}
+model <- read_csv("../results/death_v_profile_model.csv")
+model
 ```
+
+## 04_analysis_modeling - Logistic regression: death ~ patient profile
+
+```{r death_v_profile_pval, echo = FALSE, out.width = "600px", out.height= "400px"}
+include_graphics("../results/death_v_profile_model_fig_pval.png")
+```
+
+## 04_analysis_modeling - Logistic regression: death ~ patient profile
+
+```{r death_v_profile_odds, echo = FALSE, out.width = "600px", out.height= "400px"}
+include_graphics("../results/death_v_profile_model_fig_odds.png")
+```
+
+
+
+## 04_analysis_modeling - Logistic regression: death ~ symptoms
+
+Include code?
+
+```{r death_v_symptoms_model, eval=TRUE, echo=FALSE, error=FALSE, message=FALSE, warning=FALSE}
+model <- read_csv("../results/death_v_symptoms_model.csv")
+model
+```
+
+## 04_analysis_modeling - Logistic regression: death ~ symptoms
+
+```{r death_v_symptoms_pval, echo = FALSE, out.width = "600px", out.height= "400px"}
+include_graphics("../results/death_v_symptoms_model_fig_pval.png")
+```
+
+## 04_analysis_modeling - Logistic regression: death ~ symptoms
+
+```{r death_v_symptoms_odds, echo = FALSE, out.width = "600px", out.height= "400px"}
+include_graphics("../results/death_v_symptoms_model_fig_odds.png")
+```
+
+
+
+## 04_analysis_modeling - Many logistic regressions: symptoms ~ takes anti-inflamatory
+
+Include code?
+
+```{r symptoms_v_antiinfl_model, eval=TRUE, echo=FALSE, error=FALSE, message=FALSE, warning=FALSE}
+model <- read_csv("../results/symptoms_v_antiinflamatory_model.csv")
+model %>%
+  select(-c(term, symptom_label, neg_log10_p))
+```
+
+## 04_analysis_modeling - Many logistic regressions: symptoms ~ takes anti-inflamatory
+
+```{r symptoms_v_antiinfl_manhattan, echo = FALSE, out.width = "600px", out.height= "400px"}
+include_graphics("../results/symptoms_v_antiinflamatory_model_fig_manhattan.png")
+```
+
+## 04_analysis_modeling - Many logistic regressions: symptoms ~ takes anti-inflamatory
+
+```{r symptoms_v_antiinfl_odds, echo = FALSE, out.width = "600px", out.height= "400px"}
+include_graphics("../results/symptoms_v_antiinflamatory_model_fig_odds.png")
+```
+
 
 
 # 04_analysis_tests 
