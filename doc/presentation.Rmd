@@ -152,13 +152,9 @@ include_graphics("../doc/workflow.jpeg")
 </div>
 
 
-## 04_analysis_visualizations - Important tools used
-Important verbs and tools used:
-
-
-
 
 ## 01_load - Challenges and Solutions 1
+
 
 **CHALLENGE:** Multiple large files
 
