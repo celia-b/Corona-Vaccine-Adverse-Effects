@@ -64,7 +64,7 @@ biplot <- pca_fit %>%
              y = .fittedPC2, 
              color = VAX_MANU)) + 
   geom_point(size = 0.5) +
-  labs(title = "PCA...",
+  labs(title = "PCA biplot",
        x = "PC1", 
        y = "PC2") +
   scale_color_viridis_d(name = "Vaccine manufacturer", 
@@ -111,9 +111,10 @@ scree_plot <- pca_fit %>%
   tidy(matrix = "eigenvalues") %>% #
   ggplot(aes(x = PC, 
              y = percent)) +
-  geom_col(alpha = 0.8, 
+  geom_col(alpha = 0.7, 
            fill = "#56B4E9") +
   labs(title = "Scree plot",
+       subtitle = "Percentage of variance explained by each principal component",
        y = "Explained variance") +
   scale_x_continuous(breaks = 1:25,
                      expand = expansion(mult = c(0, 0.01))) +
@@ -121,7 +122,7 @@ scree_plot <- pca_fit %>%
                      expand = expansion(mult = c(0, 0.01))) +
   theme_minimal(base_family = "Avenir",
                 base_size = 10) +
-  theme(plot.title = element_text(hjust = 0.5))
+  theme(plot.title = element_text(hjust = 0))
 
 
 scree_plot
