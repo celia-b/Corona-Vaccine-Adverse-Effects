@@ -67,8 +67,8 @@ patients_clean <- patients %>%
 ## SYMPTOMS ---------------------------------------------------------------
 # Remove symptom versions
 symptoms_clean <- symptoms %>%
-  select(VAERS_ID, SYMPTOM1, SYMPTOM2, SYMPTOM3, SYMPTOM4, SYMPTOM5)
-
+  select(-c(SYMPTOMVERSION1, SYMPTOMVERSION2, SYMPTOMVERSION3, SYMPTOMVERSION4, 
+            SYMPTOMVERSION5))
 
 ## VACCINES ---------------------------------------------------------------
 vaccines_clean <- vaccines %>%

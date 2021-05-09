@@ -25,9 +25,12 @@ library(knitr)
 ## Overview of presentation
 1. Introduction to COVID-19 World Vaccine Adverse Reactions Dataset
 2. Project work flow
-3. Project methods: 
-  3.1 Overview of important packages and verbs used
-  3.2 Challenges and solutions - Load, Clean and Augment
+3. Project methods
+
+    3.1 Overview of important packages and verbs used
+    
+    3.2 Challenges and solutions - Load, Clean and Augment
+    
 4. Visualizations
 5. Modeling
 6. Conclusion and discussion
@@ -69,6 +72,11 @@ vaccines <- read_csv(file = gzfile("../data/01_vaccines.csv.gz"),
 head(patients, 3)
 ```
 
+Dimensions:
+```{r echo = TRUE}
+dim(patients)
+```
+
 
 ## COVID-19 World Vaccine Adverse Reactions
 **VACCINES.CSV**: Contains information about the received vaccine
@@ -77,12 +85,22 @@ head(patients, 3)
 vaccines %>% head(., 3)
 ```
 
+Dimensions:
+```{r echo=TRUE}
+dim(vaccines)
+```
+
 
 ## COVID-19 World Vaccine Adverse Reactions
-**SYMPTOMS.CSV**: Contains information about the symptoms experiences after vaccination
+**SYMPTOMS.CSV**: Contains information about the symptoms experienced after vaccination
 
 ```{r echo=FALSE}
 head(symptoms, 3)
+```
+
+Dimensions:
+```{r echo=TRUE}
+dim(symptoms)
 ```
 
 
@@ -105,7 +123,7 @@ include_graphics("../doc/workflow.jpeg")
   float: left;
   width: 28%;
   text-align: left;
-  margin: 0 4.5%;
+  margin: 0 4%;
 }
 
 .column-center{
@@ -122,7 +140,7 @@ include_graphics("../doc/workflow.jpeg")
 
 
 <div class="column-left">
-**Load and clean**
+### Load and clean
 
 - **readr**: read_csv(), write_csv()
 - **dyplyr**: filter(), select(), distinct(), mutate()
@@ -131,7 +149,7 @@ include_graphics("../doc/workflow.jpeg")
 
 
 <div class="column-center">
-**Augment**
+### Augment
 
   - **dplyr**: filter(), select(), mutate(), case_when(), arrange(), group_by(), count(), distinct(), summarise(), drop_na(), rename()
   - **tidyr**: pivot_longer(), pivot_wider(), inner_join(), full_join(), pluck() 
@@ -140,7 +158,7 @@ include_graphics("../doc/workflow.jpeg")
 
 
 <div class="column-right">
-**Visualizations and modeling**
+### Visualizations and modeling
 
 - **ggplot**: geom_bar(), geom_boxplot(), geom_tile(), geom_segment(), theme_minimal()
 - **forcats**: fct_reorder()
@@ -156,11 +174,11 @@ include_graphics("../doc/workflow.jpeg")
 
 ## Project methods - Challenges and solutions - 01_load 
 
-All three data sets:
+### Patients, vaccines and symptoms data sets:
 
-- Multiple large files &rightarrow; keep them compressed as gz-files and only decompress when reading into R
-- Wrong column types automatically assigned by R &rightarrow; nanually assigned appropriate column types  
-- NA strings ("NA", "N/A", "Unknown", " "...) &rightarrow; assign NAs when loading data
+- Multiple **large files** &rightarrow; keep them compressed as **gz-files** and only decompress when reading into R
+- Wrong **column types** automatically assigned by R &rightarrow; **manually assign** appropriate column types  
+- **NA strings** ("NA", "N/A", "Unknown", " "...) &rightarrow; **assign NAs** when loading data
 
 
 
@@ -225,29 +243,33 @@ patients <- read_csv(file = gzfile("../data/01_patients.csv.gz"),
 
 ## Methods - Challenges and solutions - 02_clean
 
-**Patients** data set:
+### Patients data set:
 
-- Unwanted dirty/uniformative columns &rightarrow; select(-c(CAGE_YR, CAGE_MO, RPT_DATE,SYMPTOM_TEXT,LAB_DATA,OFC_VISIT, ER_VISIT, X_STAY,  V_FUNDBY, BIRTH_DEFECT,SPLTTYPE, RECVDATE, RECOVD, L_THREAT))
-- NAs that should be interpreted as "no" &rightarrow; replace_na() 
+- Unwanted **dirty/uniformative columns** &rightarrow; **select(-c**(CAGE_YR, CAGE_MO, RPT_DATE,SYMPTOM_TEXT,LAB_DATA,OFC_VISIT, ER_VISIT, X_STAY,  V_FUNDBY, BIRTH_DEFECT,SPLTTYPE, RECVDATE, RECOVD, L_THREAT))
+- **NAs** that should be interpreted as "no" &rightarrow; **replace_na()** 
+
   - Examples: ALLERGIES and OTHER_MEDS columns
-- Row duplications &rightarrow; distinct()
+  
+- Row **duplications** &rightarrow; **distinct()**
+
 
 
 ## Methods - Challenges and solutions - 02_clean
 
-**Vaccine** data set:
+### Vaccine data set:
 
-- Contains non-COVID19 vaccines &rightarrow; filter(VAX_TYPE == "COVID19")
-- True duplicates &rightarrow; distinct() 
-- Duplicated IDs &rightarrow; _add_count(VAERS_ID) %>% filter(n == 1) %>% select(-n)_
-- Contains vaccines of unknown manufacturer &rightarrow; filter(VAX_MANU != "UNKNOWN MANUFACTURER")
-- Inconsistent naming of vaccines &rightarrow; recode() 
-- Redundant and dirty columns &rightarrow; select(-c(VAX_NAME, VAX_LOT))
+- Contains **non-COVID19** vaccines &rightarrow; **filter**(VAX_TYPE == "COVID19")
+- **Row duplications** &rightarrow; distinct() 
+- **Duplicated IDs** &rightarrow; _add_count(VAERS_ID) %>% filter(n == 1) %>% select(-n)_
+- Contains vaccines of **unknown manufacturer** &rightarrow; **filter**(VAX_MANU != "UNKNOWN MANUFACTURER")
+- **Inconsistent naming** of vaccines &rightarrow; **recode()**
+- **Redundant and dirty** columns &rightarrow; **select(-c(**VAX_NAME, VAX_LOT))
 
+ 
 
-**Symptoms** data set:
+### Symptoms data set:
 
-- SYMPTOMVERSION1-5 columns are uninformative and dirty &rightarrow; select(c(VAERS_ID, SYMPTOM1, SYMPTOM2, SYMPTOM3, SYMPTOM4, SYMPTOM5))
+- SYMPTOMVERSION1-5 columns are **unneccessary** &rightarrow; **select(-c(**SYMPTOMVERSION1, SYMPTOMVERSION2, SYMPTOMVERSION3, SYMPTOMVERSION4, SYMPTOMVERSION5))
 
 
 
@@ -268,14 +290,51 @@ I am aware of how horrible this table is :/
 
 ## Project methods - Challenges and solutions - 03_augment 
 
-- Some columns contain long string descriptions &rightarrow; Make tidy categorical variables 
-  - Examples: ALLERGIES and OTHER_MEDS columns
+### Patients data set:
+
+- Columns containing **long string descriptions** &rightarrow; Make **tidy categorical variables** 
+  - ALLERGIES &rightarrow; HAS_ALLERGIES (Y/N)
+  - CUR_ILL &rightarrow; HAS_ILLNESS (Y/N)
+  - CUR_ILL &rightarrow; HAS_COVID (Y/N)
+  - HISTORY &rightarrow; HAD_COVID (Y/N)
+  - PRIOR_VAX &rightarrow; PRIOR_ADVERSE (Y/N)
+  - OTHER_MEDS &rightarrow; 
+    - TAKES_ANTIINFLAMATORY (Y/N)
+    - TAKES_STEROIDS (Y/N)
+  - AGE_YEARS &rightarrow; AGE_CLASS 
+  - DATEDIED, VAX_DATE &rightarrow; DIED_AFTER 
+- **Uninformative** variable names &rightarrow; **mutate(), case_when()**
+- Rows with **negative values** in DIED_AFTER &rightarrow; **filter()**
+- **Dirty, redundant and uninformative** columns &rightarrow; **select(-c**(ALLERGIES, CURR_ILL, HISTORY, PRIOR_VAX, OTHER_MEDS, VAX_DATE, DATEDIED, ONSET_DATE, TODAYS_DATE))
 
 
-- Unwanted columns &rightarrow; select(-c())
-- NAs that should be interpreted as "no" &rightarrow; replace_na()
-- Row duplications &rightarrow; distinct()
-- Individuals who got more than one vaccine type (generates noise) distinct() _add_count(VAERS_ID) %>% filter(n==1) %>% select(-n)_
+## Project methods - Challenges and solutions - 03_augment 
+
+### Vaccine data set:
+
+- No augmentation!
+
+
+
+### Symptoms data set:
+
+- There are **too many symptoms** to analyze &rightarrow; make top_n_symptoms() function and use it to extract the **top 20 occurring symptoms**
+- Symptoms are recorded in a way that makes **later analysis difficult** &rightarrow; turn top 20 symptoms into **TRUE/FALSE columns**
+- **Total number of symptoms** needed for later analysis &rightarrow; *mutate()* to add column (N_SYMPTOMS) with total number of symptoms for each subject
+
+
+
+
+## Project methods - Challenges and solutions - 03_augment 
+
+### Merged data sets:
+
+- Clean and augmented **patients, vaccines and symptoms** data sets &rightarrow; inner_join() for one **wide format** tibble
+- For certain types of analysis, we need the symptoms in a **long-format** &rightarrow; **pivot_longer()** to create:
+  - SYMPTOM column: top 20 symptom names
+  - SYMPTOM_VALUE column: TRUE/FALSE
+
+
 
 
 
