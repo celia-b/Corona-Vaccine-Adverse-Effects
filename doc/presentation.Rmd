@@ -302,22 +302,26 @@ Important verbs and tools used:
 - viridis package
 
 
+## 04_analysis_visualizations - Age, sex and vaccine manufacturer distribution
+
 ## 04_analysis_visualizations - Age distribution
+>>>>>>> ac91dc28505cd1bc3d92503e4ed1471e59a0af5b
 
-```{r age_dist, echo = FALSE, out.width = "500px", out.height= "400px"}
+```{r age_dist, echo = FALSE, out.width = "600px", out.height= "450px"}
 include_graphics("../results/age_dist.png")
+
+```
+```{r, echo = FALSE}
+merged_data_wide <- read_csv(file = gzfile("../data/03_merged_data_wide.csv.gz"))
+merged_data_wide %>% count (SEX)
+merged_data_wide %>% count (VAX_MANU)
 ```
 
-## 04_analysis_visualizations - Sex distribution
+## 04_analysis_visualizations - Days until onset of symptoms vs. Age Group
 
-```{r sex_dist, echo = FALSE, out.width = "500px", out.height= "400px"}
-include_graphics("../results/sex_dist.png")
-```
+```{r symptoms_after_v_agegroup, echo = FALSE, out.width = "600px", out.height= "450px"}
+include_graphics("../results/symptoms_after_v_agegroup.png")
 
-## 04_analysis_visualizations - Vaccine manufacturer distribution
-
-```{r vac_dist, echo = FALSE, out.width = "500px", out.height= "400px"}
-include_graphics("../results/vac_dist.png")
 ```
 
 
