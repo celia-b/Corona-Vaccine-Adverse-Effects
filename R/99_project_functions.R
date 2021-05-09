@@ -20,7 +20,7 @@ symptoms_clean %>%
 
 
 capitalize <- function(x) {
-  # Capitalizes letters and removes spaces from a vector
+  # Capitalizes letters and replaces spaces with _ for elements of a vector
   # :param x: vector
   toupper(x) %>% 
   gsub(" ", "_", .)

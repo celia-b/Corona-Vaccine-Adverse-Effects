@@ -304,25 +304,31 @@ symptoms_v_antiinflamatory_model_fig_odds <- symptoms_v_antiinflamatory_model %>
 
 
 # Write data --------------------------------------------------------------
+
 # Death vs. patient profile
 write_csv(death_v_profile_model, 
           file = "results/death_v_profile_model.csv")
+
 ggsave(death_v_profile_model_fig_pval, 
        file = "results/death_v_profile_model_fig_pval.png",
        height = 5,
        width = 10)
+
 ggsave(death_v_profile_model_fig_odds, 
        file = "results/death_v_profile_model_fig_odds.png",
        height = 5,
        width = 10)
 
+
 # Death vs. symptoms
 write_csv(death_v_symptoms_model, 
           file = "results/death_v_symptoms_model.csv")
+
 ggsave(death_v_symptoms_model_fig_pval, 
        file = "results/death_v_symptoms_model_fig_pval.png",
        height = 5,
        width = 10)
+
 ggsave(death_v_symptoms_model_fig_odds, 
        file = "results/death_v_symptoms_model_fig_odds.png",
        height = 5,
