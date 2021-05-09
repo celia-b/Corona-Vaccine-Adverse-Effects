@@ -47,37 +47,39 @@ patients_clean <- patients %>%
                   DISABLE = "N",
                   OFC_VISIT = "N",
                   ER_ED_VISIT = "N")) %>% # Handled NAs that are actually "No"
-  mutate(ALLERGIES = case_when(grepl("^no.?$|^no|^none|^not|^non|^-$|^?$", 
+  mutate(ALLERGIES = case_when(grepl("^no.?$ | ^no | ^none | ^not | ^non | ^-$ | ^?$", 
                                    ALLERGIES, 
-                                   ignore.case = TRUE) ~ 'NONE',
-                               is.na(ALLERGIES) ~ 'NONE',
+                                   ignore.case = TRUE) ~ "NONE",
+                               is.na(ALLERGIES) ~ "NONE",
                                TRUE ~ ALLERGIES)) %>%
-  mutate(CUR_ILL = case_when(grepl("^non-serological|^Non-Hodgkin|^Non Hodgkin|^non-alcoholic|^non systemic", 
+  mutate(CUR_ILL = case_when(grepl("^non-serological | ^Non-Hodgkin | ^Non Hodgkin |
+                                   ^non-alcoholic | ^non systemic", 
                                    CUR_ILL, 
                                    ignore.case = TRUE) ~ CUR_ILL,
-                             grepl("^no.?$|^no|^none|^not|^non|none$|^zero$|^0$|^-$|^?$", 
+                             grepl("^no.?$ | ^no | ^none | ^not | ^non | none$ |
+                                   ^zero$ | ^0$ | ^-$ | ^?$", 
                                    CUR_ILL, 
-                                   ignore.case = TRUE) ~ 'NONE',
-                             is.na(CUR_ILL) ~ 'NONE',
+                                   ignore.case = TRUE) ~ "NONE",
+                             is.na(CUR_ILL) ~ "NONE",
                              TRUE ~ CUR_ILL))
   
-
 
 ################################## SYMPTOMS ##################################
 # Remove symptom versions
 symptoms_clean <- symptoms %>%
   select(VAERS_ID, SYMPTOM1, SYMPTOM2, SYMPTOM3, SYMPTOM4, SYMPTOM5)
 
+
 ################################## VACCINES ##################################
 vaccines_clean <- vaccines %>%
-  filter(VAX_TYPE == "COVID19") %>% # Keep only COVID vaccines
-  distinct() %>% ### Remove duplicates (same values for all variables):
+  filter(VAX_TYPE == "COVID19") %>%
+  distinct() %>%
   add_count(VAERS_ID) %>% 
-  filter(n == 1) %>% # only keep non-repeated IDs (remove duplicated IDs that had different vaccine or lot)
-  select(-n) %>% # remove count column ###
-  filter(VAX_MANU != "UNKNOWN MANUFACTURER") %>% # Remove rows with unknown vaccine manufacturer
-  mutate(VAX_MANU = recode(VAX_MANU, "PFIZER\\BIONTECH" = "PFIZER-BIONTECH")) %>% # Rename PFIZER\\BIONTECH for consistency
-  select(-c(VAX_NAME, VAX_LOT)) # Redundant column
+  filter(n == 1) %>% 
+  select(-n) %>%
+  filter(VAX_MANU != "UNKNOWN MANUFACTURER") %>% 
+  mutate(VAX_MANU = recode(VAX_MANU, "PFIZER\\BIONTECH" = "PFIZER-BIONTECH")) %>% 
+  select(-c(VAX_NAME, VAX_LOT))
   
 
 
