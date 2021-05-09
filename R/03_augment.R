@@ -53,15 +53,13 @@ patients_clean_aug <- patients_clean %>%
                                           ignore.case = TRUE) ~ "Y",
                                     TRUE ~ "N")) %>% 
   select(-OTHER_MEDS) %>% 
-  mutate(AGE_CLASS = case_when(AGE_YRS < 15 ~ "[0,15)",
+  mutate(AGE_CLASS = case_when(AGE_YRS < 15 ~ "[0, 15)",
                                AGE_YRS >= 15 & AGE_YRS < 25 ~ "[15, 25)",
                                AGE_YRS >= 25 & AGE_YRS < 40 ~ "[25, 40)",
                                AGE_YRS >= 40 & AGE_YRS < 60 ~ "[40, 60)",
                                AGE_YRS >= 60 & AGE_YRS < 80 ~ "[60, 80)",
                                AGE_YRS >= 80 ~ "80+")) %>%
-  mutate(DIED_AFTER = DATEDIED - VAX_DATE,
-         DIED_AFTER = str_trim(str_remove(DIED_AFTER, "days")), # remove spaces and letters
-         DIED_AFTER = as.integer(DIED_AFTER)) %>%
+  mutate(DIED_AFTER = (as.integer(DATEDIED) - as.integer(VAX_DATE))) %>%
   filter(DIED_AFTER >= 0 | is.na(DIED_AFTER)) %>%
   rename(SYMPTOMS_AFTER = NUMDAYS) %>% 
   select(-c(VAX_DATE, DATEDIED, ONSET_DATE, TODAYS_DATE))

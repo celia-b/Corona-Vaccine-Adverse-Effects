@@ -4,7 +4,7 @@ rm(list = ls())
 
 # Load libraries ----------------------------------------------------------
 library("tidyverse")
-library ("cowplot")
+library("cowplot")
 library("patchwork")
 library("scales")
 library("broom")
@@ -129,8 +129,6 @@ symptoms_after_age <- merged_data_wide %>%
         axis.ticks.y = element_blank(),
         axis.title.y = element_blank()) +
   labs(fill = "Age class")
-
-
 
 # Patchwork
 (symptoms_after + symptoms_after_age) + 
@@ -360,7 +358,7 @@ symptom_types_v_manu <- merged_data_long %>%
         plot.margin = margin(10, 10, 10, 10))
 
 
-# Heatmap showing the relative occurence of top 20 symptoms by age. 
+# Heatmap showing the relative occurrence of top 20 symptoms by age. 
 # Counts are relative to the number of people in the respective age groups.
 symptom_types_v_age <- merged_data_long %>%
   drop_na(AGE_CLASS) %>%
@@ -371,7 +369,7 @@ symptom_types_v_age <- merged_data_long %>%
   summarise(prop = n/total, 
             .groups = "rowwise") %>%
   ggplot(aes(x = AGE_CLASS, 
-             y = reorder(SYMPTOM, desc(prop)),
+             y = fct_reorder(SYMPTOM, desc(prop)),
              fill = prop)) +
   geom_tile() +
   scale_x_discrete(labels = c("0-15", "15-25", "25-40", "40-60", "60-80",
@@ -447,13 +445,14 @@ merged_data_wide %>%
 
 
 # Write data --------------------------------------------------------------
-write_tsv(...)
-ggsave(...)
 
+# Save age, sex and vaccine distribution plots
 ggsave(age_dist, file = "results/age_dist.png")
 ggsave(sex_dist, file = "results/sex_dist.png")
 ggsave(vac_dist, file = "results/vac_dist.png")
 
+
+# Save number of symptoms plots
 ggsave(nsymptoms_age_sex, 
        file = "results/nsymptoms_age_sex.png", 
        height = 4, 
@@ -469,6 +468,8 @@ ggsave(symptom_types_v_age,
        height = 8,
        width = 9)
 
+
+# Save types of symptoms plots
 ggsave(symptom_types_v_sex, 
        file = "results/symptom_types_v_sex.png",
        height = 5,
@@ -479,6 +480,8 @@ ggsave(symptom_types_v_manu,
        height = 5,
        width = 10)
 
+
+# Save manufacturer vs. death plot
 ggsave(manu_v_death, 
        file = "results/manu_v_death.png",
        height = 5,

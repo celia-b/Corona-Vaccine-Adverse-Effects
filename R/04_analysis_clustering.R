@@ -4,7 +4,7 @@ rm(list = ls())
 
 # Load libraries ----------------------------------------------------------
 library("tidyverse")
-library ("cowplot")
+library("cowplot")
 library("patchwork")
 library("scales")
 library("broom")
@@ -150,9 +150,8 @@ kmeans_comparison <- kclust + by_vac_manu
 kmeans_comparison
   
 # Write data --------------------------------------------------------------
-write_tsv(...)
-ggsave(...)
 
+# Save biplot, rotation matrix plot and scree plot
 ggsave(biplot, 
         file = "results/biplot.png", 
         height = 6,
