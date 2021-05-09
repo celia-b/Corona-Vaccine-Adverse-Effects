@@ -342,7 +342,7 @@ include_graphics("../results/symptoms_after_v_agegroup.png")
 
 ## 04_analysis_visualizations - Age/sex vs. number of symptoms
 
-```{r nsymptoms_age_sex, echo = FALSE, out.width = "700px", out.height= "350px"}
+```{r nsymptoms_age_sex, echo = FALSE, out.width = "800px", out.height= "350px"}
 include_graphics("../results/nsymptoms_age_sex.png")
 ```
 
@@ -402,12 +402,6 @@ death_v_symptoms_model <- merged_data_wide %>%
       formula = str_c("DEATH ~ ", str_c(symptoms, collapse = "+")), 
       family = binomial)
 ```
-
-```{r death_v_symptoms_model, echo = FALSE, out.width = "450px", out.height= "350px"}
-include_graphics("../results/death_v_symptoms_model_fig.png")
-```
-
-16 out of 19 symptoms are significant in the model - confounding factors?
 
 
 # 04_analysis_tests 

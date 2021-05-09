@@ -227,8 +227,8 @@ nsymptoms_v_age <- merged_data_long %>%
   geom_boxplot(outlier.shape = NA, 
                alpha = 0.6) +
   scale_y_continuous(limits = c(0, 15)) +
-  scale_x_discrete(labels = c("0-10", "10-20", "20-30", "30-40", "40-50",
-                              "50-60", "60-70", "70-80", "80-90", "90+")) +
+  scale_x_discrete(labels = c("0-15", "15-25", "25-40", "40-60", "60-80",
+                              "80+")) +
   coord_flip() +
   scale_fill_viridis_d() +
   labs(title = "Age vs. number of symptoms",
@@ -237,7 +237,7 @@ nsymptoms_v_age <- merged_data_long %>%
   theme_minimal(base_family = "Avenir") +
   theme(legend.position = "none", 
         plot.title = element_text(hjust = 0.5),
-        plot.margin = margin(10, 20, 10, 10))
+        plot.margin = margin(10, 30, 10, 10))
 
 # Boxplot showing total number of symptoms by sex
 nsymptoms_v_sex <- merged_data_long %>%
@@ -358,8 +358,8 @@ symptom_types_v_age <- merged_data_long %>%
              y = reorder(SYMPTOM, desc(prop)),
              fill = prop)) +
   geom_tile() +
-  scale_x_discrete(labels = c("0-10", "10-20", "20-30", "30-40", "40-50",
-                              "50-60", "60-70", "70-80", "80-90", "90-120")) +
+  scale_x_discrete(labels = c("0-15", "15-25", "25-40", "40-60", "60-80",
+                              "80+")) +
   scale_fill_viridis_c() +
   labs(title = "Age vs. types of symptoms",
        x = "Age (years)",
@@ -440,7 +440,7 @@ ggsave(vac_dist, file = "results/vac_dist.png")
 
 ggsave(nsymptoms_age_sex, 
        file = "results/nsymptoms_age_sex.png", 
-       height = 5, 
+       height = 4, 
        width = 10)
 
 ggsave(nsymptoms_v_manu, 
