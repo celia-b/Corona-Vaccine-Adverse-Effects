@@ -25,7 +25,11 @@ merged_data_wide <- read_csv(file = gzfile("data/03_merged_data_wide.csv.gz"),
 
 # Wrangle data ------------------------------------------------------------
 
-# Get symptom names, so symptom columns can be referred to as all_of(symptoms)
+# Get symptom names, so symptom columns can be referred to as all_of(symptoms). 
+# Use funcion top_n_symptoms and set number of symptoms to get to 20
+symptoms = top_n_symptoms(n_symp = 20)
+
+
 symptoms <- merged_data_wide %>% 
   select(DYSPNOEA, PAIN_IN_EXTREMITY, DIZZINESS, FATIGUE, 
          INJECTION_SITE_ERYTHEMA, INJECTION_SITE_PRURITUS, INJECTION_SITE_SWELLING, 

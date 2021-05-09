@@ -40,15 +40,6 @@ merged_data_long <- merged_data_long %>%
   mutate_if(is.character, as.factor) %>%
   mutate_if(is.logical, as.factor)
 
-# Define symptoms
-symptoms <- merged_data_wide %>% 
-  select(DYSPNOEA, PAIN_IN_EXTREMITY, DIZZINESS, FATIGUE, 
-         INJECTION_SITE_ERYTHEMA, INJECTION_SITE_PRURITUS, INJECTION_SITE_SWELLING, 
-         CHILLS, RASH, HEADACHE, INJECTION_SITE_PAIN, NAUSEA,PAIN, PYREXIA, MYALGIA,
-         ARTHRALGIA, PRURITUS, ASTHENIA, VOMITING, DEATH) %>%
-  names()
-
-
 
 # Model data --------------------------------------------------------------
 
