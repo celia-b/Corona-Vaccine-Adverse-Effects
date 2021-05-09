@@ -4,7 +4,7 @@ knitr::opts_chunk$set(echo = FALSE)
 ```
 
 # Final Project in Course 22100 R For Bio Data Science, Spring 2021
-![](DTU_Logo_Corporate_Red_CMYK.png){width=5%}
+![](DTU_Logo_Corporate_Red_CMYK.png){width=0.5%}
 
 The goal of this collaborative bio data science project is to demonstrate our ability to use Tidyverse R to perform data cleansing, transformation, visualization, and communication. The focus is on reproducibility and following the tidyverse style guide.
 
