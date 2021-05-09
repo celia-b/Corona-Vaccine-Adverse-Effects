@@ -50,52 +50,19 @@ symptoms <- top_n_symptoms(data = symptoms_clean, n_symp = 20) %>%
 
 # Visualise data ----------------------------------------------------------
 
-## AGE, SEX AND MANUFACTURER DISTRIBUTIONS -------------------------------
+## AGE DISTRIBUTION -------------------------------
 
 # Age 
 age_dist <- merged_data_wide %>%
   ggplot(aes(AGE_YRS, 
              stat(count))) +
-  geom_density(color="black", fill="lightblue",alpha = 0.5) +
+  geom_density(color="black", fill="#00846b",alpha = 0.5) +
   labs(x = "Age (years)",
        y = "Count",
        title = "Age distribution of the subjects in the dataset") +
   theme_minimal(base_family = "Avenir", base_size = 12) +
   theme(plot.title = element_text(size=13))
                
-age_dist
-
-# Sex
-sex_dist <- merged_data_wide %>%
-  ggplot(aes(SEX, 
-               stat(count), 
-               fill = SEX)) +
-  geom_bar() +
-  labs(x = "Sex",
-       y = "Count",
-       fill = "Sex",
-       title = "Sex distribution of the subjects in the dataset") +
-  theme_minimal(base_family = "Avenir", base_size = 12) +
-  theme(plot.title = element_text(size = 13))
-
-sex_dist
-
-# Vaccine
-vac_dist <- merged_data_wide %>%
-  ggplot(aes(VAX_MANU, 
-             stat(count), 
-             fill = VAX_MANU)) +
-  geom_bar() +
-  labs(x = "Vaccine manufacturer",
-       y = "Count",
-       fill = "Vaccine manufacturer",
-       title = "Vaccine manufacturer distribution") +
-  theme_minimal(base_family = "Avenir", base_size = 12) +
-  theme(plot.title = element_text(size = 13))
-
-vac_dist
-
-
 ## SYMPTOMS AFTER N DAYS -------------------------------------------------
 
 ## Distribution of the number of days after receiving the vaccine
@@ -447,10 +414,8 @@ merged_data_wide %>%
 
 # Write data --------------------------------------------------------------
 
-# Save age, sex and vaccine distribution plots
+# Save age distribution plot
 ggsave(age_dist, file = "results/age_dist.png")
-ggsave(sex_dist, file = "results/sex_dist.png")
-ggsave(vac_dist, file = "results/vac_dist.png")
 
 
 # Save number of symptoms plots
