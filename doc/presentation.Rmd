@@ -422,72 +422,80 @@ include_graphics("../results/manu_v_death.png")
 # 04_analysis_regressions
 
 
-## 04_analysis_modeling - Logistic regression: death ~ patient profile
+## 04_analysis_modeling | Logistic regression: death ~ patient profile
 
-Include code?
+```{r, eval = FALSE}
+merged_data_wide %>%
+  glm(formula = DIED ~ SEX + AGE_YRS + HAS_ALLERGIES + HAS_ILLNESS + HAS_COVID + HAD_COVID, 
+      family = binomial) %>%
+  tidy() %>%
+  mutate(odds_ratio = exp(estimate))
+```
 
-```{r death_v_profile_model, eval=TRUE, echo=FALSE, error=FALSE, message=FALSE, warning=FALSE}
+
+```{r death_v_profile_model, eval=TRUE, echo=FALSE, error=FALSE, message=FALSE, warning=FALSE, tidy = TRUE}
 model <- read_csv("../results/death_v_profile_model.csv")
 model
 ```
 
-## 04_analysis_modeling - Logistic regression: death ~ patient profile
+## 04_analysis_modeling | Logistic regression: death ~ patient profile
 
-```{r death_v_profile_pval, echo = FALSE, out.width = "600px", out.height= "400px"}
-include_graphics("../results/death_v_profile_model_fig_pval.png")
-```
-
-## 04_analysis_modeling - Logistic regression: death ~ patient profile
-
-```{r death_v_profile_odds, echo = FALSE, out.width = "600px", out.height= "400px"}
-include_graphics("../results/death_v_profile_model_fig_odds.png")
+```{r death_v_profile_pval, echo = FALSE, out.width="50%", fig.show='hold'}
+include_graphics(c("../results/death_v_profile_model_fig_pval.png", "../results/death_v_profile_model_fig_odds.png"))
 ```
 
 
+## 04_analysis_modeling | Logistic regression: death ~ symptoms
 
-## 04_analysis_modeling - Logistic regression: death ~ symptoms
+```{r, eval = FALSE}
+merged_data_wide %>%
+  glm(formula = str_c("DEATH ~ ", str_c(symptoms, collapse = "+")), 
+      family = binomial) %>%
+  tidy() %>%
+  mutate(odds_ratio = exp(estimate))
+```
 
-Include code?
 
-```{r death_v_symptoms_model, eval=TRUE, echo=FALSE, error=FALSE, message=FALSE, warning=FALSE}
+```{r death_v_symptoms_model, eval=TRUE, echo=FALSE, error=FALSE, message=FALSE, warning=FALSE, tidy = TRUE}
 model <- read_csv("../results/death_v_symptoms_model.csv")
-model
+model %>%
+  print(n = 8)
 ```
 
-## 04_analysis_modeling - Logistic regression: death ~ symptoms
+## 04_analysis_modeling | Logistic regression: death ~ symptoms
 
-```{r death_v_symptoms_pval, echo = FALSE, out.width = "600px", out.height= "400px"}
-include_graphics("../results/death_v_symptoms_model_fig_pval.png")
-```
-
-## 04_analysis_modeling - Logistic regression: death ~ symptoms
-
-```{r death_v_symptoms_odds, echo = FALSE, out.width = "600px", out.height= "400px"}
-include_graphics("../results/death_v_symptoms_model_fig_odds.png")
+```{r death_v_symptoms_pval, echo = FALSE, out.width="50%", fig.show='hold'}
+include_graphics(c("../results/death_v_symptoms_model_fig_pval.png", "../results/death_v_symptoms_model_fig_odds.png"))
 ```
 
 
 
-## 04_analysis_modeling - Many logistic regressions: symptoms ~ takes anti-inflamatory
 
-Include code?
+## 04_analysis_modeling | Many logistic regressions: each symptom ~ takes anti-inflamatory
+
+```{r, eval = FALSE}
+merged_data_long %>%
+  select(TAKES_ANTIINFLAMATORY, SYMPTOM, SYMPTOM_VALUE) %>%
+  group_by(SYMPTOM) %>%
+  nest %>% 
+  ungroup %>%
+  mutate(mdl = map(data, ~glm(TAKES_ANTIINFLAMATORY ~ SYMPTOM_VALUE,
+                              family = binomial))) %>%
+  mutate(mdl_tidy = map(mdl, ~tidy(.x, conf.int = TRUE)))
+```
+
 
 ```{r symptoms_v_antiinfl_model, eval=TRUE, echo=FALSE, error=FALSE, message=FALSE, warning=FALSE}
 model <- read_csv("../results/symptoms_v_antiinflamatory_model.csv")
 model %>%
-  select(-c(term, symptom_label, neg_log10_p))
+  select(-c(term, symptom_label, neg_log10_p)) %>%
+  print(n = 5)
 ```
 
-## 04_analysis_modeling - Many logistic regressions: symptoms ~ takes anti-inflamatory
+## 04_analysis_modeling | Many logistic regressions: each symptom ~ takes anti-inflamatory
 
-```{r symptoms_v_antiinfl_manhattan, echo = FALSE, out.width = "600px", out.height= "400px"}
-include_graphics("../results/symptoms_v_antiinflamatory_model_fig_manhattan.png")
-```
-
-## 04_analysis_modeling - Many logistic regressions: symptoms ~ takes anti-inflamatory
-
-```{r symptoms_v_antiinfl_odds, echo = FALSE, out.width = "600px", out.height= "400px"}
-include_graphics("../results/symptoms_v_antiinflamatory_model_fig_odds.png")
+```{r symptoms_v_antiinfl_manhattan, echo = FALSE, out.width="50%", fig.show='hold'}
+include_graphics(c("../results/symptoms_v_antiinflamatory_model_fig_manhattan.png", "../results/symptoms_v_antiinflamatory_model_fig_odds.png"))
 ```
 
 

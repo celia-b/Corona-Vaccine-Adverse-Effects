@@ -200,21 +200,6 @@ death_v_symptoms_model_fig_odds <- death_v_symptoms_model %>%
 
 
 ## Interactions -----------------------------------------------
-# Interactions between profile features
-# I think this doesn't make sense because some variables are categorical
-# and some continuous, so the interpretation becomes messy
-logreg_profile_interactions <- merged_data_wide %>%
-  glm(formula = DIED ~ 
-        (SEX + AGE_YRS + HAS_ALLERGIES + HAS_ILLNESS + HAS_COVID)^2, 
-      family = binomial, 
-      data = .) %>%
-  tidy() %>%
-  mutate(odds_ratio = exp(estimate))
-
-logreg_profile_interactions %>%
-  filter(p.value < 0.05)
-
-# Maybe this one makes more sense
 death_v_symptoms_interactions <- merged_data_wide %>%
   glm(formula = DIED ~ 
         (DYSPNOEA + PAIN_IN_EXTREMITY + DIZZINESS + FATIGUE + 
