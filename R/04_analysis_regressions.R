@@ -43,14 +43,10 @@ merged_data_long <- merged_data_long %>%
   mutate_if(is.character, as.factor) %>%
   mutate_if(is.logical, as.factor)
 
-# Define symptoms
-symptoms <- merged_data_wide %>% 
-  select(DYSPNOEA, PAIN_IN_EXTREMITY, DIZZINESS, FATIGUE, 
-         INJECTION_SITE_ERYTHEMA, INJECTION_SITE_PRURITUS, INJECTION_SITE_SWELLING, 
-         CHILLS, RASH, HEADACHE, INJECTION_SITE_PAIN, NAUSEA,PAIN, PYREXIA, MYALGIA,
-         ARTHRALGIA, PRURITUS, ASTHENIA, VOMITING, DEATH) %>%
-  names()
-
+# Define top 20 occurring symptoms in data set. 
+# Get these as a vector with elements in capital letters and no spaces
+symptoms <- top_n_symptoms(data = symptoms_clean, n = 20) %>%
+  capitalize()
 
 
 # Model data --------------------------------------------------------------
@@ -79,9 +75,9 @@ summary(logistic_regression_interactions) # Some of the main effects are not sig
 
 # Make logistic model of death vs all symptoms
 death_v_symptoms_model <- merged_data_wide %>%
-  glm(data = ., 
-      formula = str_c("DEATH ~ ", str_c(symptoms, collapse = "+")), 
-      family = binomial) %>% summary
+  glm(formula = str_c("DEATH ~ ", 
+                      str_c(symptoms, collapse = "+")), 
+      family = binomial)
 
 # Visualize significant symptoms
 death_v_symptoms_model_fig <- tidy(death_v_symptoms_model) %>%
@@ -111,8 +107,7 @@ death_v_symptoms_model_fig <- tidy(death_v_symptoms_model) %>%
 
 # Takes some time to run!
 death_v_symptoms_interactions <- merged_data_wide %>%
-  glm(data = ., 
-      formula = DIED ~ 
+  glm(formula = DIED ~ 
         (DYSPNOEA + PAIN_IN_EXTREMITY + DIZZINESS + FATIGUE + 
            INJECTION_SITE_ERYTHEMA + INJECTION_SITE_PRURITUS + 
            INJECTION_SITE_SWELLING + CHILLS + RASH + HEADACHE + INJECTION_SITE_PAIN +
