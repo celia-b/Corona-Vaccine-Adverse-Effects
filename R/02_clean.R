@@ -64,22 +64,22 @@ patients_clean <- patients %>%
                              TRUE ~ CUR_ILL))
   
 
-
 ################################## SYMPTOMS ##################################
 # Remove symptom versions
 symptoms_clean <- symptoms %>%
   select(VAERS_ID, SYMPTOM1, SYMPTOM2, SYMPTOM3, SYMPTOM4, SYMPTOM5)
 
+
 ################################## VACCINES ##################################
 vaccines_clean <- vaccines %>%
-  filter(VAX_TYPE == "COVID19") %>% # Keep only COVID vaccines
-  distinct() %>% ### Remove duplicates (same values for all variables):
+  filter(VAX_TYPE == "COVID19") %>%
+  distinct() %>%
   add_count(VAERS_ID) %>% 
-  filter(n == 1) %>% # only keep non-repeated IDs (remove duplicated IDs that had different vaccine or lot)
-  select(-n) %>% # remove count column ###
-  filter(VAX_MANU != "UNKNOWN MANUFACTURER") %>% # Remove rows with unknown vaccine manufacturer
-  mutate(VAX_MANU = recode(VAX_MANU, "PFIZER\\BIONTECH" = "PFIZER-BIONTECH")) %>% # Rename PFIZER\\BIONTECH for consistency
-  select(-c(VAX_NAME, VAX_LOT)) # Redundant column
+  filter(n == 1) %>% 
+  select(-n) %>%
+  filter(VAX_MANU != "UNKNOWN MANUFACTURER") %>% 
+  mutate(VAX_MANU = recode(VAX_MANU, "PFIZER\\BIONTECH" = "PFIZER-BIONTECH")) %>% 
+  select(-c(VAX_NAME, VAX_LOT))
   
 
 
