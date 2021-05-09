@@ -8,7 +8,6 @@ library("cowplot")
 library("patchwork")
 library("scales")
 library("broom")
-library("purrr")
 library("infer")
 library("viridis")
 

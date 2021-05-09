@@ -4,14 +4,7 @@ rm(list = ls())
 
 # Load libraries ----------------------------------------------------------
 library("tidyverse")
-library("cowplot")
-library("patchwork")
-library("scales")
 library("broom")
-library("purrr")
-library("infer")
-library("tidymodels")
-
 
 # Define functions --------------------------------------------------------
 source(file = "R/99_project_functions.R")
@@ -112,7 +105,7 @@ scree_plot <- pca_fit %>%
   ggplot(aes(x = PC, 
              y = percent)) +
   geom_col(alpha = 0.7, 
-           fill = "#56B4E9") +
+           fill = "#00846b") +
   labs(title = "Scree plot",
        subtitle = "Percentage of variance explained by each principal component",
        y = "Explained variance") +
