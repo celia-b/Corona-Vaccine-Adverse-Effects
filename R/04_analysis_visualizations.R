@@ -50,7 +50,7 @@ symptoms <- top_n_symptoms(data = symptoms_clean, n_symp = 20) %>%
 
 # Visualise data ----------------------------------------------------------
 
-################# AGE, SEX AND MANUFACTURER DISTRIBUTIONS #####################
+## AGE, SEX AND MANUFACTURER DISTRIBUTIONS -------------------------------
 
 # Age 
 age_dist <- merged_data_wide %>%
@@ -95,7 +95,8 @@ vac_dist <- merged_data_wide %>%
 
 vac_dist
 
-########################## SYMPTOMS AFTER N DAYS ##############################
+
+## SYMPTOMS AFTER N DAYS -------------------------------------------------
 
 ## Distribution of the number of days after receiving the vaccine
 ## when symptoms appear.
@@ -160,7 +161,7 @@ symptoms_after_manu
 
 
 
-######################## DEATH AFTER N DAYS ############################
+## DEATH AFTER N DAYS ----------------------------------------------------
 
 ## Days after vaccination when symptoms appear.
 death_after <- merged_data_wide %>%
@@ -216,7 +217,7 @@ n_days_manu <- merged_data_wide %>%
 n_days_manu
 
 
-############################## DEATH RATE #####################################
+## DEATH RATE ----------------------------------------------------------------
 # Out of the people who died, what proportion were already sick?
 merged_data_wide %>%
   select(VAERS_ID, AGE_CLASS, SEX, DIED, HAS_ILLNESS, VAX_MANU) %>%
@@ -226,7 +227,7 @@ merged_data_wide %>%
   coord_flip()
 
 
-############################# NUMBER OF SYMPTOMS #############################
+## NUMBER OF SYMPTOMS ----------------------------------------------------
 
 # Boxplot showing number of symptoms vs age
 nsymptoms_v_age <- merged_data_long %>%
@@ -296,7 +297,7 @@ nsymptoms_age_sex <- (nsymptoms_v_age + nsymptoms_v_sex) +
   plot_annotation(caption = "Outliers not included")
 
 
-############################## TYPES OF SYMPTOMS ##############################
+## TYPES OF SYMPTOMS ----------------------------------------------------------
 
 # Bar chart showing relative occurrence of the top 20 symptoms by sex. 
 # Symptom counts are relative to the number of individuals from the respective sex, 
@@ -387,7 +388,7 @@ symptom_types_v_age <- merged_data_long %>%
         plot.margin = margin(10, 10, 10, 10))
 
 
-####################### VACCINE MANUFACTURER VS DEATH ########################
+## VACCINE MANUFACTURER VS DEATH ----------------------------------------------
 
 # Plot vaccine manufacturer vs death as bar plot. 
 # Counts of deaths per group (per vaccine) are relative to the number of 
@@ -416,7 +417,7 @@ manu_v_death <- merged_data_wide %>%
         plot.margin = margin(10, 20, 10, 10))
 
 
-###################### AGE DISTRIBUTION OF PEOPLE WHO ... ######################
+## AGE DISTRIBUTION OF PEOPLE WHO ... --------------------------
 
 # Total people
 merged_data_wide %>%
