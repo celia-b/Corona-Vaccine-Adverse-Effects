@@ -25,11 +25,12 @@ library(knitr)
 ## Overview of presentation
 1. Introduction to COVID-19 World Vaccine Adverse Reactions Dataset
 2. Project work flow
-3. Project methods: important packages and verbs used
-4. Challenges and solutions - Load, Clean and Augment
-5. Visualizations
-6. Modeling
-7. Conclusion and discussion
+3. Project methods: 
+  3.1 Overview of important packages and verbs used
+  3.2 Challenges and solutions - Load, Clean and Augment
+4. Visualizations
+5. Modeling
+6. Conclusion and discussion
 
 
 # COVID-19 World Vaccine Adverse Reactions
@@ -148,15 +149,24 @@ include_graphics("../doc/workflow.jpeg")
 - **viridis**
 - **stats (?)**: glm(), prcomp()
 - **broom**: tidy(), glance()
-- **purrr**: map(), nest(), ungroup()
+- **purrr**: map(), nest()
 </div>
 
 
 
-## 01_load - Challenges and Solutions 1
+## Project methods - Challenges and solutions - 01_load 
+
+All three data sets:
+
+- Multiple large files &rightarrow; keep them compressed as gz-files and only decompress when reading into R
+- Wrong column types automatically assigned by R &rightarrow; nanually assigned appropriate column types  
+- NA strings ("NA", "N/A", "Unknown", " "...) &rightarrow; assign NAs when loading data
 
 
-**CHALLENGE:** Multiple large files
+
+## 01_load - Challenges and Solutions 1 (DELETE SLIDE)
+
+**CHALLENGE 1:** Multiple large files
 
 **SOLUTION:** Keep them compressed and only decompress when reading into R:
 
@@ -172,8 +182,7 @@ write_csv(x = patients, file = "../data/02_patients_clean.csv.gz")
 ```
 
 
-
-## 01_load - Challenges and Solutions 2
+## 01_load - Challenges and Solutions 2 (DELETE SLIDE)
 
 **CHALLENGE:** Wrong column types automatically assigned by R
 
@@ -193,8 +202,7 @@ patients <- read_csv(file = gzfile("../data/01_patients.csv.gz"),
 ```
 
 
-
-## 01_load - Challenges and Solutions 3
+## 01_load - Challenges and Solutions 3 (DELETE SLIDE)
 
 **CHALLENGE:** NA strings ("NA", "N/A", "Unknown", " "...)
 
@@ -214,9 +222,37 @@ patients <- read_csv(file = gzfile("../data/01_patients.csv.gz"),
 
 
 
-# 02_clean
 
-## 02_clean - Challenges and Solutions 1
+## Methods - Challenges and solutions - 02_clean
+
+**Patients** data set:
+
+- Unwanted dirty/uniformative columns &rightarrow; select(-c(CAGE_YR, CAGE_MO, RPT_DATE,SYMPTOM_TEXT,LAB_DATA,OFC_VISIT, ER_VISIT, X_STAY,  V_FUNDBY, BIRTH_DEFECT,SPLTTYPE, RECVDATE, RECOVD, L_THREAT))
+- NAs that should be interpreted as "no" &rightarrow; replace_na() 
+  - Examples: ALLERGIES and OTHER_MEDS columns
+- Row duplications &rightarrow; distinct()
+
+
+## Methods - Challenges and solutions - 02_clean
+
+**Vaccine** data set:
+
+- Contains non-COVID19 vaccines &rightarrow; filter(VAX_TYPE == "COVID19")
+- True duplicates &rightarrow; distinct() 
+- Duplicated IDs &rightarrow; _add_count(VAERS_ID) %>% filter(n == 1) %>% select(-n)_
+- Contains vaccines of unknown manufacturer &rightarrow; filter(VAX_MANU != "UNKNOWN MANUFACTURER")
+- Inconsistent naming of vaccines &rightarrow; recode() 
+- Redundant and dirty columns &rightarrow; select(-c(VAX_NAME, VAX_LOT))
+
+
+**Symptoms** data set:
+
+- SYMPTOMVERSION1-5 columns are uninformative and dirty &rightarrow; select(c(VAERS_ID, SYMPTOM1, SYMPTOM2, SYMPTOM3, SYMPTOM4, SYMPTOM5))
+
+
+
+
+## 02_clean - Challenges and Solutions 1 (DELETE SLIDE)
 
 I am aware of how horrible this table is :/
 
@@ -230,15 +266,26 @@ I am aware of how horrible this table is :/
 
 
 
-# 03_augment
+## Project methods - Challenges and solutions - 03_augment 
 
-## 03_augment - Challenges and Solutions 1
+- Some columns contain long string descriptions &rightarrow; Make tidy categorical variables 
+  - Examples: ALLERGIES and OTHER_MEDS columns
+
+
+- Unwanted columns &rightarrow; select(-c())
+- NAs that should be interpreted as "no" &rightarrow; replace_na()
+- Row duplications &rightarrow; distinct()
+- Individuals who got more than one vaccine type (generates noise) distinct() _add_count(VAERS_ID) %>% filter(n==1) %>% select(-n)_
+
+
+
+## 03_augment - Challenges and Solutions 1 (DELETE SLIDE)
 **CHALLENGE:** Some columns contain long string descriptions that need to be turned into something tidy
 
 **SOLUTION:** Make categorical variable
 
 
-## 03_augment - Challenges and Solutions 1
+## 03_augment - Challenges and Solutions 1 (DELETE SLIDE)
 **Example:** ALLERGIES column:
 ``` {r message=TRUE, warning=FALSE, include=FALSE}
 patients %>%
@@ -273,7 +320,7 @@ patients %>%
 ```
 
 
-## 03_augment - Challenges and Solutions 1
+## 03_augment - Challenges and Solutions 1 (DELETE SLIDE)
 **Another example:** OTHER_MEDS column
 
 Detect individuals that have taken anti-inflammatory or steroid drugs before vaccine (not recommended):
@@ -309,7 +356,7 @@ patients %>%
 ```
 
 
-## 03_augment - Challenges and Solutions 2
+## 03_augment - Challenges and Solutions 2 (DELETE SLIDE)
 
 **CHALLENGE:** Symptoms are recorded in a way that makes later analysis difficult
 
