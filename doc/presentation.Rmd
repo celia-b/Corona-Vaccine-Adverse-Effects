@@ -305,7 +305,6 @@ Important verbs and tools used:
 ## 04_analysis_visualizations - Age, sex and vaccine manufacturer distribution
 
 ## 04_analysis_visualizations - Age distribution
->>>>>>> ac91dc28505cd1bc3d92503e4ed1471e59a0af5b
 
 ```{r age_dist, echo = FALSE, out.width = "600px", out.height= "450px"}
 include_graphics("../results/age_dist.png")
@@ -327,42 +326,42 @@ include_graphics("../results/symptoms_after_v_agegroup.png")
 
 ## 04_analysis_visualizations - Age/sex vs. number of symptoms
 
-```{r nsymptoms_age_sex, echo = FALSE, out.width = "700px", out.height= "450px"}
+```{r nsymptoms_age_sex, echo = FALSE, out.width = "700px", out.height= "350px"}
 include_graphics("../results/nsymptoms_age_sex.png")
 ```
 
 
 ## 04_analysis_visualizations - Vaccine manufacturer vs. number of symptoms
 
-```{r nsymptoms_v_manu, echo = FALSE, out.width = "500px", out.height= "400px"}
+```{r nsymptoms_v_manu, echo = FALSE, out.width = "650px", out.height= "400px"}
 include_graphics("../results/nsymptoms_v_manu.png")
 ```
 
 
 ## 04_analysis_visualizations - Age vs. types of symptoms
 
-```{r symptom_types_v_age, echo = FALSE, out.width = "550px", out.height= "500px"}
+```{r symptom_types_v_age, echo = FALSE, out.width = "550px", out.height= "450px"}
 include_graphics("../results/symptom_types_v_age.png")
 ```
 
 
 ## 04_analysis_visualizations - Sex vs. types of symptoms
 
-```{r symptom_types_v_sex, echo = FALSE, out.width = "650px", out.height= "500px"}
+```{r symptom_types_v_sex, echo = FALSE, out.width = "750px", out.height= "400px"}
 include_graphics("../results/symptom_types_v_sex.png")
 ```
 
 
 ## 04_analysis_visualizations - Vaccine manufacturer vs. types of symptoms
 
-```{r symptom_types_v_manu, echo = FALSE, out.width = "800px", out.height= "500px"}
+```{r symptom_types_v_manu, echo = FALSE, out.width = "875px", out.height= "455px"}
 include_graphics("../results/symptom_types_v_manu.png")
 ```
 
 
 ## 04_analysis_visualizations - vaccine manufacturer vs. death
 
-```{r manu_v_death, echo = FALSE, out.width = "500px", out.height= "400px"}
+```{r manu_v_death, echo = FALSE, out.width = "600px", out.height= "400px"}
 include_graphics("../results/manu_v_death.png")
 ```
 
@@ -399,6 +398,7 @@ include_graphics("../results/death_v_symptoms_model_fig.png")
 
 ## 04_analysis_tests - Important tools used
 Important verbs and tools used:
+
 - prop_test()
 - chisq.test()
 
