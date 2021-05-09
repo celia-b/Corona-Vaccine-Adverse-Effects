@@ -545,12 +545,33 @@ include_graphics(c("../results/symptoms_v_antiinflamatory_model_fig_manhattan.pn
 
 # 04_analysis_tests 
 
-## 04_analysis_tests - Important tools used
-Important verbs and tools used:
+## 04_analysis_tests
+Chi-squared contingency table tests
 
-- prop_test()
-- chisq.test()
+```{r echo=FALSE, out.width="30%", out.extra='style="float:left; padding:10px"'}
+include_graphics("/cloud/project/results/sex_dist.png")
+```
+```{r echo=FALSE, out.width="30%", out.extra='style="float:right; padding:10px"'}
+include_graphics("/cloud/project/results/vac_dist.png")
+```
 
+
+
+```{r results='asis', echo=FALSE}
+    # Setting `results = 'asis'` allows for using Latex within the code chunk
+    cat('\\begin{center}')
+    # `{c c}` Creates a two column table
+    # Use `{c | c}` if you'd like a line between the tables
+    cat('\\begin{tabular}{ c c }')
+    print(knitr::kable(contingency_table1, format = 'latex'))
+    # Separate the two columns with an `&`
+    cat('&')
+    print(knitr::kable(contingency_table2, format = 'latex'))
+    cat('\\end{tabular}')
+    cat('\\end{center}')
+```
+p-value = 2.24e-10
+p-value = 1.21e-183
 
 
 # 04_analysis_clustering
