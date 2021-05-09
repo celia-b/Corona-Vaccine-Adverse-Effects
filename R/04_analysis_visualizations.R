@@ -42,8 +42,8 @@ merged_data_long <- merged_data_long %>%
   mutate_if(is.character, as.factor) %>%
   mutate_if(is.logical, as.factor)
 
-# Define top 20 occurring symptoms in data set. 
-# Get these as a vector with elements in capital letters and no spaces
+# Use top_n_symptoms() function to get vector of top 20 symptoms occurring in data set.
+# Use capitalize() function to capitalize elements and replace spaces with _
 symptoms <- top_n_symptoms(data = symptoms_clean, n_symp = 20) %>%
   capitalize()
 
@@ -54,39 +54,44 @@ symptoms <- top_n_symptoms(data = symptoms_clean, n_symp = 20) %>%
 
 # Age 
 age_dist <- merged_data_wide %>%
-  ggplot(aes(AGE_YRS, stat (count))) +
+  ggplot(aes(AGE_YRS, 
+             stat(count))) +
   geom_density(color="black", fill="lightblue",alpha = 0.5) +
   labs(x = "Age (years)",
        y = "Count",
        title = "Age distribution of the subjects in the dataset") +
   theme_minimal(base_family = "Avenir", base_size = 12) +
-  theme ( plot.title = element_text(size=13))
+  theme(plot.title = element_text(size=13))
                
 age_dist
 
 # Sex
 sex_dist <- merged_data_wide %>%
-  ggplot (aes (SEX, stat (count), fill = SEX)) +
-  geom_bar () +
-  labs (x = "Sex",
-        y = "Count",
-        fill = "Sex",
-        title = "Sex distribution of the subjects in the dataset") +
+  ggplot(aes(SEX, 
+               stat(count), 
+               fill = SEX)) +
+  geom_bar() +
+  labs(x = "Sex",
+       y = "Count",
+       fill = "Sex",
+       title = "Sex distribution of the subjects in the dataset") +
   theme_minimal(base_family = "Avenir", base_size = 12) +
-  theme (plot.title = element_text(size=13))
+  theme(plot.title = element_text(size = 13))
 
 sex_dist
 
 # Vaccine
 vac_dist <- merged_data_wide %>%
-  ggplot (aes (VAX_MANU, stat (count), fill = VAX_MANU)) +
+  ggplot(aes(VAX_MANU, 
+             stat(count), 
+             fill = VAX_MANU)) +
   geom_bar() +
-  labs (x = "Vaccine manufacturer",
-        y = "Count",
-        fill = "Vaccine manufacturer",
-        title = "Vaccine manufacturer distribution") +
+  labs(x = "Vaccine manufacturer",
+       y = "Count",
+       fill = "Vaccine manufacturer",
+       title = "Vaccine manufacturer distribution") +
   theme_minimal(base_family = "Avenir", base_size = 12) +
-  theme (plot.title = element_text(size=13))
+  theme(plot.title = element_text(size = 13))
 
 vac_dist
 
@@ -112,7 +117,9 @@ symptoms_after_age <- merged_data_wide %>%
   arrange(SYMPTOMS_AFTER) %>%
   filter(SYMPTOMS_AFTER < 20) %>%
   drop_na(AGE_CLASS) %>%
-  ggplot(aes(SYMPTOMS_AFTER, stat(prop), fill = AGE_CLASS)) +
+  ggplot(aes(SYMPTOMS_AFTER, 
+             stat(prop), 
+             fill = AGE_CLASS)) +
   geom_bar(position = "dodge") +
   #scale_y_continuous(labels = percent) +
   labs(#subtitle = "Grouping by age class",
@@ -127,10 +134,10 @@ symptoms_after_age <- merged_data_wide %>%
 
 # Patchwork
 (symptoms_after + symptoms_after_age) + 
-  plot_annotation(title = 'Days after vaccination when symptoms appear',
+  plot_annotation(title = "Days after vaccination when symptoms appear",
                   subtitle = NULL,
                   caption = "(Symptoms that appear after day 20 are infrequent and not shown)") +
-  theme(plot.title = element_text(size=24))
+  theme(plot.title = element_text(size = 24))
 
 
 ## By manufacturer 
@@ -138,7 +145,9 @@ symptoms_after_manu <- merged_data_wide %>%
   select(VAERS_ID, AGE_CLASS, SEX, SYMPTOMS_AFTER, VAX_MANU) %>%
   arrange(SYMPTOMS_AFTER) %>%
   filter(SYMPTOMS_AFTER < 20) %>%
-  ggplot(aes(SYMPTOMS_AFTER, stat(prop), fill = VAX_MANU)) +
+  ggplot(aes(SYMPTOMS_AFTER, 
+             stat(prop), 
+             fill = VAX_MANU)) +
   geom_bar(position = "dodge") +
   scale_y_continuous(labels = percent) +
   labs(title = "Days after vaccination when symptoms appear.",
@@ -160,7 +169,8 @@ death_after <- merged_data_wide %>%
   select(VAERS_ID, AGE_CLASS, SEX, DIED_AFTER, VAX_MANU) %>%
   arrange(DIED_AFTER) %>%
   filter(DIED_AFTER < 30 & DIED_AFTER >= 0) %>%
-  ggplot(aes(DIED_AFTER, stat(prop))) +
+  ggplot(aes(DIED_AFTER, 
+             stat(prop))) +
   geom_bar() +
   scale_y_continuous(labels = percent) +
   labs(title = "Days after vaccination when death occurs",
@@ -192,7 +202,9 @@ n_days_manu <- merged_data_wide %>%
   select(VAERS_ID, AGE_CLASS, SEX, DIED_AFTER, VAX_MANU) %>%
   arrange(DIED_AFTER) %>%
   filter(DIED_AFTER < 30 & DIED_AFTER >= 0) %>%
-  ggplot(aes(DIED_AFTER, stat(prop), fill = VAX_MANU)) +
+  ggplot(aes(DIED_AFTER, 
+             stat(prop), 
+             fill = VAX_MANU)) +
   geom_bar(position = "dodge") +
   scale_y_continuous(labels = percent) +
   labs(title = "Days after vaccination when death occurs.",
@@ -210,7 +222,7 @@ n_days_manu
 # Out of the people who died, what proportion were already sick?
 merged_data_wide %>%
   select(VAERS_ID, AGE_CLASS, SEX, DIED, HAS_ILLNESS, VAX_MANU) %>%
-  filter(DIED == 'Y') %>%
+  filter(DIED == "Y") %>%
   ggplot(aes(HAS_ILLNESS)) + 
   geom_bar() +
   coord_flip()
@@ -237,6 +249,7 @@ nsymptoms_v_age <- merged_data_long %>%
   theme_minimal(base_family = "Avenir") +
   theme(legend.position = "none", 
         plot.title = element_text(hjust = 0.5),
+        plot.subtitle = element_text(hjust = 0.5),
         plot.margin = margin(10, 30, 10, 10))
 
 # Boxplot showing total number of symptoms by sex
@@ -270,16 +283,19 @@ nsymptoms_v_manu <- merged_data_long %>%
   coord_flip() +
   scale_fill_viridis_d() +
   labs(title = "Manufacturer vs. number of symptoms",
+       subtitle = "Outliers not included",
        x = "Vaccine manufacturer",
        y = "Number of symptoms") +
   theme_minimal(base_family = "Avenir") +
   theme(legend.position = "none", 
         plot.title = element_text(hjust = 0.5),
+        plot.subtitle = element_text(hjust = 0.5),
         plot.margin = margin(10, 30, 10, 10))
 
 # Combine plots showing age/sex vs. number of symptoms into one
 # figure using patchwork
-nsymptoms_age_sex <- nsymptoms_v_age + nsymptoms_v_sex
+nsymptoms_age_sex <- (nsymptoms_v_age + nsymptoms_v_sex) +
+  plot_annotation(caption = "Outliers not included")
 
 
 ############################## TYPES OF SYMPTOMS ##############################

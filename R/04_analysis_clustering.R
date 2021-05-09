@@ -25,89 +25,104 @@ merged_data_wide <- read_csv(file = gzfile("data/03_merged_data_wide.csv.gz"),
 
 # Wrangle data ------------------------------------------------------------
 
-# Get symptom names, so symptom columns can be referred to as all_of(symptoms). 
-# Use funcion top_n_symptoms and set number of symptoms to get to 20
-symptoms = top_n_symptoms(n_symp = 20)
+# Use top_n_symptoms() function to get vector of top 20 symptoms occurring in data set.
+# Use capitalize() function to capitalize elements and replace spaces with _
+symptoms <- top_n_symptoms(data = symptoms_clean, n_symp = 20) %>%
+  capitalize()
 
-
-symptoms <- merged_data_wide %>% 
-  select(DYSPNOEA, PAIN_IN_EXTREMITY, DIZZINESS, FATIGUE, 
-         INJECTION_SITE_ERYTHEMA, INJECTION_SITE_PRURITUS, INJECTION_SITE_SWELLING, 
-         CHILLS, RASH, HEADACHE, INJECTION_SITE_PAIN, NAUSEA,PAIN, PYREXIA, MYALGIA,
-         ARTHRALGIA, PRURITUS, ASTHENIA, VOMITING, DEATH) %>%
-  names()
-
-# Convert symptom related variables to numeric
+# Convert symptom-related variables to numeric values (FALSE/N = 0, TRUE/Y = 1)
 numeric_symptoms <- merged_data_wide %>% 
-  mutate(HOSPITAL = case_when (HOSPITAL == "N"~ 0,
-                               HOSPITAL == "Y"~ 1)) %>%
-  mutate(DISABLE = case_when (DISABLE == "N"~ 0,
-                              DISABLE == "Y"~ 1)) %>%
-  mutate(ER_ED_VISIT = case_when (ER_ED_VISIT == "N"~ 0,
-                              ER_ED_VISIT == "Y"~ 1)) %>%
+  mutate(HOSPITAL = case_when(HOSPITAL == "N"~ 0,
+                              HOSPITAL == "Y"~ 1)) %>%
+  mutate(DISABLE = case_when(DISABLE == "N"~ 0,
+                             DISABLE == "Y"~ 1)) %>%
+  mutate(ER_ED_VISIT = case_when(ER_ED_VISIT == "N"~ 0,
+                                 ER_ED_VISIT == "Y"~ 1)) %>%
   mutate_if(is.logical, as.numeric) %>%
-  select(all_of(symptoms), HOSPITAL, DISABLE, 
-         ER_ED_VISIT, SYMPTOMS_AFTER, N_SYMPTOMS) %>%
+  select(all_of(symptoms), HOSPITAL, DISABLE, ER_ED_VISIT, 
+         SYMPTOMS_AFTER, N_SYMPTOMS) %>%
   drop_na()
 
-# Get classes (vaccine manufacturer)
+# Get classes (vaccine manufactures)
 classes <- merged_data_wide %>% 
-  drop_na(all_of(symptoms), HOSPITAL, DISABLE, 
-          ER_ED_VISIT, SYMPTOMS_AFTER, N_SYMPTOMS) %>%
+  drop_na(all_of(symptoms), HOSPITAL, DISABLE, ER_ED_VISIT, 
+          SYMPTOMS_AFTER, N_SYMPTOMS) %>%
   select(VAX_MANU)
 
 
 # Principal component analysis -------------------------------------------------
 
+# Do PCA on symptoms with numeric format
 pca_fit <- numeric_symptoms %>% 
-  scale() %>% # scale data
-  prcomp(center = TRUE) # do PCA
+  prcomp(scale = TRUE, 
+         center = TRUE)
 
 # PC1 vs PC2 biplot
 biplot <- pca_fit %>%
   augment(classes) %>% 
-  ggplot(aes(.fittedPC1, .fittedPC2, color = VAX_MANU)) + 
+  ggplot(aes(x = .fittedPC1, 
+             y = .fittedPC2, 
+             color = VAX_MANU)) + 
   geom_point(size = 0.5) +
-  labs(x = 'PC1', y = 'PC2') +
-  scale_color_viridis_d(name = "MANUFACTURER", option = "D") +
-  theme_half_open(font_size = 9, font_family = "Avenir") +
-  background_grid() 
+  labs(title = "PCA...",
+       x = "PC1", 
+       y = "PC2") +
+  scale_color_viridis_d(name = "Vaccine manufacturer", 
+                        option = "D") +
+  theme_minimal(base_family = "Avenir") +
+  theme(plot.title = element_text(hjust = 0.5))
   
 biplot
 
-# define arrow style for plotting
-arrow_style <- arrow(angle = 10, ends = "first", type = "open", 
+# define arrow style for plotting rotation matrix
+arrow_style <- arrow(angle = 10, 
+                     ends = "first", 
+                     type = "open", 
                      length = grid::unit(5, "pt"))
 
-# plot rotation matrix
+# Extract the rotation matrix using tidy() from broom
+# Plot rotation matrix
 rotation_matrix <- pca_fit %>%
-  tidy(matrix = "rotation") %>%
-  pivot_wider(names_from = "PC", names_prefix = "PC", values_from = "value") %>%
-  ggplot(aes(PC1, PC2)) +
-  geom_segment(xend = 0, yend = 0, arrow = arrow_style) +
-  geom_text(
-    aes(label = column),
-    hjust = 0, nudge_x = 0.05, 
-    color = "#904C2F",
-    size = 2.5) +
-  xlim(-.5, .5) + ylim(-.5, .5) +
+  tidy(matrix = "rotation") %>% # extract rotation matrix using tidy() from broom
+  pivot_wider(names_from = "PC", 
+              names_prefix = "PC", 
+              values_from = "value") %>%
+  ggplot(aes(x = PC1, 
+             y = PC2)) +
+  geom_segment(xend = 0, 
+               yend = 0, 
+               arrow = arrow_style) +
+  geom_text(aes(label = column),
+            position = position_jitter(),
+            color = "#904C2F",
+            size = 2.5) +
+  xlim(-0.5, 0.5) + 
+  ylim(-0.5, 0.5) +
   coord_fixed() + # fix aspect ratio to 1:1
-  theme_minimal_grid(10)
+  labs(title = "Rotation matrix") +
+  theme_minimal(base_family = "Avenir",
+                base_size = 10) +
+  theme(plot.title = element_text(hjust = 0.5))
 
 rotation_matrix
 
-# scree plot
+# Use tidy() from broom to get eigenvalues and use these to make scree plot
 scree_plot <- pca_fit %>%
-  tidy(matrix = "eigenvalues") %>%
-  ggplot(aes(PC, percent)) +
-  geom_col(fill = "#56B4E9", alpha = 0.8) +
-  labs(y = "explained variance") +
-  scale_x_continuous(breaks = 1:25) +
-  scale_y_continuous(
-    labels = scales::percent_format(),
-    expand = expansion(mult = c(0, 0.01))
-  ) +
-  theme_minimal_hgrid(10)
+  tidy(matrix = "eigenvalues") %>% #
+  ggplot(aes(x = PC, 
+             y = percent)) +
+  geom_col(alpha = 0.8, 
+           fill = "#56B4E9") +
+  labs(title = "Scree plot",
+       y = "Explained variance") +
+  scale_x_continuous(breaks = 1:25,
+                     expand = expansion(mult = c(0, 0.01))) +
+  scale_y_continuous(labels = scales::percent_format(),
+                     expand = expansion(mult = c(0, 0.01))) +
+  theme_minimal(base_family = "Avenir",
+                base_size = 10) +
+  theme(plot.title = element_text(hjust = 0.5))
+
 
 scree_plot
 
@@ -137,8 +152,19 @@ kmeans_comparison
 write_tsv(...)
 ggsave(...)
 
-ggsave (biplot, file = "results/biplot.png")
-ggsave (rotation_matrix, file = "results/rotation_matrix.png")
-ggsave (scree_plot, file = "results/scree_plot.png")
+ggsave(biplot, 
+        file = "results/biplot.png", 
+        height = 6,
+        width = 10)
+
+ggsave(rotation_matrix, 
+       file = "results/rotation_matrix.png", 
+       height = 7,
+       width = 8)
+
+ggsave(scree_plot, 
+       file = "results/scree_plot.png",
+       height = 5,
+       width = 10)
 
 

@@ -426,13 +426,13 @@ Important verbs and tools used:
 
 ## 04_analysis_clustering - PCA biplot
 
-```{r biplot, echo = FALSE, out.width = "695px", out.height= "340px"}
+```{r biplot, echo = FALSE, out.width = "695px", out.height= "400px"}
 include_graphics("../results/biplot.png")
 ```
 
 ## 04_analysis_clustering - Rotation matrix
 
-```{r rotation_matrix, echo = FALSE, out.width = "695px", out.height= "340px"}
+```{r rotation_matrix, echo = FALSE, out.width = "640px", out.height= "500px"}
 include_graphics("../results/rotation_matrix.png")
 ```
 
