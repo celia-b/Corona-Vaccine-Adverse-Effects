@@ -91,7 +91,8 @@ pca_plot <- pca_fit %>%
 arrow_style <- arrow(angle = 10, 
                      ends = "first", 
                      type = "open", 
-                     length = grid::unit(5, "pt"))
+                     length = grid::unit(5, 
+                                         "pt"))
 
 # Extract the rotation matrix using tidy() from broom and then plot it
 rotation_matrix <- pca_fit %>%
@@ -110,7 +111,7 @@ rotation_matrix <- pca_fit %>%
             size = 2.5) +
   xlim(-0.5, 0.5) + 
   ylim(-0.5, 0.5) +
-  coord_fixed() + # fix aspect ratio to 1:1
+  coord_fixed() +
   labs(title = "Rotation matrix") +
   theme_minimal(base_family = "Avenir",
                 base_size = 12) +
