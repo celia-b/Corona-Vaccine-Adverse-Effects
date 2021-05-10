@@ -7,14 +7,14 @@ symptoms_clean <- read_csv(file = gzfile("data/02_symptoms_clean.csv.gz"))
 ## 1. top_n_symptoms_func() ---------------------------------------------------------
 top_n_symptoms_func <- function(data = symptoms_clean, 
                                 n_symp = 20, 
-                                VAERS_ID = VAERS_ID) {
+                                ID = VAERS_ID) {
   # Returns a vector of the top n most occurring symptoms from a data set. 
-  # :param data: data set containing identifier "VAERS_ID" and variables "SYMPTOMX" 
-  #  with symptoms as character values. Default is "02_symptoms_clean.csv.gz"
-  # :param VAERS_ID: identifier. Default is VAERS_ID.
+  # :param data: data set containing identifier, ID, and variables, SYMPTOMX, 
+  #  with symptoms as character values. Default is "data/02_symptoms_clean.csv.gz"
+  # :param ID: identifier. Default is VAERS_ID.
   # :param n_symp: number of top occurring symptoms to extract. Default is 20. 
   data %>%
-    pivot_longer(cols = -VAERS_ID, 
+    pivot_longer(cols = -ID, 
                  names_to = "symptom_num", 
                  values_to = "symptom", 
                  values_drop_na = TRUE) %>%

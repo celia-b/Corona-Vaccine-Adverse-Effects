@@ -93,7 +93,7 @@ symptoms_clean_long <- symptoms_clean %>%
 top_20_symptoms <- symptoms_clean_long %>%
   filter(symptom %in% top_n_symptoms_func(data = symptoms_clean, 
                                           n_symp = 20, 
-                                          VAERS_ID = VAERS_ID)) %>% 
+                                          ID = "VAERS_ID")) %>% 
   mutate(true_col = TRUE) %>%
   pivot_wider(id_cols = VAERS_ID,
               names_from = symptom,
@@ -157,7 +157,8 @@ merged_data_wide <- patients_clean_aug %>%
 # Use format_func() to capitalize and replace spaces with _ in symptom names
 merged_data_long <- merged_data_wide %>%
   pivot_longer(cols = (top_n_symptoms_func(data = symptoms_clean, 
-                                           n_symp = 20) %>% 
+                                           n_symp = 20, 
+                                           ID = "VAERS_ID") %>% 
                          format_func()), 
                names_to = "SYMPTOM", 
                values_to = "SYMPTOM_VALUE")
