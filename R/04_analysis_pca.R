@@ -70,13 +70,15 @@ pca_plot <- pca_fit %>%
              y = .fittedPC2, 
              color = VAX_MANU)) + 
   geom_point(size = 0.5) +
-  labs(title = "PCA biplot",
+  labs(title = "PCA plot",
        x = "PC1", 
        y = "PC2") +
   scale_color_viridis_d(name = "Vaccine manufacturer", 
                         option = "D") +
-  theme_minimal(base_family = "Avenir") +
-  theme(plot.title = element_text(hjust = 0.5))
+  theme_minimal(base_family = "Avenir",
+                base_size = 12) +
+  theme(plot.title = element_text(hjust = 0.5,
+                                  size = 15))
 
 
 ## 1.2 Rotation matrix -------------------------------------------------------------
@@ -89,7 +91,7 @@ arrow_style <- arrow(angle = 10,
 
 # Extract the rotation matrix using tidy() from broom and then plot it
 rotation_matrix <- pca_fit %>%
-  tidy(matrix = "rotation") %>% # extract rotation matrix using tidy() from broom
+  tidy(matrix = "rotation") %>% 
   pivot_wider(names_from = "PC", 
               names_prefix = "PC", 
               values_from = "value") %>%
@@ -107,8 +109,9 @@ rotation_matrix <- pca_fit %>%
   coord_fixed() + # fix aspect ratio to 1:1
   labs(title = "Rotation matrix") +
   theme_minimal(base_family = "Avenir",
-                base_size = 10) +
-  theme(plot.title = element_text(hjust = 0.5))
+                base_size = 12) +
+  theme(plot.title = element_text(hjust = 0.5, 
+                                  size = 15))
 
 
 
@@ -129,8 +132,9 @@ scree_plot <- pca_fit %>%
   scale_y_continuous(labels = scales::percent_format(),
                      expand = expansion(mult = c(0, 0.01))) +
   theme_minimal(base_family = "Avenir",
-                base_size = 10) +
-  theme(plot.title = element_text(hjust = 0))
+                base_size = 12) +
+  theme(plot.title = element_text(hjust = 0,
+                                  size = 15))
 
 
   
