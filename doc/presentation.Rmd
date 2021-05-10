@@ -268,18 +268,19 @@ clean %>%
 ## Visualization | Age, sex and manufacturer distribution
 
 
-```{r age_dist, echo = FALSE, out.width = "500px", out.height = "300px", out.extra = 'style = "float:left;padding:20px"'}
+```{r age_dist, echo = FALSE, out.width = "60%", out.height = "350px", fig.show='hold', out.extra='style = "float:right;padding:10px"'}
 include_graphics("../results/age_dist.png")
 
 ```
 
-```{r message=FALSE, warning=FALSE, echo=FALSE, out.width="50%", out.extra='style = "float:right;padding:20px"'}
+```{r message=FALSE, warning=FALSE, echo=FALSE}
 merged_data_wide <- read_csv(gzfile("../data/03_merged_data_wide.csv.gz"))
 merged_data_wide %>% 
-  count (SEX)
+  count (SEX) 
 
 merged_data_wide %>% 
   count (VAX_MANU)
+  
 ```
 
 
