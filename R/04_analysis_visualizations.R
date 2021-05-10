@@ -89,7 +89,7 @@ symptoms_after <- merged_data_wide %>%
   labs(x = "Days after vaccination",
        y = "Count") +
   theme_minimal(base_family = "Avenir",
-                base_size = 12) 
+                base_size = 12)
 
 
 ### 2.2 Density plot grouped by age class  --------------------------------------

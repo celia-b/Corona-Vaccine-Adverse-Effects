@@ -190,3 +190,4 @@ ggsave(sex_v_death,
        file = "results/sex_v_death.png",
        height = 5,
        width = 8)
+
