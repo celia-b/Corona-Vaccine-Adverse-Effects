@@ -414,7 +414,18 @@ include_graphics(c("../results/symptoms_v_antiinflamatory_model_fig_manhattan.pn
 ## 04_analysis_tests
 Chi-squared contingency table tests
 
+```{r echo = FALSE, include=FALSE}
+contingency_table1 <- read_csv("/cloud/project/results/contingency_table1.csv")
+contingency_table2 <- read_csv("/cloud/project/results/contingency_table2.csv")
+```
 
+
+```{r echo = FALSE}
+kable(list(contingency_table1,contingency_table2))
+```
+```{r echo = FALSE, out.width="50%", fig.show='hold'}
+include_graphics(c("/cloud/project/results/manu_v_death.png", "/cloud/project/results/sex_v_death.png"))
+```
 
 # 04_analysis_pca
 
