@@ -436,11 +436,3 @@ ggsave(symptom_types_v_manu,
        width = 10)
 
 
-# Save manufacturer vs. death plot
-ggsave(manu_v_death, 
-       file = "results/manu_v_death.png",
-       height = 5,
-       width = 8)
-
-
-
