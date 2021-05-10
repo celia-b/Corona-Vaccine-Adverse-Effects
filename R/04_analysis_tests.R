@@ -6,6 +6,7 @@ rm(list = ls())
 library("tidyverse")
 library("infer")
 
+
 # Define functions --------------------------------------------------------
 source(file = "R/99_project_functions.R")
 

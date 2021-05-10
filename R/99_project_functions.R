@@ -5,7 +5,7 @@ symptoms_clean <- read_csv(file = gzfile("data/02_symptoms_clean.csv.gz"))
 # Define project functions ------------------------------------------------
 
 ## top_n_symptoms() ---------------------------------------------------------
-top_n_symptoms <- function(data = symptoms_clean, n_symp = 20) {
+top_n_symptoms_func <- function(data = symptoms_clean, n_symp = 20) {
   # returns a vector of the top n most occurring symptoms from a data set. 
   # :param data: dataset with symptoms
   # :param n_symp: number of symptoms to extract
@@ -22,7 +22,7 @@ symptoms_clean %>%
 
 
 ## capitalize() ---------------------------------------------------------
-capitalize <- function(x) {
+format_func <- function(x) {
   # Capitalizes letters and replaces spaces with _ for elements of a vector
   # :param x: vector
   toupper(x) %>% 
