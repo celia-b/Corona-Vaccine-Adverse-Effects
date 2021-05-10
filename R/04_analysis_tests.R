@@ -45,13 +45,15 @@ merged_data_wide <- merged_data_wide %>%
 # The sample is, supposedly, reasonably random
 
 
-# Run Chi-squared tests
-died_v_manu_p_val <- chisq_func(DIED, VAX_MANU) %>%
-  pluck("p.value") %>% # p-value = 2.24e-10
+# Run Chi-squared tests and extract p-values
+manu_v_died_test <- chisq_func(DIED, VAX_MANU)
+manu_v_died_pval <- manu_v_died_test %>%
+  pluck("p.value") %>%
   format.pval(digits = 2)
 
-died_v_sex_test <- chisq_func(DIED, SEX) %>%
-  pluck("p.value") %>% # p-value = 1.21e-183
+sex_v_died_test <- chisq_func(DIED, SEX)
+sex_v_died_pval <- sex_v_died_test %>%
+  pluck("p.value") %>% 
   format.pval(digits = 2)
 
 
@@ -97,16 +99,63 @@ manu_v_death <- merged_data_wide %>%
   scale_y_continuous(labels = scales::percent) +
   scale_fill_viridis_d() +
   labs(title = "Relative occurence of death by vaccine manufacturer",
+       subtitle = str_c("p-value:", manu_v_died_pval), 
        x = "Vaccine manufacturer",
        y = "Relative occurence of death") +
   theme_minimal(base_family = "Avenir") +
   theme(legend.position = "none",
-        plot.margin = margin(10, 20, 10, 10)) + 
-  annotate("text", x = 3, y = 0.02, label = died_v_manu_p_val)
+        plot.margin = margin(10, 20, 10, 10),
+        plot.title = element_text(hjust = 0.5), 
+        plot.subtitle = element_text(hjust = 0.5))
   
+
+
+# Sex vs. death bar plot
+# Counts of deaths per group (per vaccine) are relative to the number of 
+# subjects in the group. 
+sex_v_death <- merged_data_wide %>%
+  filter(!is.na(SEX)) %>%
+  count(SEX, DIED) %>%
+  group_by(SEX) %>%
+  mutate(total = sum(n)) %>%
+  filter(DIED == "Y") %>%
+  summarise(prop = n/total, .groups = "rowwise") %>%
+  ggplot(.,
+         aes(x = fct_reorder(SEX, desc(prop)),
+             y = prop,
+             fill = SEX, 
+             drop_na = TRUE)) +
+  geom_bar(position = "dodge",
+           stat = "identity",
+           alpha = 0.8) +
+  scale_y_continuous(labels = scales::percent) +
+  scale_fill_viridis_d() +
+  labs(title = "Relative occurence of death by vaccine manufacturer",
+       subtitle = str_c("p-value:", sex_v_died_pval),
+       x = "Sex",
+       y = "Relative occurence of death") +
+  theme_minimal(base_family = "Avenir") +
+  theme(legend.position = "none",
+        plot.margin = margin(10, 20, 10, 10),
+        plot.title = element_text(hjust = 0.5),
+        plot.subtitle = element_text(hjust = 0.5))
+
 
 
 
 # Write data --------------------------------------------------------------
 write_tsv(...)
 ggsave(...)
+
+# Save manufacturer/sex vs. death plots
+ggsave(manu_v_death, 
+       file = "results/manu_v_death.png",
+       height = 5,
+       width = 8)
+
+ggsave(sex_v_death,
+       file = "results/sex_v_death.png",
+       height = 5,
+       width = 8)
+
+
