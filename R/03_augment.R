@@ -91,7 +91,8 @@ symptoms_clean_long <- symptoms_clean %>%
 # Convert top 20 symptoms to wide format tibble. 
 top_20_symptoms <- symptoms_clean_long %>%
   filter(symptom %in% top_n_symptoms_func(data = symptoms_clean, 
-                                          n_symp = 20)) %>% 
+                                          n_symp = 20, 
+                                          VAERS_ID = VAERS_ID)) %>% 
   mutate(true_col = TRUE) %>% 
   drop_na(symptom) %>% 
   pivot_wider(id_cols = VAERS_ID,
