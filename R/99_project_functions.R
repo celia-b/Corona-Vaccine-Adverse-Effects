@@ -20,6 +20,7 @@ symptoms_clean %>%
   pluck("symptom")
 }
 
+
 ## capitalize() ---------------------------------------------------------
 capitalize <- function(x) {
   # Capitalizes letters and replaces spaces with _ for elements of a vector

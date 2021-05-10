@@ -80,7 +80,8 @@ symptoms_clean_long <- symptoms_clean %>%
 # Fill tibble with TRUE/FALSE depending on whether the individual has symptom
 # Convert top 20 symptoms to wide format. 
 top_20_symptoms <- symptoms_clean_long %>%
-  filter(symptom %in% top_n_symptoms(data = symptoms_clean, n_symp = 20)) %>% 
+  filter(symptom %in% top_n_symptoms(data = symptoms_clean, 
+                                     n_symp = 20)) %>% 
   mutate(true_col = TRUE) %>% 
   drop_na(symptom) %>% 
   pivot_wider(id_cols = VAERS_ID,
@@ -120,8 +121,10 @@ vaccines_clean_aug <- vaccines_clean
 # Merge patients, symptoms, and vaccine data into one tibble
 # Make columns DIED and DEATH (symptom) identical
 merged_data_wide <- patients_clean_aug %>%
-  inner_join(symptoms_clean_aug, by = "VAERS_ID") %>%
-  inner_join(vaccines_clean_aug, by = "VAERS_ID") %>%
+  inner_join(symptoms_clean_aug, 
+             by = "VAERS_ID") %>%
+  inner_join(vaccines_clean_aug, 
+             by = "VAERS_ID") %>%
   mutate(DIED = case_when(DIED == "Y" ~ "Y", 
                           DEATH == TRUE ~ "Y",
                           TRUE ~ "N"),
@@ -131,7 +134,8 @@ merged_data_wide <- patients_clean_aug %>%
 
 # Make long format tibble containing a symptoms column with all top 20 symptoms
 merged_data_long <- merged_data_wide %>%
-  pivot_longer(cols = (top_n_symptoms(data = symptoms_clean, n_symp = 20) %>% 
+  pivot_longer(cols = (top_n_symptoms(data = symptoms_clean, 
+                                      n_symp = 20) %>% 
                          capitalize()), 
                names_to = "SYMPTOM", 
                values_to = "SYMPTOM_VALUE")

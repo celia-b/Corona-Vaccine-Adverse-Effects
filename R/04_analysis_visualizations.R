@@ -43,7 +43,8 @@ merged_data_long <- merged_data_long %>%
 
 # Use top_n_symptoms() function to get vector of top 20 symptoms occurring in data set.
 # Use capitalize() function to capitalize elements and replace spaces with _
-symptoms <- top_n_symptoms(data = symptoms_clean, n_symp = 20) %>%
+symptoms <- top_n_symptoms(data = symptoms_clean, 
+                           n_symp = 20) %>%
   capitalize()
 
 
