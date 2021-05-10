@@ -8,6 +8,8 @@ output:
   ioslides_presentation:
     widescreen: true
     smaller: true
+  html_document:
+    
 header-includes:
   - \usepackage{multicol}
   - \setlength{\columnsep}{18pt}
@@ -44,9 +46,13 @@ library(knitr)
 
 - Data from the Vaccine Adverse Event Reporting System (VAERS) created by the Food and Drug Administration (FDA) and Centers for Disease Control and Prevention (CDC) 
 - Contains 3 datasets: 
+
     1. PATIENTS.CSV
+    
     2. VACCINES.CSV
+    
     3. SYMPTOMS.CSV
+    
 - Datasets connected by patient IDs (VAERS_ID)
 
 ```{r message=TRUE, warning=TRUE, include=FALSE}
@@ -142,7 +148,7 @@ clean %>%
            VAERS_ID == '0916996')
 ```
 
-- **Too many symptoms** and untidy &rightarrow; extract **top 20 occurring symptoms** and turn them into **tidy categorical (TRUE/FALSE) columns**
+- **Too many symptoms** and **untidy** &rightarrow; extract **top 20** occurring symptoms and turn them into **tidy categorical (TRUE/FALSE) columns**
 
 
 # Results and Discussion
@@ -183,7 +189,7 @@ Hypothesis: two peaks corresponding to the innate and acquired immune response. 
 include_graphics("../results/nsymptoms_age_sex.png")
 ```
 
-Observations: no noticeable differences
+Observations: no noticeable differences.
 
 
 ## Visualization | Does vaccine type impact the number of symptoms?
@@ -192,7 +198,7 @@ Observations: no noticeable differences
 include_graphics("../results/nsymptoms_v_manu.png")
 ```
 
-Observations: no noticeable differences
+Observations: no noticeable differences.
 
 
 ## Visualization | Do symptoms differ among age groups?
@@ -210,7 +216,7 @@ Hypothesis: symptoms associated to a strong immune response are most common in y
 include_graphics("../results/symptom_types_v_sex.png")
 ```
 
-Observations: some noticeable differences, hereamongst death, more common in males.
+Observations: some noticeable differences, hereamongst death, which is more common in males.
 
 
 ## Visualization | Do different vaccines cause different symptoms?
@@ -219,7 +225,7 @@ Observations: some noticeable differences, hereamongst death, more common in mal
 include_graphics("../results/symptom_types_v_manu.png")
 ```
 
-Observations: Janssen causes the most common symptoms more often (n.b. smaller sample size)
+Observations: Janssen causes the most common symptoms more often (NB smaller sample size)
 
 
 # Exploratory Data Analysis | Principal Component Analysis
