@@ -299,7 +299,7 @@ contingency_table2 <- read_csv("/cloud/project/results/contingency_table2.csv")
 ```
 
 
-## Chi-squared Contingency Table Tests | Does the proportion of death differ amongst vaccine types? 
+## Proportion tests | Does the proportion of death differ amongst vaccine types? 
 
 ```{r echo=FALSE, fig.show='hold', out.width="45%", fig.show='hold', out.extra='style = "float:right;padding:10px"'}
 include_graphics("/cloud/project/results/manu_v_death.png")
@@ -313,7 +313,7 @@ contingency_table1
 Observations: there is a significant difference among vaccine types (p-value < 0.05).
 
 
-## Chi-squared Contingency Table Tests | Does the proportion of death differ between males and females?
+## Proportion tests | Does the proportion of death differ between males and females?
 
 ```{r echo=FALSE, fig.show='hold', out.width="45%", fig.show='hold', out.extra='style = "float:right;padding:10px"'}
 include_graphics("/cloud/project/results/sex_v_death.png")
@@ -325,8 +325,23 @@ contingency_table2
 
 Observations: death is significantly more common in males (p-value < 0.05).
 
-## Conclusion and discussion
+## Conclusion
 
+Uneven group sizes difficults interpretation of results. Knowing this, we observed the following:
+
+1. Most vaccine recipients experience symptoms immediately. 
+
+2. Symptoms associated to the expected immune response happen more often in younger age groups.
+
+3. Age, illness and being male are positively correlated with death. 
+
+4. Asthenia, dyspnoea and vomiting are positively correlated with death.
+
+5. Anti-inflammatory drugs do not reduce symptoms.
+
+6. The proportion of death varies among vaccine types.
+
+7. The proportion of death is higher in males. 
 
 
 ## References
