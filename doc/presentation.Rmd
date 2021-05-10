@@ -345,7 +345,7 @@ include_graphics("../results/rotation_matrix.png")
 
 ## PCA | Scree plot 
 
-```{r scree_plot, echo = FALSE, out.width = "750px", out.height= "400px"}
+```{r scree_plot, echo = FALSE, out.width = "750px", out.height= "400px", fig.align = "center"}
 include_graphics("../results/scree_plot.png")
 ```
 
@@ -457,12 +457,12 @@ contingency_table2 <- read_csv("/cloud/project/results/contingency_table2.csv")
 
 Null hypothesis: the proportion of patients that died after getting one vaccine = the proportion of patients that died after getting another vaccine
 
-```{r echo=FALSE}
-contingency_table1
+```{r echo=FALSE, fig.show='hold', out.width="45%", fig.show='hold', out.extra='style = "float:right;padding:10px"'}
+include_graphics("/cloud/project/results/manu_v_death.png")
 ```
 
-```{r echo=FALSE, fig.show='hold', out.width="45%"}
-include_graphics("/cloud/project/results/manu_v_death.png")
+```{r echo=FALSE}
+contingency_table1
 ```
 
 
@@ -470,13 +470,14 @@ include_graphics("/cloud/project/results/manu_v_death.png")
 
 Null hypothesis: the proportion of males that died after vaccination = the proportion of females that died after vaccination
 
-```{r echo=FALSE, }
+```{r echo=FALSE, fig.show='hold', out.width="45%", fig.show='hold', out.extra='style = "float:right;padding:10px"'}
+include_graphics("/cloud/project/results/manu_v_death.png")
+```
+
+```{r echo=FALSE}
 contingency_table2
 ```
 
-```{r echo=FALSE, fig.show='hold', out.width="45%"}
-include_graphics("/cloud/project/results/manu_v_death.png")
-```
 
 
 # 04_analysis_pca

@@ -126,6 +126,7 @@ symptoms_clean_aug <- symptoms_clean_long %>%
   ungroup()
 
 
+
 ## 3. Vaccines --------------------------------------------------------------
 
 vaccines_clean_aug <- vaccines_clean
