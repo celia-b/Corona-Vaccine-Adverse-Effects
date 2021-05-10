@@ -124,7 +124,7 @@ manu_v_death <- merged_data_wide %>%
         plot.margin = margin(10, 20, 10, 10),
         plot.title = element_text(hjust = 0.5), 
         plot.subtitle = element_text(hjust = 0.5))
-  
+
 
 # Sex vs. death bar plot
 # Counts of deaths per group (per vaccine) are relative to the number of 
@@ -178,5 +178,3 @@ ggsave(sex_v_death,
        file = "results/sex_v_death.png",
        height = 5,
        width = 8)
-
-
