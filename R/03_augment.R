@@ -24,10 +24,10 @@ vaccines_clean <- read_csv(file = gzfile("data/02_vaccines_clean.csv.gz"),
 
 ## PATIENTS ---------------------------------------------------------------
 patients_clean_aug <- patients_clean %>%
-  mutate(HAS_ALLERGIES = case_when(ALLERGIES == "NONE" ~ "N",
+  mutate(HAS_ALLERGIES = case_when(is.na(ALLERGIES) ~ "N",
                                    TRUE ~ "Y")) %>% 
   select(-ALLERGIES) %>% 
-  mutate(HAS_ILLNESS = case_when(CUR_ILL == "NONE" ~ "N",
+  mutate(HAS_ILLNESS = case_when(is.na(CUR_ILL) ~ "N",
                                  TRUE ~ "Y")) %>% 
   mutate(HAS_COVID = case_when(grepl("covid",
                                      CUR_ILL,
@@ -59,7 +59,7 @@ patients_clean_aug <- patients_clean %>%
                                AGE_YRS >= 40 & AGE_YRS < 60 ~ "[40, 60)",
                                AGE_YRS >= 60 & AGE_YRS < 80 ~ "[60, 80)",
                                AGE_YRS >= 80 ~ "80+")) %>%
-  mutate(DIED_AFTER = (as.integer(DATEDIED) - as.integer(VAX_DATE))) %>%
+  mutate(DIED_AFTER = as.integer(DATEDIED) - as.integer(VAX_DATE)) %>%
   filter(DIED_AFTER >= 0 | is.na(DIED_AFTER)) %>%
   rename(SYMPTOMS_AFTER = NUMDAYS) %>% 
   select(-c(VAX_DATE, DATEDIED, ONSET_DATE, TODAYS_DATE))

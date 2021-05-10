@@ -49,8 +49,8 @@ patients_clean <- patients %>%
                   ER_ED_VISIT = "N")) %>% # Handled NAs that are actually "No"
   mutate(ALLERGIES = case_when(grepl("^no.?$ | ^no | ^none | ^not | ^non | ^-$ | ^?$", 
                                    ALLERGIES, 
-                                   ignore.case = TRUE) ~ "NONE",
-                               is.na(ALLERGIES) ~ "NONE",
+                                   ignore.case = TRUE) ~ NA_character_,
+                               is.na(ALLERGIES) ~ NA_character_,
                                TRUE ~ ALLERGIES)) %>%
   mutate(CUR_ILL = case_when(grepl("^non-serological | ^Non-Hodgkin | ^Non Hodgkin |
                                    ^non-alcoholic | ^non systemic", 
@@ -59,10 +59,10 @@ patients_clean <- patients %>%
                              grepl("^no.?$ | ^no | ^none | ^not | ^non | none$ |
                                    ^zero$ | ^0$ | ^-$ | ^?$", 
                                    CUR_ILL, 
-                                   ignore.case = TRUE) ~ "NONE",
-                             is.na(CUR_ILL) ~ "NONE",
+                                   ignore.case = TRUE) ~ NA_character_,
+                             is.na(CUR_ILL) ~ NA_character_,
                              TRUE ~ CUR_ILL))
-  
+
 
 ## SYMPTOMS ---------------------------------------------------------------
 # Remove symptom versions

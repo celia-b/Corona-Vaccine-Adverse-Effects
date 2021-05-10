@@ -616,7 +616,7 @@ include_graphics("/cloud/project/results/vac_dist.png")
 
 
 
-```{r results='asis', echo=FALSE}
+```{r eval=FALSE, include=FALSE, results='asis'}
     # Setting `results = 'asis'` allows for using Latex within the code chunk
     cat('\\begin{center}')
     # `{c c}` Creates a two column table

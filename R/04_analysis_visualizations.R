@@ -79,6 +79,7 @@ symptoms_after <- merged_data_wide %>%
 
 ## By age class
 # I'm not convinced this plot looks nice --> maybe facet_wrap it? make it into heatmap?
+# Delete ?
 symptoms_after_age <- merged_data_wide %>%
   select(VAERS_ID, AGE_CLASS, SEX, SYMPTOMS_AFTER, VAX_MANU) %>%
   arrange(SYMPTOMS_AFTER) %>%
@@ -98,6 +99,7 @@ symptoms_after_age <- merged_data_wide %>%
   labs(fill = "Age class")
 
 # Patchwork
+# delete ?
 (symptoms_after + symptoms_after_age) + 
   plot_annotation(title = "Days after vaccination when symptoms appear",
                   subtitle = NULL,
@@ -106,6 +108,7 @@ symptoms_after_age <- merged_data_wide %>%
 
 
 ## By manufacturer 
+# delete ?
 symptoms_after_manu <- merged_data_wide %>%
   select(VAERS_ID, AGE_CLASS, SEX, SYMPTOMS_AFTER, VAX_MANU) %>%
   arrange(SYMPTOMS_AFTER) %>%
@@ -130,6 +133,7 @@ symptoms_after_manu
 ## DEATH AFTER N DAYS ----------------------------------------------------
 
 ## Days after vaccination when symptoms appear.
+# delete ?
 death_after <- merged_data_wide %>%
   select(VAERS_ID, AGE_CLASS, SEX, DIED_AFTER, VAX_MANU) %>%
   arrange(DIED_AFTER) %>%
@@ -147,6 +151,7 @@ death_after
 
 
 ## By age class --> Not informative (small sample size, < 5 in age classes)
+# delete ?
 merged_data_wide %>%
   select(VAERS_ID, AGE_CLASS, SEX, DIED_AFTER, VAX_MANU) %>%
   arrange(DIED_AFTER) %>%
@@ -156,6 +161,7 @@ merged_data_wide %>%
   count()
 
 ## By manufacturer --> Again problematic because of small sample size in Janssen
+# delete?
 merged_data_wide %>%
   select(VAERS_ID, AGE_CLASS, SEX, DIED_AFTER, VAX_MANU) %>%
   arrange(DIED_AFTER) %>%
@@ -163,6 +169,7 @@ merged_data_wide %>%
   group_by(VAX_MANU) %>%
   count() # --> 16 (Janssen) vs 852 vs 690 (Moderna and Pfizer)
 
+# delete ?
 n_days_manu <- merged_data_wide %>%
   select(VAERS_ID, AGE_CLASS, SEX, DIED_AFTER, VAX_MANU) %>%
   arrange(DIED_AFTER) %>%
@@ -184,7 +191,8 @@ n_days_manu
 
 
 ## DEATH RATE ----------------------------------------------------------------
-# Out of the people who died, what proportion were already sick?
+# Out of the people who died, what proportion were already sick? 
+# delete ?
 merged_data_wide %>%
   select(VAERS_ID, AGE_CLASS, SEX, DIED, HAS_ILLNESS, VAX_MANU) %>%
   filter(DIED == "Y") %>%
@@ -352,35 +360,6 @@ symptom_types_v_age <- merged_data_long %>%
                                    size = 9), 
         plot.title = element_text(hjust = 0.5),
         plot.margin = margin(10, 10, 10, 10))
-
-
-## VACCINE MANUFACTURER VS DEATH ----------------------------------------------
-
-# Plot vaccine manufacturer vs death as bar plot. 
-# Counts of deaths per group (per vaccine) are relative to the number of 
-# subjects in the group. 
-manu_v_death <- merged_data_wide %>%
-  count(VAX_MANU, DIED) %>%
-  group_by(VAX_MANU) %>%
-  mutate(total = sum(n)) %>%
-  filter(DIED == "Y") %>%
-  summarise(prop = n/total, .groups = "rowwise") %>%
-  ggplot(.,
-         aes(x = fct_reorder(VAX_MANU, desc(prop)),
-             y = prop,
-             fill = VAX_MANU)) +
-  geom_bar(position = "dodge",
-           stat = "identity",
-           alpha = 0.8) +
-  scale_y_continuous(labels = scales::percent) +
-  coord_flip() +
-  scale_fill_viridis_d() +
-  labs(title = "Relative occurence of death by vaccine manufacturer",
-       x = "Vaccine manufacturer",
-       y = "Relative occurence of death") +
-  theme_minimal(base_family = "Avenir") +
-  theme(legend.position = "none",
-        plot.margin = margin(10, 20, 10, 10))
 
 
 ## AGE DISTRIBUTION OF PEOPLE WHO ... --------------------------
