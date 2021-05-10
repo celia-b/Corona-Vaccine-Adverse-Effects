@@ -57,22 +57,24 @@ patients_clean <- patients %>%
                   DISABLE = "N",
                   OFC_VISIT = "N",
                   ER_ED_VISIT = "N")) %>%
-  mutate(ALLERGIES = case_when(grepl("^no\\.?$|^no|^none|^not|^non|^-$|^\\?$", 
+  mutate(ALLERGIES = case_when(grepl("^no\\.$|^no|^none|^not|^non|^-$|^\\?$", 
                                    ALLERGIES, 
                                    ignore.case = TRUE) ~ NA_character_,
                                is.na(ALLERGIES) ~ NA_character_,
                                TRUE ~ ALLERGIES)) %>%
-  mutate(CUR_ILL = case_when(grepl("^non-serological|^Non-Hodgkin|^Non Hodgkin|^non-alcoholic|^non systemic", 
+  mutate(CUR_ILL = case_when(grepl("^non-serological|^Non-Hodgkin|^Non Hodgkin|
+                                   ^non-alcoholic|^non systemic", 
                                    CUR_ILL, 
                                    ignore.case = TRUE) ~ CUR_ILL,
-                             grepl("^no\\.?$|^no|^none|^not|^non|none$|^zero$|^0$|^-$|^\\?$", 
+                             grepl("^no\\.$|^no|^none|^not|^non|none$|^zero$|
+                                   ^0$|^-$|^\\?$", 
                                    CUR_ILL, 
                                    ignore.case = TRUE) ~ NA_character_,
                              is.na(CUR_ILL) ~ NA_character_,
                              TRUE ~ CUR_ILL))
 
 
-## 2. Symtoms ---------------------------------------------------------------
+## 2. Symptoms ---------------------------------------------------------------
 # Remove columns containing symptom versions
 
 symptoms_clean <- symptoms %>%

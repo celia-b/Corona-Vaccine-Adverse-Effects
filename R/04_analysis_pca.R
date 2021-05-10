@@ -35,7 +35,7 @@ numeric_symptoms <- merged_data_wide %>%
   mutate(ER_ED_VISIT = case_when(ER_ED_VISIT == "N" ~ 0,
                                  ER_ED_VISIT == "Y" ~ 1)) %>%
   mutate_if(is.logical, 
-            as.numeric) %>%
+            as.numeric) %>% 
   select(all_of(symptoms), 
          HOSPITAL, 
          DISABLE, 
