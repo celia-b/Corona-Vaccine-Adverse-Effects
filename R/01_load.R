@@ -42,12 +42,15 @@ vaccines_raw <- read_csv(file = "data/_raw/2021VAERSVAX.csv",
 
 
 # Write data --------------------------------------------------------------
+## 1. Patients ------------------------------------------------------------
 write_csv(x = patients_raw,
           file = "data/01_patients.csv.gz")
 
+## 2. Symptoms -----------------------------------------------------------
 write_csv(x = symptoms_raw,
           file = "data/01_symptoms.csv.gz")
 
+## 3. Vaccines -----------------------------------------------------------
 write_csv(x = vaccines_raw,
            file = "data/01_vaccines.csv.gz")
 
