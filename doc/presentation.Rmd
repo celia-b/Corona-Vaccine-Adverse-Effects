@@ -337,12 +337,8 @@ Important verbs and tools used:
 
 ## PCA - PCA plot, rotation matrix and Scree plot
 
-```{r biplot, echo = FALSE, out.width = "695px", out.height= "400px"}
+```{r, fig.show="hold", out.width="50%"}
 include_graphics("../results/pca_plot.png")
-```
-
-
-```{r rotation_matrix, echo = FALSE, out.width = "640px", out.height= "500px"}
 include_graphics("../results/rotation_matrix.png")
 ```
 
@@ -454,38 +450,6 @@ kable(list(contingency_table1,contingency_table2))
 include_graphics(c("/cloud/project/results/manu_v_death.png", "/cloud/project/results/sex_v_death.png"))
 ```
 
-<<<<<<< HEAD
-=======
-# 04_analysis_pca
-
-## 04_analysis_pca - Important tools used
-Important verbs and tools used:
-
-- prcomp()
-- augment ()
-
-## 04_analysis_pca - PCA plot
-
-```{r pca_plot, echo = FALSE, out.width = "695px", out.height= "400px"}
-include_graphics("../results/pca_plot.png")
-```
-
-## 04_analysis_pca - Rotation matrix
-
-```{r rotation_matrix, echo = FALSE, out.width = "640px", out.height= "500px"}
-include_graphics("../results/rotation_matrix.png")
-```
-
-## 04_analysis_pca - Scree plot
-
-```{r scree_plot, echo = FALSE, out.width = "695px", out.height= "340px"}
-include_graphics("../results/scree_plot.png")
-```
-
-
-
-
->>>>>>> f79434260aa6c0faba882c7b08dc845b7e130c31
 
 ## Conclusion and discussion
 
