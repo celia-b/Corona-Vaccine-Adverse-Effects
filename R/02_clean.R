@@ -11,6 +11,8 @@ source(file = "R/99_project_functions.R")
 
 
 # Load data ---------------------------------------------------------------
+
+# Load in data sets and manually assign column types to those misinterpreted by R
 patients <- read_csv(file = gzfile("data/01_patients.csv.gz"), 
                      col_types = cols("BIRTH_DEFECT" = col_character(),
                                       "X_STAY" = col_character(),
@@ -26,7 +28,11 @@ vaccines <- read_csv(file = gzfile("data/01_vaccines.csv.gz"),
 
 # Wrangle data ------------------------------------------------------------
 
-## PATIENTS ---------------------------------------------------------------
+## 1. Patients ---------------------------------------------------------------
+
+# Remove dirty and unwanted columns. 
+# Replace NAs that are actually 'no' with "N". 
+# Replace no-like strings that are actually NA with NA. 
 patients_clean <- patients %>%
   select(-c(CAGE_YR, 
             CAGE_MO,
@@ -41,12 +47,12 @@ patients_clean <- patients %>%
             SPLTTYPE,
             RECVDATE, 
             RECOVD,
-            L_THREAT)) %>% # Removed columns
+            L_THREAT)) %>% 
   replace_na(list(DIED = "N",
                   HOSPITAL = "N",
                   DISABLE = "N",
                   OFC_VISIT = "N",
-                  ER_ED_VISIT = "N")) %>% # Handled NAs that are actually "No"
+                  ER_ED_VISIT = "N")) %>%
   mutate(ALLERGIES = case_when(grepl("^no.?$ | ^no | ^none | ^not | ^non | ^-$ | ^?$", 
                                    ALLERGIES, 
                                    ignore.case = TRUE) ~ NA_character_,
@@ -64,13 +70,24 @@ patients_clean <- patients %>%
                              TRUE ~ CUR_ILL))
 
 
-## SYMPTOMS ---------------------------------------------------------------
-# Remove symptom versions
+## 2. Symtoms ---------------------------------------------------------------
+
+# Remove columns containing symptom versions
 symptoms_clean <- symptoms %>%
-  select(-c(SYMPTOMVERSION1, SYMPTOMVERSION2, SYMPTOMVERSION3, SYMPTOMVERSION4, 
+  select(-c(SYMPTOMVERSION1, 
+            SYMPTOMVERSION2, 
+            SYMPTOMVERSION3, 
+            SYMPTOMVERSION4, 
             SYMPTOMVERSION5))
 
-## VACCINES ---------------------------------------------------------------
+
+## 3. Vaccines ---------------------------------------------------------------
+
+# Filter for only COVID19 vaccines.
+# Remove duplicated rows.
+# Remove duplicated IDs.
+# Change column name for consistency.
+# Remove dirty and redundant columns. 
 vaccines_clean <- vaccines %>%
   filter(VAX_TYPE == "COVID19") %>%
   distinct() %>%
@@ -78,8 +95,10 @@ vaccines_clean <- vaccines %>%
   filter(n == 1) %>% 
   select(-n) %>%
   filter(VAX_MANU != "UNKNOWN MANUFACTURER") %>% 
-  mutate(VAX_MANU = recode(VAX_MANU, "PFIZER\\BIONTECH" = "PFIZER-BIONTECH")) %>% 
-  select(-c(VAX_NAME, VAX_LOT))
+  mutate(VAX_MANU = recode(VAX_MANU, 
+                           "PFIZER\\BIONTECH" = "PFIZER-BIONTECH")) %>% 
+  select(-c(VAX_NAME, 
+            VAX_LOT))
   
 
 

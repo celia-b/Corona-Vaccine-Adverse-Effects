@@ -40,17 +40,14 @@ library(knitr)
 # Introduction | COVID-19 World Vaccine Adverse Reactions
 
 
-## Introduction | COVID-19 World Vaccine Adverse Reactions
+## Introduction: Dataset | COVID-19 World Vaccine Adverse Reactions
 
-- Found on Kaggle (https://www.kaggle.com/ayushggarg/covid19-vaccine-adverse-reactions?select=2021VAERSSYMPTOMS.csv)
 - Data from the Vaccine Adverse Event Reporting System (VAERS) created by the Food and Drug Administration (FDA) and Centers for Disease Control and Prevention (CDC) 
 - Contains 3 data sets: 
     1. PATIENTS.CSV
     2. VACCINES.CSV
     3. SYMPTOMS.CSV
-- Data sets connected by individual IDs (VAERS_ID)
-- VAERS User Guide (https://vaers.hhs.gov/docs/VAERSDataUseGuide_November2020.pdf)
-  - A guide to variable names
+- Data sets connected by patient IDs (VAERS_ID)
 
 ```{r message=TRUE, warning=TRUE, include=FALSE}
 patients <- read_csv(file = gzfile("../data/01_patients.csv.gz"), 
@@ -67,49 +64,55 @@ vaccines <- read_csv(file = gzfile("../data/01_vaccines.csv.gz"),
 ```
 
 
-## Introduction | COVID-19 World Vaccine Adverse Reactions
+
+## Introduction: Dataset | COVID-19 World Vaccine Adverse Reactions
 
 **PATIENTS.CSV**: Contains information about the individuals that received the vaccines
 
 ```{r echo=FALSE}
 patients %>%
-  head(3)
-```
-
-Dimensions:
-```{r echo = TRUE}
-dim(patients)
+  print(n=3)
 ```
 
 
-## Introduction | COVID-19 World Vaccine Adverse Reactions
+
+## Introduction: Dataset | COVID-19 World Vaccine Adverse Reactions
 
 **VACCINES.CSV**: Contains information about the received vaccine
 
 ```{r echo=FALSE}
 vaccines %>% 
-  head(3) 
-```
-
-Dimensions:
-```{r echo=TRUE}
-dim(vaccines)
+  print(head = 5) 
 ```
 
 
-## Introduction | COVID-19 World Vaccine Adverse Reactions
+
+## Introduction: Dataset | COVID-19 World Vaccine Adverse Reactions
 
 **SYMPTOMS.CSV**: Contains information about the symptoms experienced after vaccination
 
 ```{r echo=FALSE}
-head(symptoms, 3)
+symptoms %>%
+  print(n = 6)
 ```
 
-Dimensions:
-```{r echo=TRUE}
-dim(symptoms)
-```
 
+
+## Introduction: Aim
+The aim of this project is to gain insight on the adverse effects of different Covid-19 vaccines and answer the following questions:
+
+- Do some vaccines cause more/different symptoms than others?
+
+- Do patients with some profiles get more/different symptoms?
+
+- Are certain symptoms correlated with death?
+
+- Is patient profile correlated with death?
+
+- Does taking anti-inflamatories reduce the chance of having symptoms?
+
+
+# Methods
 
 ## Methods: Project workflow
 
@@ -121,7 +124,7 @@ include_graphics("../doc/workflow.jpeg")
 2. Clean each data set individually
 3. Augment and merge the data sets
 4. Make visualizations
-5. Do modeling
+5. Do modelling
 
 
 ## Methods: Important packages and verbs
@@ -260,9 +263,9 @@ clean %>%
 - Proportions tests with **chisq.test()**
 
 
-# 04_analysis_visualizations
+# Exploratory Data Analysis | Visualization
 
-## 04_analysis_visualizations - Age, sex and manufacturer distribution
+## Visualization | Age, sex and manufacturer distribution
 
 
 ```{r age_dist, echo = FALSE, out.width = "500px", out.height = "300px", out.extra = 'style = "float:left;padding:20px"'}
@@ -280,8 +283,7 @@ merged_data_wide %>%
 ```
 
 
-
-## 04_analysis_visualizations - Days until onset of symptoms vs. Age Group
+## Visualization | Days until onset of symptoms vs. Age Group
 
 Hypothesis: two peaks corresponding to the innate and acquired immune response
 
@@ -291,46 +293,68 @@ include_graphics("../results/symptoms_after_dist_age.png")
 ```
 
 
-## 04_analysis_visualizations - Age/sex vs. number of symptoms
+## Visualization | Age/sex vs. number of symptoms
 
 ```{r nsymptoms_age_sex, echo = FALSE, out.width = "800px", out.height= "350px"}
 include_graphics("../results/nsymptoms_age_sex.png")
 ```
 
 
-## 04_analysis_visualizations - Vaccine manufacturer vs. number of symptoms
+## Visualization | Vaccine manufacturer vs. number of symptoms
 
 ```{r nsymptoms_v_manu, echo = FALSE, out.width = "650px", out.height= "400px"}
 include_graphics("../results/nsymptoms_v_manu.png")
 ```
 
 
-## 04_analysis_visualizations - Age vs. types of symptoms
+## Visualization | Age vs. types of symptoms
 
 ```{r symptom_types_v_age, echo = FALSE, out.width = "550px", out.height= "450px"}
 include_graphics("../results/symptom_types_v_age.png")
 ```
 
 
-## 04_analysis_visualizations - Sex vs. types of symptoms
+## Visualization | Sex vs. types of symptoms
 
 ```{r symptom_types_v_sex, echo = FALSE, out.width = "750px", out.height= "400px"}
 include_graphics("../results/symptom_types_v_sex.png")
 ```
 
 
-## 04_analysis_visualizations - Vaccine manufacturer vs. types of symptoms
+## Visualization | Vaccine manufacturer vs. types of symptoms
 
 ```{r symptom_types_v_manu, echo = FALSE, out.width = "875px", out.height= "455px"}
 include_graphics("../results/symptom_types_v_manu.png")
 ```
 
+# Exploratory Data Analysis | Principal Component Analysis
+
+## PCA | Important tools used
+Important verbs and tools used:
+
+- prcomp()
+- augment ()
+
+## PCA | PCA plot and rotation matrix 
+
+```{r, fig.show="hold", out.width="50%", out.height= "400px"}
+include_graphics("../results/pca_plot.png")
+include_graphics("../results/rotation_matrix.png")
+```
+
+## PCA | Scree plot 
+
+```{r scree_plot, echo = FALSE, out.width = "750px", out.height= "400px"}
+include_graphics("../results/scree_plot.png")
+```
 
 
-# 04_analysis_regressions
+# Modelling | Logistic Regressions 
 
 
-## 04_analysis_modeling | Logistic regression: death ~ patient profile
+## Logistic Regression | Death ~ Patient Profile
+
+Is the patient's profile (sex, age, allergic/not, ill/not, has/had covid/not) correlated with death?
 
 ```{r, eval = FALSE}
 merged_data_wide %>%
@@ -346,14 +370,18 @@ model <- read_csv("../results/death_v_profile_model.csv")
 model
 ```
 
-## 04_analysis_modeling | Logistic regression: death ~ patient profile
+## Logistic Regression | Death ~ Patient Profile
+
+Is the patient's profile (sex, age, allergic/not, ill/not, has/had covid/not) correlated with death?
 
 ```{r death_v_profile_pval, echo = FALSE, out.width="50%", fig.show='hold'}
 include_graphics(c("../results/death_v_profile_model_fig_pval.png", "../results/death_v_profile_model_fig_odds.png"))
 ```
 
 
-## 04_analysis_modeling | Logistic regression: death ~ symptoms
+## Logistic Regression | Death ~ Symptoms
+
+Are some symptoms correlated with death?
 
 ```{r, eval = FALSE}
 merged_data_wide %>%
@@ -371,15 +399,19 @@ model %>%
 ```
 
 
-## 04_analysis_modeling | Logistic regression: death ~ symptoms
+## Logistic Regression | Death ~ Symptoms
 
-```{r, echo = FALSE, out.width = "60%", out.extra = 'style = "float:right; padding:10px"'}
+Are some symptoms correlated with death?
+
+```{r, echo = FALSE, out.width="50%", fig.show='hold'}
 include_graphics(c("../results/death_v_symptoms_model_fig_pval.png", "../results/death_v_symptoms_model_fig_odds.png"))
 ```
 
 
 
-## 04_analysis_modeling | Many logistic regressions: each symptom ~ takes anti-inflamatory
+## Many Logistic Regressions | Each Symptom ~ Takes Anti-Inflamatory
+
+Does taking antiiflamatories modify the chance of having symptoms?
 
 ```{r, eval = FALSE}
 merged_data_long %>%
@@ -402,7 +434,7 @@ model %>%
 
 
 
-## 04_analysis_modeling | Many logistic regressions: each symptom ~ takes anti-inflamatory
+## Many Logistic Regressions | Each Symptom ~ Takes Anti-Inflamatory
 
 ```{r symptoms_v_antiinfl_manhattan, echo = FALSE, out.width="50%", fig.show='hold'}
 include_graphics(c("../results/symptoms_v_antiinflamatory_model_fig_manhattan.png", "../results/symptoms_v_antiinflamatory_model_fig_odds.png"))
@@ -424,42 +456,19 @@ contingency_table2 <- read_csv("/cloud/project/results/contingency_table2.csv")
 ```{r echo = FALSE}
 kable(list(contingency_table1,contingency_table2))
 ```
+
 ```{r echo = FALSE, out.width="50%", fig.show='hold'}
 include_graphics(c("/cloud/project/results/manu_v_death.png", "/cloud/project/results/sex_v_death.png"))
 ```
 
-# 04_analysis_pca
-
-## 04_analysis_pca - Important tools used
-Important verbs and tools used:
-
-- prcomp()
-- augment ()
-
-## 04_analysis_pca - PCA biplot
-
-```{r biplot, echo = FALSE, out.width = "695px", out.height= "400px"}
-include_graphics("../results/biplot.png")
-```
-
-## 04_analysis_pca - Rotation matrix
-
-```{r rotation_matrix, echo = FALSE, out.width = "640px", out.height= "500px"}
-include_graphics("../results/rotation_matrix.png")
-```
-
-## 04_analysis_pca - Scree plot
-
-```{r scree_plot, echo = FALSE, out.width = "695px", out.height= "340px"}
-include_graphics("../results/scree_plot.png")
-```
-
-
-
-
 
 ## Conclusion and discussion
 
+## References
+
+Dataset: https://www.kaggle.com/ayushggarg/covid19-vaccine-adverse-reactions?select=2021VAERSSYMPTOMS.csv
+
+Dataset user guide: https://vaers.hhs.gov/docs/VAERSDataUseGuide_November2020.pdf
 
 
 
