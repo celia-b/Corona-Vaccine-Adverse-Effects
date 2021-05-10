@@ -262,9 +262,9 @@ clean %>%
 - Proportions tests with **chisq.test()**
 
 
-# 04_analysis_visualizations
+# Exploratory Data Analysis - Visualization
 
-## 04_analysis_visualizations - Age, sex and manufacturer distribution
+## Visualization - Age, sex and manufacturer distribution
 
 
 ```{r age_dist, echo = FALSE, out.width = "500px", out.height = "300px", out.extra = 'style = "float:left;padding:20px"'}
@@ -283,7 +283,7 @@ merged_data_wide %>%
 
 
 
-## 04_analysis_visualizations - Days until onset of symptoms vs. Age Group
+## Visualization - Days until onset of symptoms vs. Age Group
 
 Hypothesis: two peaks corresponding to the innate and acquired immune response
 
@@ -293,40 +293,63 @@ include_graphics("../results/symptoms_after_dist_age.png")
 ```
 
 
-## 04_analysis_visualizations - Age/sex vs. number of symptoms
+## Visualization - Age/sex vs. number of symptoms
 
 ```{r nsymptoms_age_sex, echo = FALSE, out.width = "800px", out.height= "350px"}
 include_graphics("../results/nsymptoms_age_sex.png")
 ```
 
 
-## 04_analysis_visualizations - Vaccine manufacturer vs. number of symptoms
+## Visualization - Vaccine manufacturer vs. number of symptoms
 
 ```{r nsymptoms_v_manu, echo = FALSE, out.width = "650px", out.height= "400px"}
 include_graphics("../results/nsymptoms_v_manu.png")
 ```
 
 
-## 04_analysis_visualizations - Age vs. types of symptoms
+## Visualization - Age vs. types of symptoms
 
 ```{r symptom_types_v_age, echo = FALSE, out.width = "550px", out.height= "450px"}
 include_graphics("../results/symptom_types_v_age.png")
 ```
 
 
-## 04_analysis_visualizations - Sex vs. types of symptoms
+## Visualization - Sex vs. types of symptoms
 
 ```{r symptom_types_v_sex, echo = FALSE, out.width = "750px", out.height= "400px"}
 include_graphics("../results/symptom_types_v_sex.png")
 ```
 
 
-## 04_analysis_visualizations - Vaccine manufacturer vs. types of symptoms
+## Visualization - Vaccine manufacturer vs. types of symptoms
 
 ```{r symptom_types_v_manu, echo = FALSE, out.width = "875px", out.height= "455px"}
 include_graphics("../results/symptom_types_v_manu.png")
 ```
 
+# Exploratory Data Analysis - Principal Component Analysis
+
+## PCA - Important tools used
+Important verbs and tools used:
+
+- prcomp()
+- augment ()
+
+## PCA - PCA plot, rotation matrix and Scree plot
+
+```{r biplot, echo = FALSE, out.width = "695px", out.height= "400px"}
+include_graphics("../results/pca_plot.png")
+```
+
+
+```{r rotation_matrix, echo = FALSE, out.width = "640px", out.height= "500px"}
+include_graphics("../results/rotation_matrix.png")
+```
+
+
+```{r scree_plot, echo = FALSE, out.width = "695px", out.height= "340px"}
+include_graphics("../results/scree_plot.png")
+```
 
 
 # Modeling 
@@ -429,35 +452,6 @@ kable(list(contingency_table1,contingency_table2))
 ```{r echo = FALSE, out.width="50%", fig.show='hold'}
 include_graphics(c("/cloud/project/results/manu_v_death.png", "/cloud/project/results/sex_v_death.png"))
 ```
-
-# 04_analysis_pca
-
-## 04_analysis_pca - Important tools used
-Important verbs and tools used:
-
-- prcomp()
-- augment ()
-
-## 04_analysis_pca - PCA biplot
-
-```{r biplot, echo = FALSE, out.width = "695px", out.height= "400px"}
-include_graphics("../results/pca_plot.png")
-```
-
-## 04_analysis_pca - Rotation matrix
-
-```{r rotation_matrix, echo = FALSE, out.width = "640px", out.height= "500px"}
-include_graphics("../results/rotation_matrix.png")
-```
-
-## 04_analysis_pca - Scree plot
-
-```{r scree_plot, echo = FALSE, out.width = "695px", out.height= "340px"}
-include_graphics("../results/scree_plot.png")
-```
-
-
-
 
 
 ## Conclusion and discussion
