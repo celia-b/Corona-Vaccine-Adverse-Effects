@@ -11,8 +11,10 @@ source(file = "R/99_project_functions.R")
 
 
 # Load data ---------------------------------------------------------------
+# Misinterpreted column types are manually asigned 
+# and NA strings read as NA characters
 
-# Load in data sets and manually assign column types to those misinterpreted by R
+## 1. Patients ------------------------------------------------------------
 patients_raw <- read_csv(file = "data/_raw/2021VAERSDATA.csv", 
                          col_types = cols("BIRTH_DEFECT" = col_character(),
                                           "X_STAY" = col_character(),
@@ -29,8 +31,11 @@ patients_raw <- read_csv(file = "data/_raw/2021VAERSDATA.csv",
                                 "None reported", "Not applicable",
                                 "No", "NO", "no")) 
 
+## 2. Symptoms -----------------------------------------------------------
 symptoms_raw <- read_csv(file = "data/_raw/2021VAERSSYMPTOMS.csv")
 
+
+## 3. Vaccines -----------------------------------------------------------
 vaccines_raw <- read_csv(file = "data/_raw/2021VAERSVAX.csv",
                          col_types = cols("VAX_DOSE_SERIES" = col_character()),
                          na = c("UNK", "N/A"))
