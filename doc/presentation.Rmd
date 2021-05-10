@@ -88,7 +88,7 @@ vaccines %>%
 
 
 ## Introduction: Dataset | COVID-19 World Vaccine Adverse Reactions
-
+ 
 **SYMPTOMS.CSV**: Contains information about the symptoms experienced after vaccination
 
 ```{r echo=FALSE}
@@ -287,7 +287,7 @@ merged_data_wide %>%
 
 Hypothesis: two peaks corresponding to the innate and acquired immune response
 
-```{r symptoms_after_v_agegroup, echo = FALSE, out.width = "700px", out.height= "350px"}
+```{r symptoms_after_v_agegroup, echo = FALSE, out.width = "750px", out.height= "350px", fig.align = "center"}
 include_graphics("../results/symptoms_after_dist_age.png")
 
 ```
@@ -295,35 +295,35 @@ include_graphics("../results/symptoms_after_dist_age.png")
 
 ## Visualization | Age/sex vs. number of symptoms
 
-```{r nsymptoms_age_sex, echo = FALSE, out.width = "800px", out.height= "350px"}
+```{r nsymptoms_age_sex, echo = FALSE, out.width = "800px", out.height= "350px", fig.align = "center"}
 include_graphics("../results/nsymptoms_age_sex.png")
 ```
 
 
 ## Visualization | Vaccine manufacturer vs. number of symptoms
 
-```{r nsymptoms_v_manu, echo = FALSE, out.width = "650px", out.height= "400px"}
+```{r nsymptoms_v_manu, echo = FALSE, out.width = "650px", out.height= "400px", fig.align = "center"}
 include_graphics("../results/nsymptoms_v_manu.png")
 ```
 
 
 ## Visualization | Age vs. types of symptoms
 
-```{r symptom_types_v_age, echo = FALSE, out.width = "550px", out.height= "450px"}
+```{r symptom_types_v_age, echo = FALSE, out.width = "550px", out.height= "450px", fig.align = "center"}
 include_graphics("../results/symptom_types_v_age.png")
 ```
 
 
 ## Visualization | Sex vs. types of symptoms
 
-```{r symptom_types_v_sex, echo = FALSE, out.width = "750px", out.height= "400px"}
+```{r symptom_types_v_sex, echo = FALSE, out.width = "750px", out.height= "400px", fig.align = "center"}
 include_graphics("../results/symptom_types_v_sex.png")
 ```
 
 
 ## Visualization | Vaccine manufacturer vs. types of symptoms
 
-```{r symptom_types_v_manu, echo = FALSE, out.width = "875px", out.height= "455px"}
+```{r symptom_types_v_manu, echo = FALSE, out.width = "875px", out.height= "455px", fig.align = "center"}
 include_graphics("../results/symptom_types_v_manu.png")
 ```
 
