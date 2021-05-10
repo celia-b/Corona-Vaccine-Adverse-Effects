@@ -65,8 +65,9 @@ symptoms <- top_n_symptoms(data = symptoms_clean, n = 20) %>%
 
 
 ## Logistic regression 1 -------------------------------------------------
-# Modeling death outcome vs patient profile
-# (sex, age, allergies, current illness, current Covid-19, past Covid-19)
+# Modeling death outcome vs patient profile (sex, age, allergies, 
+# current illness, current Covid-19, past Covid-19) to see whether a certain 
+# patient profile is more likely to die
 death_v_profile_model <- merged_data_wide %>%
   glm(formula = DIED ~ 
         SEX + AGE_YRS + HAS_ALLERGIES + HAS_ILLNESS + HAS_COVID + HAD_COVID, 
@@ -77,17 +78,20 @@ death_v_profile_model <- merged_data_wide %>%
 
 
 ### LogReg Visualization 1.1 ---------------------------------------------
+# Make p-value bar plot
 death_v_profile_model_fig_pval <- death_v_profile_model %>%
   filter(term != "(Intercept)") %>%
-  ggplot(aes(x = fct_reorder(term, p.value),
+  ggplot(aes(x = fct_reorder(term, 
+                             p.value),
              y = -log(p.value),
              fill = term)) +
   geom_bar(stat = "identity") +
   geom_hline(yintercept = -log(0.05),
              linetype = "dashed", 
              color = "black") +
-  scale_x_discrete(labels = c("Age", "Has illness", "Is male", "Has allergies", "Has Covid-19", "Had Covid-19")) +
   scale_fill_viridis_d() +
+  scale_x_discrete(labels = c("Age", "Has illness", "Is male", "Has allergies", 
+                              "Has Covid-19", "Had Covid-19")) +
   labs(title = "P-values for death ~ patient profile association",
        subtitle = "Dashed line indicates a p-value of 0.05",
        x = "Profile features",
@@ -103,18 +107,20 @@ death_v_profile_model_fig_pval <- death_v_profile_model %>%
 
 
 ### LogReg Visualization 1.2 ---------------------------------------------
+# Make log-odds ratio bar plot
 death_v_profile_model_fig_odds <- death_v_profile_model %>%
   filter(p.value < 0.05) %>%
   filter(term != "(Intercept)") %>%
-  ggplot(aes(x = fct_reorder(term, estimate),
+  ggplot(aes(x = fct_reorder(term, 
+                             estimate),
              y = estimate,
              fill = term)) +
   geom_bar(stat = "identity") +
   geom_hline(yintercept = 0,
              linetype = "dashed", 
              color = "black") +
-  scale_x_discrete(labels = c("Age", "Has illness", "Is male")) +
   scale_fill_viridis_d() +
+  scale_x_discrete(labels = c("Age", "Has illness", "Is male")) +
   labs(title = "Log-Odds ratio for death ~ patient profile association",
        subtitle = "A Log-Odds ratio above 0 means the feature is more common in patients who die",
        x = "Profile features",
@@ -133,18 +139,22 @@ death_v_profile_model_fig_odds <- death_v_profile_model %>%
 
 ## Logistic Regression 2 ----------------------------------------------
 # Modeling death outcome vs presence/absence of 20 most common symptoms 
+# to see whether the presence/absence of certain symptoms increase risk of dying
 death_v_symptoms_model <- merged_data_wide %>%
   glm(formula = str_c("DEATH ~ ", 
-                      str_c(symptoms, collapse = "+")), 
+                      str_c(symptoms, 
+                            collapse = "+")), 
       family = binomial) %>%
   tidy() %>%
   mutate(odds_ratio = exp(estimate))
   
 
 ### LogReg Visualization 2.1 -----------------------------------------
+# Make p-value plot
 death_v_symptoms_model_fig_pval <- death_v_symptoms_model %>%
   filter(term != "(Intercept)") %>%
-  ggplot(aes(x = fct_reorder(term, p.value),
+  ggplot(aes(x = fct_reorder(term, 
+                             p.value),
              y = -log(p.value),
              fill = term)) +
   geom_bar(stat = "identity") +
@@ -166,10 +176,12 @@ death_v_symptoms_model_fig_pval <- death_v_symptoms_model %>%
         plot.margin = margin(10, 10, 10, 20))
 
 ### LogReg Visualization 2.2 -----------------------------------------
+# Make log-odds ratio plot
 death_v_symptoms_model_fig_odds <- death_v_symptoms_model %>%
   filter(p.value < 0.05) %>%
   filter(term != "(Intercept)") %>%
-  ggplot(aes(x = fct_reorder(term, estimate),
+  ggplot(aes(x = fct_reorder(term, 
+                             estimate),
              y = estimate,
              fill = term)) +
   geom_bar(stat = "identity") +
@@ -197,46 +209,33 @@ death_v_symptoms_model_fig_odds <- death_v_symptoms_model %>%
         plot.margin = margin(10, 10, 10, 20))
 
 
-
-
-## Interactions -----------------------------------------------
-death_v_symptoms_interactions <- merged_data_wide %>%
-  glm(formula = DIED ~ 
-        (DYSPNOEA + PAIN_IN_EXTREMITY + DIZZINESS + FATIGUE + 
-           INJECTION_SITE_ERYTHEMA + INJECTION_SITE_PRURITUS + 
-           INJECTION_SITE_SWELLING + CHILLS + RASH + HEADACHE + INJECTION_SITE_PAIN +
-           NAUSEA + PAIN + PYREXIA + MYALGIA + ARTHRALGIA + PRURITUS + ASTHENIA + 
-           VOMITING)^2, 
-      family = binomial) %>%
-  tidy() %>%
-  mutate(odds_ratio = exp(estimate))
-
-
-
-
 ## Many LogRegs ---------------------------------------------
 # How much more/less likely is it to get each of the symptoms
-# if you have taken an antiinflamatory?
+# if you have taken an anti-inflammatory?
 symptoms_v_antiinflamatory_model <- merged_data_long %>%
-  select(TAKES_ANTIINFLAMATORY, SYMPTOM, SYMPTOM_VALUE) %>%
+  select(SYMPTOM, SYMPTOM_VALUE, TAKES_ANTIINFLAMATORY) %>%
   group_by(SYMPTOM) %>%
   nest %>% 
   ungroup %>%
-  mutate(mdl = map(data, ~glm(TAKES_ANTIINFLAMATORY ~ SYMPTOM_VALUE,
-                              data = .x,
-                              family = binomial(link = "logit")))) %>%
-  mutate(mdl_tidy = map(mdl, ~tidy(.x, conf.int = TRUE))) %>% 
+  mutate(mdl = map(data, 
+                   ~glm(SYMPTOM_VALUE ~ TAKES_ANTIINFLAMATORY,
+                        data = .x,
+                        family = binomial(link = "logit")))) %>%
+  mutate(mdl_tidy = map(mdl, 
+                        ~tidy(.x, conf.int = TRUE))) %>% 
   unnest(mdl_tidy) %>%
   filter(term != "(Intercept)") %>%
   mutate(odds_ratio = exp(estimate)) %>%
   mutate(identified_as = case_when(p.value < 0.05 ~ "Significant",
                                    TRUE ~ "Non-significant"),
          symptom_label = case_when(identified_as == "Significant" ~ as.character(SYMPTOM),
-                                   identified_as == "Non-significant" ~ "")) %>% 
-  mutate(neg_log10_p = -log10(p.value)) %>%
+                                   identified_as == "Non-significant" ~ ""),
+         neg_log10_p = -log10(p.value)) %>%
   select(-c(data, mdl)) # Nested columns are removed bc otherwise we can't save the csv
 
+
 ### Many LogRegs Visualization 1 ---------------------------
+# Make Manhattan plot
 symptoms_v_antiinflamatory_model_fig_manhattan <- symptoms_v_antiinflamatory_model %>% 
   ggplot(aes(x = SYMPTOM,
              y = neg_log10_p,
@@ -254,25 +253,28 @@ symptoms_v_antiinflamatory_model_fig_manhattan <- symptoms_v_antiinflamatory_mod
         plot.title = element_text(hjust = 0.5),
         plot.subtitle = element_text(hjust = 0.5),
         plot.margin = margin(10, 10, 10, 20)) +
-  labs(title = "P-values for symptom ~ takes anti-inflamatory association",
+  labs(title = "P-values for symptom ~ takes anti-inflammatory association",
        subtitle = "Dashed line indicates a p-value of 0.05",
        x = "Symptom",
        y = "-log10(p)")
 
 ### Many LogRegs Visualization 2 ---------------------------
+# Make p-value plot
 symptoms_v_antiinflamatory_model_fig_odds <- symptoms_v_antiinflamatory_model %>%
   filter(p.value < 0.05) %>%
   filter(term != "(Intercept)") %>%
-  ggplot(aes(x = fct_reorder(SYMPTOM, estimate),
+  ggplot(aes(x = fct_reorder(SYMPTOM, 
+                             estimate),
              y = estimate,
-             fill = term)) +
+             fill = SYMPTOM)) +
   geom_bar(stat = "identity") +
   geom_hline(yintercept = 0,
              linetype = "dashed", 
              color = "black") +
   scale_fill_viridis_d() +
-  labs(title = "Log-Odds ratio for symptom ~ takes anti-inflamatory",
-       subtitle = "A Log-Odds ratio above 0 means the symtom is more common people who take anti-inflamatories",
+  labs(title = "Log-Odds ratio for symptom ~ takes anti-inflammatory",
+       subtitle = "A Log-Odds ratio above 0 means the symptom is more common in 
+       people who take anti-inflamatories",
        x = "Symptoms",
        y = "Log-Odds ratio",
        caption = "Only symptoms with a p-value < 0.05 are shown.") +
@@ -285,7 +287,6 @@ symptoms_v_antiinflamatory_model_fig_odds <- symptoms_v_antiinflamatory_model %>
         plot.subtitle = element_text(hjust = 0.5),
         plot.margin = margin(10, 10, 10, 20))
   
-
 
 
 # Write data --------------------------------------------------------------
@@ -319,13 +320,16 @@ ggsave(death_v_symptoms_model_fig_odds,
        height = 5,
        width = 10)
 
-# Symptoms vs. anti-inflamatory
+
+# Symptoms vs. anti-inflammatory
 write_csv(symptoms_v_antiinflamatory_model,
           file = "results/symptoms_v_antiinflamatory_model.csv")
+
 ggsave(symptoms_v_antiinflamatory_model_fig_manhattan, 
        file = "results/symptoms_v_antiinflamatory_model_fig_manhattan.png",
        height = 5,
        width = 10)
+
 ggsave(symptoms_v_antiinflamatory_model_fig_odds, 
        file = "results/symptoms_v_antiinflamatory_model_fig_odds.png",
        height = 5,
