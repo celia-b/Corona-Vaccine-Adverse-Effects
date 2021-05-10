@@ -4,10 +4,8 @@ rm(list = ls())
 
 # Load libraries ----------------------------------------------------------
 library("tidyverse")
-library("cowplot")
 library("patchwork")
 library("scales")
-library("viridis")
 library("ggridges")
 
 
