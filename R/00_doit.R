@@ -6,4 +6,5 @@ source(file = "R/04_analysis_visualizations.R")
 source(file = "R/04_analysis_pca.R")
 source(file = "R/04_analysis_regressions.R")
 source(file = "R/04_analysis_tests.R")
-rmarkdown::render("doc/presentation.Rmd", output_format = NULL)
+rmarkdown::render("doc/presentation.Rmd", 
+                  output_format = NULL)
