@@ -74,7 +74,7 @@ patients_clean <- patients %>%
                              TRUE ~ CUR_ILL))
 
 
-## 2. Symtoms ---------------------------------------------------------------
+## 2. Symptoms ---------------------------------------------------------------
 # Remove columns containing symptom versions
 
 symptoms_clean <- symptoms %>%
