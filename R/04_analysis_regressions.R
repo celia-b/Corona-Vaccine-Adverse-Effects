@@ -229,8 +229,8 @@ symptoms_v_antiinflamatory_model <- merged_data_long %>%
          SYMPTOM_VALUE, 
          TAKES_ANTIINFLAMATORY) %>%
   group_by(SYMPTOM) %>%
-  nest %>% 
-  ungroup %>%
+  nest() %>% 
+  ungroup() %>%
   mutate(mdl = map(data, 
                    ~glm(SYMPTOM_VALUE ~ TAKES_ANTIINFLAMATORY,
                         data = .x,
