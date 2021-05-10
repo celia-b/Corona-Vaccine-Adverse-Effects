@@ -7,9 +7,8 @@ library("tidyverse")
 library("cowplot")
 library("patchwork")
 library("scales")
-library("broom")
-library("infer")
 library("viridis")
+library("ggridges")
 
 
 # Define functions --------------------------------------------------------
@@ -33,177 +32,106 @@ merged_data_long <- read_csv(file = gzfile("data/03_merged_data_long.csv.gz"),
 
 # Convert variables to factors
 merged_data_wide <- merged_data_wide %>% 
-  mutate_if(is.character, as.factor) %>%
-  mutate_if(is.logical, as.factor)
+  mutate_if(is.character,
+            as.factor) %>%
+  mutate_if(is.logical,
+            as.factor)
 
 # Convert variables to factors
 merged_data_long <- merged_data_long %>%
-  mutate_if(is.character, as.factor) %>%
-  mutate_if(is.logical, as.factor)
+  mutate_if(is.character,
+            as.factor) %>%
+  mutate_if(is.logical,
+            as.factor)
 
-# Use top_n_symptoms() function to get vector of top 20 symptoms occurring in data set.
-# Use capitalize() function to capitalize elements and replace spaces with _
-symptoms <- top_n_symptoms(data = symptoms_clean, n_symp = 20) %>%
-  capitalize()
+# Use top_n_symptoms_func() function to get vector of top 20 symptoms occurring in data set.
+# Use format_func() function to capitalize vector elements and replace spaces with _
+symptoms <- top_n_symptoms_func(data = symptoms_clean, 
+                                n_symp = 20) %>%
+  format_func()
 
 
 # Visualise data ----------------------------------------------------------
 
-## AGE DISTRIBUTION -------------------------------
+## 1. Age distribution -------------------------------------------------------
 
-# Age 
+# Make density plot showing the age distribution within the data set
 age_dist <- merged_data_wide %>%
-  ggplot(aes(AGE_YRS, 
-             stat(count))) +
-  geom_density(color="black", fill="#00846b",alpha = 0.5) +
+  ggplot(aes(x = AGE_YRS, 
+             y = stat(count))) +
+  geom_density(color = "black", 
+               fill = "#00846b",
+               alpha = 0.5) +
   labs(x = "Age (years)",
        y = "Count",
        title = "Age distribution of the subjects in the dataset") +
-  theme_minimal(base_family = "Avenir", base_size = 12) +
-  theme(plot.title = element_text(size=13))
+  theme_minimal(base_family = "Avenir",
+                base_size = 12) +
+  theme(plot.title = element_text(size = 13))
                
-## SYMPTOMS AFTER N DAYS -------------------------------------------------
 
-## Distribution of the number of days after receiving the vaccine
-## when symptoms appear.
+## 2. Symptoms after n days -------------------------------------------------
+
+### 2.1 Bar plot ------------------------------------------------------------
+
+# Make bar plot showing the distribution of number of days after receiving a
+# vaccine that symptoms appear
 symptoms_after <- merged_data_wide %>%
-  select(VAERS_ID, AGE_CLASS, SEX, SYMPTOMS_AFTER, VAX_MANU) %>%
+  select(VAERS_ID,
+         SYMPTOMS_AFTER) %>%
   arrange(SYMPTOMS_AFTER) %>%
-  filter(SYMPTOMS_AFTER < 20) %>%
-  ggplot(aes(SYMPTOMS_AFTER, stat(prop))) +
-  geom_bar() +
-  scale_y_continuous(labels = percent) +
+  filter(SYMPTOMS_AFTER < 15) %>%
+  ggplot(aes(x = SYMPTOMS_AFTER,
+             y = stat(count))) +
+  geom_bar(fill = "#1E9B8AFF" ,
+           alpha = 0.7) +
   labs(x = "Days after vaccination",
-       y = "Relative ocurrence")
+       y = "Count") +
+  theme_minimal(base_family = "Avenir",
+                base_size = 12) 
 
 
-## By age class
-# I'm not convinced this plot looks nice --> maybe facet_wrap it? make it into heatmap?
-# Delete ?
+### 2.2 Density plot grouped by age class  --------------------------------------
+
+# Make density plots showing the distribution of number of days after receiving 
+# a vaccine that symptoms appear, grouped by age class
 symptoms_after_age <- merged_data_wide %>%
-  select(VAERS_ID, AGE_CLASS, SEX, SYMPTOMS_AFTER, VAX_MANU) %>%
+  select(AGE_CLASS,
+         SYMPTOMS_AFTER) %>%
   arrange(SYMPTOMS_AFTER) %>%
-  filter(SYMPTOMS_AFTER < 20) %>%
-  drop_na(AGE_CLASS) %>%
-  ggplot(aes(SYMPTOMS_AFTER, 
-             stat(prop), 
+  filter(SYMPTOMS_AFTER < 15) %>%
+  drop_na(AGE_CLASS) %>% 
+  ggplot(aes(x = SYMPTOMS_AFTER,
+             y = AGE_CLASS,
              fill = AGE_CLASS)) +
-  geom_bar(position = "dodge") +
-  #scale_y_continuous(labels = percent) +
-  labs(#subtitle = "Grouping by age class",
-    x = "Days after vaccination",
-    y = "Relative ocurrence") +
-  theme(axis.text.y = element_blank(),
-        axis.ticks.y = element_blank(),
-        axis.title.y = element_blank()) +
-  labs(fill = "Age class")
+  geom_density_ridges(alpha = 0.5) +
+  scale_fill_viridis_d() +
+  labs(fill = "Age class",
+       x = "Days after vaccination",
+       y = "Age class (years)") +
+  theme_minimal(base_family = "Avenir", 
+                base_size = 12) +
+  theme(legend.position = "right")
 
-# Patchwork
-# delete ?
-(symptoms_after + symptoms_after_age) + 
-  plot_annotation(title = "Days after vaccination when symptoms appear",
+
+### 2.3 Patchwork -------------------------------------------------------------
+
+# Patchwork the two above plots together
+symptoms_after_dist_age <- symptoms_after + 
+  symptoms_after_age + 
+  plot_annotation(title = "Distribution of the number of days after vaccination
+                  until symptom onset",
                   subtitle = NULL,
-                  caption = "(Symptoms that appear after day 20 are infrequent and not shown)") +
-  theme(plot.title = element_text(size = 24))
-
-
-## By manufacturer 
-# delete ?
-symptoms_after_manu <- merged_data_wide %>%
-  select(VAERS_ID, AGE_CLASS, SEX, SYMPTOMS_AFTER, VAX_MANU) %>%
-  arrange(SYMPTOMS_AFTER) %>%
-  filter(SYMPTOMS_AFTER < 20) %>%
-  ggplot(aes(SYMPTOMS_AFTER, 
-             stat(prop), 
-             fill = VAX_MANU)) +
-  geom_bar(position = "dodge") +
-  scale_y_continuous(labels = percent) +
-  labs(title = "Days after vaccination when symptoms appear.",
-       subtitle = "Grouping by manufacturer",
-       caption = NULL,
-       tag = NULL,
-       x = "Days after vaccination",
-       y = "Relative ocurrence") +
-  labs(fill = "Manufacturer")
-
-symptoms_after_manu
+                  caption = "Symptoms that appear after day 15 are infrequent 
+                  and not shown")
 
 
 
-## DEATH AFTER N DAYS ----------------------------------------------------
+## 3. Number of symptoms --------------------------------------------------------
 
-## Days after vaccination when symptoms appear.
-# delete ?
-death_after <- merged_data_wide %>%
-  select(VAERS_ID, AGE_CLASS, SEX, DIED_AFTER, VAX_MANU) %>%
-  arrange(DIED_AFTER) %>%
-  filter(DIED_AFTER < 30 & DIED_AFTER >= 0) %>%
-  ggplot(aes(DIED_AFTER, 
-             stat(prop))) +
-  geom_bar() +
-  scale_y_continuous(labels = percent) +
-  labs(title = "Days after vaccination when death occurs",
-       caption = "(Death after 30 days is infrequent and not shown)",
-       x = "Days after vaccination",
-       y = "Relative ocurrence")
+### 3.1 Grouped by age --------------------------------------------------------
 
-death_after
-
-
-## By age class --> Not informative (small sample size, < 5 in age classes)
-# delete ?
-merged_data_wide %>%
-  select(VAERS_ID, AGE_CLASS, SEX, DIED_AFTER, VAX_MANU) %>%
-  arrange(DIED_AFTER) %>%
-  filter(DIED_AFTER < 30 & DIED_AFTER >= 0) %>%
-  drop_na(AGE_CLASS) %>%
-  group_by(AGE_CLASS) %>%
-  count()
-
-## By manufacturer --> Again problematic because of small sample size in Janssen
-# delete?
-merged_data_wide %>%
-  select(VAERS_ID, AGE_CLASS, SEX, DIED_AFTER, VAX_MANU) %>%
-  arrange(DIED_AFTER) %>%
-  filter(DIED_AFTER < 30 & DIED_AFTER >= 0) %>%
-  group_by(VAX_MANU) %>%
-  count() # --> 16 (Janssen) vs 852 vs 690 (Moderna and Pfizer)
-
-# delete ?
-n_days_manu <- merged_data_wide %>%
-  select(VAERS_ID, AGE_CLASS, SEX, DIED_AFTER, VAX_MANU) %>%
-  arrange(DIED_AFTER) %>%
-  filter(DIED_AFTER < 30 & DIED_AFTER >= 0) %>%
-  ggplot(aes(DIED_AFTER, 
-             stat(prop), 
-             fill = VAX_MANU)) +
-  geom_bar(position = "dodge") +
-  scale_y_continuous(labels = percent) +
-  labs(title = "Days after vaccination when death occurs.",
-       subtitle = "Grouping by manufacturer",
-       caption = NULL,
-       tag = NULL,
-       x = "Days after vaccination",
-       y = "Relative ocurrence") +
-  labs(fill = "Manufacturer")
-
-n_days_manu
-
-
-## DEATH RATE ----------------------------------------------------------------
-# Out of the people who died, what proportion were already sick? 
-# delete ?
-merged_data_wide %>%
-  select(VAERS_ID, AGE_CLASS, SEX, DIED, HAS_ILLNESS, VAX_MANU) %>%
-  filter(DIED == "Y") %>%
-  ggplot(aes(HAS_ILLNESS)) + 
-  geom_bar() +
-  coord_flip()
-
-
-## NUMBER OF SYMPTOMS ----------------------------------------------------
-
-# Boxplot showing number of symptoms vs age
+# Box plot showing age vs number of symptoms
 nsymptoms_v_age <- merged_data_long %>%
   drop_na(AGE_CLASS) %>%
   ggplot(aes(x = AGE_CLASS,
@@ -212,7 +140,7 @@ nsymptoms_v_age <- merged_data_long %>%
   geom_boxplot(outlier.shape = NA, 
                alpha = 0.6) +
   scale_y_continuous(limits = c(0, 15)) +
-  scale_x_discrete(labels = c("0-15", "15-25", "25-40", "40-60", "60-80",
+  scale_x_discrete(labels = c("0-15", "15-25", "25-40", "40-60", "60-80", 
                               "80+")) +
   coord_flip() +
   scale_fill_viridis_d() +
@@ -225,7 +153,10 @@ nsymptoms_v_age <- merged_data_long %>%
         plot.subtitle = element_text(hjust = 0.5),
         plot.margin = margin(10, 30, 10, 10))
 
-# Boxplot showing total number of symptoms by sex
+
+### 3.2 Grouped by sex --------------------------------------------------------
+
+# Box plot showing sex vs total number of symptoms
 nsymptoms_v_sex <- merged_data_long %>%
   drop_na(SEX) %>%
   ggplot(aes(x = SEX,
@@ -245,7 +176,10 @@ nsymptoms_v_sex <- merged_data_long %>%
         plot.title = element_text(hjust = 0.5),
         plot.margin = margin(10, 30, 10, 10))
 
-# Boxplot showing total number of symptoms by vaccine manufacturer
+
+### 3.3 Grouped by vaccine manufacturer ---------------------------------------
+
+# Box plot showing vaccine manufacturer vs. total number of symptoms
 nsymptoms_v_manu <- merged_data_long %>%
   ggplot(aes(x = VAX_MANU,
              y = N_SYMPTOMS, 
@@ -265,25 +199,70 @@ nsymptoms_v_manu <- merged_data_long %>%
         plot.subtitle = element_text(hjust = 0.5),
         plot.margin = margin(10, 30, 10, 10))
 
+
+### 3.4 Patchwork -------------------------------------------------------------
+
 # Combine plots showing age/sex vs. number of symptoms into one
 # figure using patchwork
 nsymptoms_age_sex <- (nsymptoms_v_age + nsymptoms_v_sex) +
   plot_annotation(caption = "Outliers not included")
 
 
-## TYPES OF SYMPTOMS ----------------------------------------------------------
+## 4. Types of symptoms --------------------------------------------------------
+
+### 4.1 Grouped by age
+
+# Heat map showing the relative occurrence of top 20 symptoms by age. 
+# Counts are relative to the number of people in the respective age groups.
+symptom_types_v_age <- merged_data_long %>%
+  drop_na(AGE_CLASS) %>%
+  count(AGE_CLASS, 
+        SYMPTOM, 
+        SYMPTOM_VALUE) %>%
+  group_by(SYMPTOM, 
+           AGE_CLASS) %>%
+  mutate(total = sum(n)) %>%
+  filter(SYMPTOM_VALUE == TRUE) %>%
+  summarise(prop = n/total, 
+            .groups = "rowwise") %>%
+  ggplot(aes(x = AGE_CLASS, 
+             y = fct_reorder(SYMPTOM, 
+                             desc(prop)),
+             fill = prop)) +
+  geom_tile() +
+  scale_x_discrete(labels = c("0-15", "15-25", "25-40", "40-60", "60-80",
+                              "80+")) +
+  scale_fill_viridis_c() +
+  labs(title = "Age vs. types of symptoms",
+       x = "Age (years)",
+       y = "Top 20 symptoms",
+       fill = "Relative occurence") +
+  theme_minimal(base_family = "Avenir") +
+  theme(axis.text.x = element_text(angle = 45, 
+                                   hjust = 1, 
+                                   size = 9), 
+        plot.title = element_text(hjust = 0.5),
+        plot.margin = margin(10, 10, 10, 10))
+
+
+### 4.2 Grouped by sex --------------------------------------------------------
 
 # Bar chart showing relative occurrence of the top 20 symptoms by sex. 
 # Symptom counts are relative to the number of individuals from the respective sex, 
 # as there are more females than males in the dataset.
 symptom_types_v_sex <- merged_data_long %>%
-  count(SEX, SYMPTOM, SYMPTOM_VALUE) %>%
-  group_by(SYMPTOM, SEX) %>%
+  count(SEX, 
+        SYMPTOM, 
+        SYMPTOM_VALUE) %>%
+  group_by(SYMPTOM, 
+           SEX) %>%
   mutate(total = sum(n)) %>%
-  filter(SYMPTOM_VALUE == TRUE, !is.na(SEX)) %>%
+  filter(SYMPTOM_VALUE == TRUE, 
+         !is.na(SEX)) %>%
   summarise(prop = n/total, 
             .groups = "rowwise") %>%
-  ggplot(aes(x = fct_reorder(SYMPTOM, desc(prop)),
+  ggplot(aes(x = fct_reorder(SYMPTOM, 
+                             desc(prop)),
              y = prop,
              fill = SEX)) +
   geom_bar(position = position_dodge2(width = 1.5),
@@ -303,17 +282,23 @@ symptom_types_v_sex <- merged_data_long %>%
         plot.margin = margin(10, 10, 10, 10))
 
 
+### 4.2 Grouped by vaccine manufacturer ----------------------------------------
+
 # Bar chart showing relative occurrence of the top 20 symptoms by manufacturer. 
 # Symptom counts are relative to the number of individuals vaccinated with the 
 # respective vaccine. 
 symptom_types_v_manu <- merged_data_long %>%
-  count(VAX_MANU, SYMPTOM, SYMPTOM_VALUE) %>%
-  group_by(VAX_MANU, SYMPTOM) %>%
+  count(VAX_MANU, 
+        SYMPTOM, 
+        SYMPTOM_VALUE) %>%
+  group_by(VAX_MANU, 
+           SYMPTOM) %>%
   mutate(total = sum(n)) %>%
   filter(SYMPTOM_VALUE == TRUE) %>%
   summarise(prop = n/total, 
             .groups = "rowwise") %>%
-  ggplot(aes(x = reorder(SYMPTOM, desc(prop)),
+  ggplot(aes(x = reorder(SYMPTOM, 
+                         desc(prop)),
              y = prop,
              fill = VAX_MANU)) +
   geom_bar(position = position_dodge2(width = 1.5),
@@ -333,68 +318,20 @@ symptom_types_v_manu <- merged_data_long %>%
         plot.margin = margin(10, 10, 10, 10))
 
 
-# Heatmap showing the relative occurrence of top 20 symptoms by age. 
-# Counts are relative to the number of people in the respective age groups.
-symptom_types_v_age <- merged_data_long %>%
-  drop_na(AGE_CLASS) %>%
-  count(AGE_CLASS, SYMPTOM, SYMPTOM_VALUE) %>%
-  group_by(SYMPTOM, AGE_CLASS) %>%
-  mutate(total = sum(n)) %>%
-  filter(SYMPTOM_VALUE == TRUE) %>%
-  summarise(prop = n/total, 
-            .groups = "rowwise") %>%
-  ggplot(aes(x = AGE_CLASS, 
-             y = fct_reorder(SYMPTOM, desc(prop)),
-             fill = prop)) +
-  geom_tile() +
-  scale_x_discrete(labels = c("0-15", "15-25", "25-40", "40-60", "60-80",
-                              "80+")) +
-  scale_fill_viridis_c() +
-  labs(title = "Age vs. types of symptoms",
-       x = "Age (years)",
-       y = "Top 20 symptoms",
-       fill = "Relative occurence") +
-  theme_minimal(base_family = "Avenir") +
-  theme(axis.text.x = element_text(angle = 45, 
-                                   hjust = 1, 
-                                   size = 9), 
-        plot.title = element_text(hjust = 0.5),
-        plot.margin = margin(10, 10, 10, 10))
-
-
-## AGE DISTRIBUTION OF PEOPLE WHO ... --------------------------
-
-# Total people
-merged_data_wide %>%
-  ggplot(aes(x = AGE_YRS, y = ..density..)) +
-  geom_histogram(bins = 116) +
-  geom_density(color = "blue") +
-  labs(title = "Age distribution of subjects in the dataset", 
-       x = "Age (years)",
-       y = "Proportion")
-
-# People who died -- > Not accounting for different age group sizes
-merged_data_wide %>%
-  filter(DIED == "Y") %>%
-  drop_na() %>%
-  ggplot(aes(AGE_YRS)) +
-  geom_density()
-
-# People who had to go to the hospital after vaccination 
-# -- > Not accounting for different age group sizes
-merged_data_wide %>%
-  filter(HOSPITAL == "Y") %>%
-  drop_na() %>%
-  ggplot(aes(AGE_YRS)) +
-  geom_density()
-
-
 
 # Write data --------------------------------------------------------------
 
 # Save age distribution plot
-ggsave(age_dist, file = "results/age_dist.png")
+ggsave(age_dist,
+       file = "results/age_dist.png",
+       height = 4,
+       width = 7)
 
+# Save days after vaccination plot
+ggsave(symptoms_after_dist_age,
+        file = "results/symptoms_after_dist_age.png",
+        height = 5,
+        width = 10)
 
 # Save number of symptoms plots
 ggsave(nsymptoms_age_sex, 
@@ -407,13 +344,12 @@ ggsave(nsymptoms_v_manu,
        height = 5,
        width = 8)
 
+# Save types of symptoms plots
 ggsave(symptom_types_v_age, 
        file = "results/symptom_types_v_age.png",
        height = 8,
        width = 9)
 
-
-# Save types of symptoms plots
 ggsave(symptom_types_v_sex, 
        file = "results/symptom_types_v_sex.png",
        height = 5,
