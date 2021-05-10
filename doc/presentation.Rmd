@@ -1,6 +1,7 @@
 ---
-title: "R for Bio Data Science - Final Project"
-author: Alexandra Weronika Balicki, Celia Burgos Sequeros, Isabel Diaz-Pines Cort and Sofie Schovsbo
+title: 22100 - R for Bio Data Science
+subtitle: Final Project
+author: Alexandra Weronika Balicki, Celia Burgos Sequeros, Isabel Diaz-Pines Cort & Sofie Schovsbo
 
 date: May 10, 2021
 output: 
@@ -262,9 +263,9 @@ clean %>%
 - Proportions tests with **chisq.test()**
 
 
-# Exploratory Data Analysis - Visualization
+# Exploratory Data Analysis | Visualization
 
-## Visualization - Age, sex and manufacturer distribution
+## Visualization | Age, sex and manufacturer distribution
 
 
 ```{r age_dist, echo = FALSE, out.width = "500px", out.height = "300px", out.extra = 'style = "float:left;padding:20px"'}
@@ -282,8 +283,7 @@ merged_data_wide %>%
 ```
 
 
-
-## Visualization - Days until onset of symptoms vs. Age Group
+## Visualization | Days until onset of symptoms vs. Age Group
 
 Hypothesis: two peaks corresponding to the innate and acquired immune response
 
@@ -293,56 +293,56 @@ include_graphics("../results/symptoms_after_dist_age.png")
 ```
 
 
-## Visualization - Age/sex vs. number of symptoms
+## Visualization | Age/sex vs. number of symptoms
 
 ```{r nsymptoms_age_sex, echo = FALSE, out.width = "800px", out.height= "350px"}
 include_graphics("../results/nsymptoms_age_sex.png")
 ```
 
 
-## Visualization - Vaccine manufacturer vs. number of symptoms
+## Visualization | Vaccine manufacturer vs. number of symptoms
 
 ```{r nsymptoms_v_manu, echo = FALSE, out.width = "650px", out.height= "400px"}
 include_graphics("../results/nsymptoms_v_manu.png")
 ```
 
 
-## Visualization - Age vs. types of symptoms
+## Visualization | Age vs. types of symptoms
 
 ```{r symptom_types_v_age, echo = FALSE, out.width = "550px", out.height= "450px"}
 include_graphics("../results/symptom_types_v_age.png")
 ```
 
 
-## Visualization - Sex vs. types of symptoms
+## Visualization | Sex vs. types of symptoms
 
 ```{r symptom_types_v_sex, echo = FALSE, out.width = "750px", out.height= "400px"}
 include_graphics("../results/symptom_types_v_sex.png")
 ```
 
 
-## Visualization - Vaccine manufacturer vs. types of symptoms
+## Visualization | Vaccine manufacturer vs. types of symptoms
 
 ```{r symptom_types_v_manu, echo = FALSE, out.width = "875px", out.height= "455px"}
 include_graphics("../results/symptom_types_v_manu.png")
 ```
 
-# Exploratory Data Analysis - Principal Component Analysis
+# Exploratory Data Analysis | Principal Component Analysis
 
-## PCA - Important tools used
+## PCA | Important tools used
 Important verbs and tools used:
 
 - prcomp()
 - augment ()
 
-## PCA - PCA plot and rotation matrix 
+## PCA | PCA plot and rotation matrix 
 
 ```{r, fig.show="hold", out.width="50%", out.height= "400px"}
 include_graphics("../results/pca_plot.png")
 include_graphics("../results/rotation_matrix.png")
 ```
 
-## PCA - Scree plot 
+## PCA | Scree plot 
 
 ```{r scree_plot, echo = FALSE, out.width = "750px", out.height= "400px"}
 include_graphics("../results/scree_plot.png")
@@ -370,7 +370,7 @@ model <- read_csv("../results/death_v_profile_model.csv")
 model
 ```
 
-## Logistic Regression: | Death ~ Patient Profile
+## Logistic Regression | Death ~ Patient Profile
 
 Is the patient's profile (sex, age, allergic/not, ill/not, has/had covid/not) correlated with death?
 
