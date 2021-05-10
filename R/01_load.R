@@ -11,10 +11,12 @@ source(file = "R/99_project_functions.R")
 
 
 # Load data ---------------------------------------------------------------
+
+# Load in data sets and manually assign column types to those misinterpreted by R
 patients_raw <- read_csv(file = "data/_raw/2021VAERSDATA.csv", 
                          col_types = cols("BIRTH_DEFECT" = col_character(),
                                           "X_STAY" = col_character(),
-                                          "RPT_DATE" = col_date(format="%m/%d/%Y"),
+                                          "RPT_DATE" = col_date(format = "%m/%d/%Y"),
                                           "V_FUNDBY" = col_character(),
                                           "ER_VISIT" = col_character(),
                                           "HOSPDAYS" = col_character()),
@@ -25,7 +27,7 @@ patients_raw <- read_csv(file = "data/_raw/2021VAERSDATA.csv",
                                 "NO KNOWN", "no known", "No known", "No Known", 
                                 "None known", "none known", "NONE KNOWN", "None Known", 
                                 "None reported", "Not applicable",
-                                "No", "NO", "no")) # There is also "no", but that might interfere with certain columns where we do want yes/no --> change them to Y/N
+                                "No", "NO", "no")) 
 
 symptoms_raw <- read_csv(file = "data/_raw/2021VAERSSYMPTOMS.csv")
 
@@ -33,9 +35,6 @@ vaccines_raw <- read_csv(file = "data/_raw/2021VAERSVAX.csv",
                          col_types = cols("VAX_DOSE_SERIES" = col_character()),
                          na = c("UNK", "N/A"))
 
-
-# Wrangle data ------------------------------------------------------------
- 
 
 # Write data --------------------------------------------------------------
 write_csv(x = patients_raw,

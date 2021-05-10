@@ -12,6 +12,7 @@ source(file = "R/99_project_functions.R")
 
 # Load data ---------------------------------------------------------------
 
+# Load in data sets and manually assign column types to those misinterpreted by R
 patients_clean <- read_csv(file = gzfile("data/02_patients_clean.csv.gz"), 
                            col_types = cols(VAX_DATE = col_date(format = "%m/%d/%Y"),
                                             DATEDIED = col_date(format = "%m/%d/%Y")))
