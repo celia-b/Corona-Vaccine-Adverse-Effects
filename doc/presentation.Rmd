@@ -23,31 +23,27 @@ library(knitr)
 ```
 
 
-## Overview of presentation
-1. Introduction to COVID-19 World Vaccine Adverse Reactions Dataset
-2. Project work flow
-3. Project methods
+## Project Outline
+1. Introduction
+2. Materials and methods
+3. Results and discussion
 
-    3.1 Overview of important packages and verbs used
-    
-    3.2 Challenges and solutions - Load, Clean and Augment
-    
-4. Visualizations
-5. Modeling
-6. Conclusion and discussion
+  3.1 Exploratory data analysis
+  3.2 Modeling
+  
+4. Conclusion
 
 
-# Introduction | COVID-19 World Vaccine Adverse Reactions
-
+# Introduction
 
 ## Introduction: Dataset | COVID-19 World Vaccine Adverse Reactions
 
 - Data from the Vaccine Adverse Event Reporting System (VAERS) created by the Food and Drug Administration (FDA) and Centers for Disease Control and Prevention (CDC) 
-- Contains 3 data sets: 
+- Contains 3 datasets: 
     1. PATIENTS.CSV
     2. VACCINES.CSV
     3. SYMPTOMS.CSV
-- Data sets connected by patient IDs (VAERS_ID)
+- Datasets connected by patient IDs (VAERS_ID)
 
 ```{r message=TRUE, warning=TRUE, include=FALSE}
 patients <- read_csv(file = gzfile("../data/01_patients.csv.gz"), 
@@ -88,7 +84,7 @@ vaccines %>%
 
 
 ## Introduction: Dataset | COVID-19 World Vaccine Adverse Reactions
-
+ 
 **SYMPTOMS.CSV**: Contains information about the symptoms experienced after vaccination
 
 ```{r echo=FALSE}
@@ -99,7 +95,7 @@ symptoms %>%
 
 
 ## Introduction: Aim
-The aim of this project is to gain insight on the adverse effects of different Covid-19 vaccines and answer the following questions:
+The aim of this project is to gain insight on the adverse effects of different Covid-19 vaccines and answer questions such as:
 
 - Do some vaccines cause more/different symptoms than others?
 
@@ -109,7 +105,7 @@ The aim of this project is to gain insight on the adverse effects of different C
 
 - Is patient profile correlated with death?
 
-- Does taking anti-inflamatories reduce the chance of having symptoms?
+- Does taking anti-inflammatory drugs reduce the chance of having symptoms?
 
 
 # Methods
@@ -123,101 +119,25 @@ include_graphics("../doc/workflow.jpeg")
 1. Load data sets (patients, vaccines, symptoms)
 2. Clean each data set individually
 3. Augment and merge the data sets
-4. Make visualizations
-5. Do modelling
+4. Exploratory data analysis
+
+ - Visualizations
+ - PCA
+ 
+5. Modelling
+
+  - Logistic regressions
+  - Proportion testing
 
 
-## Methods: Important packages and verbs
-<style>
-.column-left{
-  float: left;
-  width: 30%;
-  text-align: left;
-  margin: 0 4%;
-}
+## Methods: Challenges and solutions 
 
-.column-center{
-  display: inline-block;
-  width: 30%;
-  text-align: left;
-}
-.column-right{
-  float: right;
-  width: 30%;
-  text-align: left;
-}
-</style>
+### Cleaning
 
-
-<div class="column-left">
-### Load and clean
-
-- **readr**: read_csv(), write_csv()
-- **dyplyr**: filter(), select(), distinct(), mutate()
-- **tidyr**: replace_na()
-</div>
-
-
-<div class="column-center">
-### Augment
-
-  - **dplyr**: filter(), select(), mutate(), case_when(), arrange(), group_by(), count(), distinct(), summarise(), drop_na(), rename()
-  - **tidyr**: pivot_longer(), pivot_wider(), inner_join(), full_join(), pluck() 
-  - **stringr**: regular expressions, str_c(), str_replace(), str_replace()
-</div>
-
-
-<div class="column-right">
-### Analysis
-
-- **ggplot**: geom_bar(), geom_boxplot(), geom_tile(), geom_segment(), theme_minimal()
-- **forcats**: fct_reorder()
-- **scales**
-- **patchwork**
-- **viridis**
-- **stats (?)**: glm(), prcomp()
-- **broom**: tidy(), glance()
-- **purrr**: map(), nest()
-</div>
-
-
-
-## Methods: Dataset loading | Challenges and solutions 
-
-#### Patients, vaccines and symptoms datasets:
-
-- Multiple **large files** &rightarrow; keep them compressed as **gz-files** and only decompress when reading into R
-- Wrong **column types** automatically assigned by R &rightarrow; **manually assign** appropriate column types  
-- **NA strings** ("NA", "N/A", "Unknown", " "...) &rightarrow; **assign NAs** when loading data
-
-
-
-## Methods: Dataset cleaning | Challenges and solutions 
-
-#### Patients dataset:
-
-- Unwanted **dirty/uniformative columns** &rightarrow; **select(-c**(CAGE_YR, CAGE_MO, RPT_DATE ... ))
 - **NAs** that should be interpreted as "no" &rightarrow; **replace_na**(ALLERGIES = "N") 
-- Row **duplications** &rightarrow; **distinct()**
-
-#### Vaccines dataset:
-
-- Contains **non-COVID19** vaccines &rightarrow; **filter**(VAX_TYPE == "COVID19")
-- Contains vaccines of **unknown manufacturer** &rightarrow; **filter**(VAX_MANU != "UNKNOWN MANUFACTURER")
-- **Row duplications** &rightarrow; distinct() 
 - **Duplicated IDs** &rightarrow; **add_count**(VAERS_ID) **%>% filter**(n == 1) **%>% select**(-n)
-- **Inconsistent naming** of vaccines &rightarrow; **rename()**
-- **Redundant and dirty** columns &rightarrow; **select(-c(**VAX_NAME, VAX_LOT))
 
-#### Symptoms dataset:
-
-- SYMPTOMVERSION1-5 columns are **unneccessary** &rightarrow; **select(-c())**
-
-
-
-## Methods: Data augmentation | Challenges and solutions
-
-#### Patients data set:
+### Augment
 
 - Columns containing **long string descriptions** &rightarrow; Make **tidy categorical (Y/N) variables** 
 
@@ -232,41 +152,13 @@ clean %>%
            VAERS_ID == '0916996')
 ```
 
+- **Too many symptoms** and untidy &rightarrow; extract **top 20 occurring symptoms** and turn them into **tidy categorical (TRUE/FALSE) columns**
 
-- **Dirty, redundant and uninformative** columns &rightarrow; **select(-c**(ALLERGIES, OTHER_MEDS ... )) 
-
-#### Symptoms data set:
-
-- **Too many symptoms** and dirty &rightarrow; extract **top 20 occurring symptoms** and turn them into **tidy categorical (TRUE/FALSE) columns**
-- Calculate **total number of symptoms** per patient &rightarrow; *mutate()* to add column (N_SYMPTOMS)
-
-
-
-## Methods: Data augmentation | Merging datasets 
-
-- For visualizing, we need the **wide format** &rightarrow; **inner_join**(by = VAERS_ID)
-- For modelling, symptoms must be in **long-format** &rightarrow; **pivot_longer()** to create:
-  - SYMPTOM column: top 20 symptom names
-  - SYMPTOM_VALUE column: TRUE/FALSE
-
-
-
-## Methods: Analysis
-### Exploratory data analysis
-
-- Visualizations with **ggplot()**
-- Reduction of dimensionality (Principal Component Analysis) with **prcomp()**
-
-### Modelling and statistics
-
-- Logistic regression models with **glm()**
-- Proportions tests with **chisq.test()**
 
 
 # Exploratory Data Analysis | Visualization
 
-## Visualization | Age, sex and manufacturer distribution
-
+## Visualization | Group representation: Age, sex and manufacturer
 
 ```{r age_dist, echo = FALSE, out.width = "60%", out.height = "350px", fig.show='hold', out.extra='style = "float:right;padding:10px"'}
 include_graphics("../results/age_dist.png")
@@ -284,47 +176,47 @@ merged_data_wide %>%
 ```
 
 
-## Visualization | Days until onset of symptoms vs. Age Group
+## Visualization | When do symptoms appear?
 
-Hypothesis: two peaks corresponding to the innate and acquired immune response
-
-```{r symptoms_after_v_agegroup, echo = FALSE, out.width = "700px", out.height= "350px"}
+```{r symptoms_after_v_agegroup, echo = FALSE, out.width = "750px", out.height= "350px", fig.align = "center"}
 include_graphics("../results/symptoms_after_dist_age.png")
 
 ```
 
+Hypothesis: two peaks corresponding to the innate and acquired immune response - stronger immune response 
+
 
 ## Visualization | Age/sex vs. number of symptoms
 
-```{r nsymptoms_age_sex, echo = FALSE, out.width = "800px", out.height= "350px"}
+```{r nsymptoms_age_sex, echo = FALSE, out.width = "800px", out.height= "350px", fig.align = "center"}
 include_graphics("../results/nsymptoms_age_sex.png")
 ```
 
 
 ## Visualization | Vaccine manufacturer vs. number of symptoms
 
-```{r nsymptoms_v_manu, echo = FALSE, out.width = "650px", out.height= "400px"}
+```{r nsymptoms_v_manu, echo = FALSE, out.width = "650px", out.height= "400px", fig.align = "center"}
 include_graphics("../results/nsymptoms_v_manu.png")
 ```
 
 
 ## Visualization | Age vs. types of symptoms
 
-```{r symptom_types_v_age, echo = FALSE, out.width = "550px", out.height= "450px"}
+```{r symptom_types_v_age, echo = FALSE, out.width = "550px", out.height= "450px", fig.align = "center"}
 include_graphics("../results/symptom_types_v_age.png")
 ```
 
 
 ## Visualization | Sex vs. types of symptoms
 
-```{r symptom_types_v_sex, echo = FALSE, out.width = "750px", out.height= "400px"}
+```{r symptom_types_v_sex, echo = FALSE, out.width = "750px", out.height= "400px", fig.align = "center"}
 include_graphics("../results/symptom_types_v_sex.png")
 ```
 
 
 ## Visualization | Vaccine manufacturer vs. types of symptoms
 
-```{r symptom_types_v_manu, echo = FALSE, out.width = "875px", out.height= "455px"}
+```{r symptom_types_v_manu, echo = FALSE, out.width = "875px", out.height= "455px", fig.align = "center"}
 include_graphics("../results/symptom_types_v_manu.png")
 ```
 
@@ -345,7 +237,7 @@ include_graphics("../results/rotation_matrix.png")
 
 ## PCA | Scree plot 
 
-```{r scree_plot, echo = FALSE, out.width = "750px", out.height= "400px"}
+```{r scree_plot, echo = FALSE, out.width = "750px", out.height= "400px", fig.align = "center"}
 include_graphics("../results/scree_plot.png")
 ```
 
@@ -457,12 +349,12 @@ contingency_table2 <- read_csv("/cloud/project/results/contingency_table2.csv")
 
 Null hypothesis: the proportion of patients that died after getting one vaccine = the proportion of patients that died after getting another vaccine
 
-```{r echo=FALSE}
-contingency_table1
+```{r echo=FALSE, fig.show='hold', out.width="45%", fig.show='hold', out.extra='style = "float:right;padding:10px"'}
+include_graphics("/cloud/project/results/manu_v_death.png")
 ```
 
-```{r echo=FALSE, fig.show='hold', out.width="45%"}
-include_graphics("/cloud/project/results/manu_v_death.png")
+```{r echo=FALSE}
+contingency_table1
 ```
 
 
@@ -470,12 +362,12 @@ include_graphics("/cloud/project/results/manu_v_death.png")
 
 Null hypothesis: the proportion of males that died after vaccination = the proportion of females that died after vaccination
 
-```{r echo=FALSE, }
-contingency_table2
+```{r echo=FALSE, fig.show='hold', out.width="45%", fig.show='hold', out.extra='style = "float:right;padding:10px"'}
+include_graphics("/cloud/project/results/manu_v_death.png")
 ```
 
-```{r echo=FALSE, fig.show='hold', out.width="45%"}
-include_graphics("/cloud/project/results/manu_v_death.png")
+```{r echo=FALSE}
+contingency_table2
 ```
 
 
