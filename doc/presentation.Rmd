@@ -479,30 +479,6 @@ contingency_table2
 ```
 
 
-
-# 04_analysis_pca
-
-## 04_analysis_pca - Important tools used
-Important verbs and tools used: 
-
-
-- prcomp()
-- augment ()
-
-## 04_analysis_pca - PCA plot
-
-```{r pca_plot, echo = FALSE, out.width = "695px", out.height= "400px"}
-include_graphics("../results/pca_plot.png")
-```
-
-## 04_analysis_pca - Rotation matrix
-
-```{r rotation_matrix, echo = FALSE, out.width = "640px", out.height= "500px"}
-include_graphics("../results/rotation_matrix.png")
-```
-
-
-
 ## Conclusion and discussion
 
 
