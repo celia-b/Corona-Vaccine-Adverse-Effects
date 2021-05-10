@@ -483,7 +483,8 @@ contingency_table2
 # 04_analysis_pca
 
 ## 04_analysis_pca - Important tools used
-Important verbs and tools used:
+Important verbs and tools used: 
+
 
 - prcomp()
 - augment ()
