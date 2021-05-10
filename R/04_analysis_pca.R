@@ -52,13 +52,13 @@ pca_fit <- numeric_symptoms %>%
          center = TRUE)
 
 ## PC1 vs PC2 biplot -----------------------------------------------------------
-biplot <- pca_fit %>%
+pca_plot <- pca_fit %>%
   augment(classes) %>% 
   ggplot(aes(x = .fittedPC1, 
              y = .fittedPC2, 
              color = VAX_MANU)) + 
   geom_point(size = 0.5) +
-  labs(title = "PCA biplot",
+  labs(title = "PCA plot",
        x = "PC1", 
        y = "PC2") +
   scale_color_viridis_d(name = "Vaccine manufacturer", 
@@ -118,12 +118,11 @@ scree_plot <- pca_fit %>%
                 base_size = 10) +
   theme(plot.title = element_text(hjust = 0))
 
-  
 # Write data -------------------------------------------------------------------
 
 # Save biplot, rotation matrix plot and scree plot
-ggsave(biplot, 
-        file = "results/biplot.png", 
+ggsave(pca_plot, 
+        file = "results/pca_plot.png", 
         height = 6,
         width = 10)
 
