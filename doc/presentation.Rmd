@@ -269,8 +269,8 @@ include_graphics("../results/age_dist.png")
 
 ```
 ```{r message=FALSE, warning=FALSE, echo=FALSE, out.width="50%", out.extra='style = "float:right;padding:20px"'}
+merged_data_wide <- read_csv(file = gzfile("../data/merged_data_wide.csv.gz"))
 merged_data_wide %>% count (SEX)
-
 merged_data_wide %>% count (VAX_MANU)
 
 ```
