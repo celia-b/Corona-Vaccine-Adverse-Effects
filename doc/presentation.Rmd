@@ -1,6 +1,7 @@
 ---
-title: "R for Bio Data Science - Final Project"
-author: Alexandra Weronika Balicki, Celia Burgos Sequeros, Isabel Diaz-Pines Cort and Sofie Schovsbo
+title: 22100 - R for Bio Data Science
+subtitle: Final Project
+author: Alexandra Weronika Balicki, Celia Burgos Sequeros, Isabel Diaz-Pines Cort & Sofie Schovsbo
 
 date: May 10, 2021
 output: 
