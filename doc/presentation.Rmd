@@ -419,17 +419,24 @@ Chi-squared contingency table tests
 
 ```{r echo = FALSE, include=FALSE}
 contingency_table1 <- read_csv("/cloud/project/results/contingency_table1.csv")
+
 contingency_table2 <- read_csv("/cloud/project/results/contingency_table2.csv")
 ```
 
 
-```{r echo = FALSE}
-kable(list(contingency_table1,contingency_table2))
+```{r echo=FALSE, }
+contingency_table1
 ```
 
-```{r echo = FALSE, out.width="50%", fig.show='hold'}
+```{r echo=FALSE, }
+contingency_table2
+```
+
+
+```{r echo=FALSE, fig.show='hold', out.width="50%"}
 include_graphics(c("/cloud/project/results/manu_v_death.png", "/cloud/project/results/sex_v_death.png"))
 ```
+
 
 # 04_analysis_pca
 
@@ -463,9 +470,12 @@ include_graphics("../results/scree_plot.png")
 
 ## Conclusion and discussion
 
+
+
 ## References
 
-Dataset: https://www.kaggle.com/ayushggarg/covid19-vaccine-adverse-reactions?select=2021VAERSSYMPTOMS.csv
+Data set: https://www.kaggle.com/ayushggarg/covid19-vaccine-adverse-reactions?select=2021VAERSSYMPTOMS.csv
+
 Dataset user guide: https://vaers.hhs.gov/docs/VAERSDataUseGuide_November2020.pdf
 
 
