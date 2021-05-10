@@ -53,6 +53,6 @@ chisq_func <- function(variable1, variable2) {
     select(-!!variable1) %>% 
     chisq.test() %>% 
     tidy()
-}  
+} 
 
 

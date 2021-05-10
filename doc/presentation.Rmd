@@ -268,18 +268,19 @@ clean %>%
 ## Visualization | Age, sex and manufacturer distribution
 
 
-```{r age_dist, echo = FALSE, out.width = "500px", out.height = "300px", out.extra = 'style = "float:left;padding:20px"'}
+```{r age_dist, echo = FALSE, out.width = "60%", out.height = "350px", fig.show='hold', out.extra='style = "float:right;padding:10px"'}
 include_graphics("../results/age_dist.png")
 
 ```
 
-```{r message=FALSE, warning=FALSE, echo=FALSE, out.width="50%", out.extra='style = "float:right;padding:20px"'}
+```{r message=FALSE, warning=FALSE, echo=FALSE}
 merged_data_wide <- read_csv(gzfile("../data/03_merged_data_wide.csv.gz"))
 merged_data_wide %>% 
-  count (SEX)
+  count (SEX) 
 
 merged_data_wide %>% 
   count (VAX_MANU)
+  
 ```
 
 
@@ -411,7 +412,7 @@ include_graphics(c("../results/death_v_symptoms_model_fig_pval.png", "../results
 
 ## Many Logistic Regressions | Each Symptom ~ Takes Anti-Inflamatory
 
-Does taking antiiflamatories modify the chance of having symptoms?
+Does taking anti-inflamatories modify the chance of having symptoms?
 
 ```{r, eval = FALSE}
 merged_data_long %>%
@@ -442,27 +443,45 @@ include_graphics(c("../results/symptoms_v_antiinflamatory_model_fig_manhattan.pn
 
 
 
-# 04_analysis_tests 
 
-## 04_analysis_tests
-Chi-squared contingency table tests
+# Modelling | Chi-squared Contingency Table Tests
 
 ```{r echo = FALSE, include=FALSE}
 contingency_table1 <- read_csv("/cloud/project/results/contingency_table1.csv")
+
 contingency_table2 <- read_csv("/cloud/project/results/contingency_table2.csv")
 ```
 
 
-```{r echo = FALSE}
-kable(list(contingency_table1,contingency_table2))
+## Chi-squared Contingency Table Tests | Vaccine Manufacturer and Death
+
+Null hypothesis: the proportion of patients that died after getting one vaccine = the proportion of patients that died after getting another vaccine
+
+```{r echo=FALSE}
+contingency_table1
 ```
 
-```{r echo = FALSE, out.width="50%", fig.show='hold'}
-include_graphics(c("/cloud/project/results/manu_v_death.png", "/cloud/project/results/sex_v_death.png"))
+```{r echo=FALSE, fig.show='hold', out.width="45%"}
+include_graphics("/cloud/project/results/manu_v_death.png")
+```
+
+
+## Chi-squared Contingency Table Tests | Vaccine Manufacturer and Sex
+
+Null hypothesis: the proportion of males that died after vaccination = the proportion of females that died after vaccination
+
+```{r echo=FALSE, }
+contingency_table2
+```
+
+```{r echo=FALSE, fig.show='hold', out.width="45%"}
+include_graphics("/cloud/project/results/manu_v_death.png")
 ```
 
 
 ## Conclusion and discussion
+
+
 
 ## References
 
