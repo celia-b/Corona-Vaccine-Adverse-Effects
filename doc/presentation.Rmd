@@ -438,36 +438,21 @@ merged_data_wide %>%
 
 # 04_analysis_visualizations
 
-
-## 04_analysis_visualizations - Age, sex and vaccine manufacturer distribution
-
-## 04_analysis_visualizations - Age distribution
-
-## 04_analysis_visualizations - Age manufacturer distribution
+## 04_analysis_visualizations - Age, sex and manufacturer distribution
 
 
-```{r age_dist, echo = FALSE, out.width = "600px", out.height= "450px"}
+```{r age_dist, echo = FALSE, out.width = "500px", out.height = "300px", out.extra = 'style = "float:left;padding:20px"'}
 include_graphics("../results/age_dist.png")
 
 ```
+```{r message=FALSE, warning=FALSE, echo=FALSE, out.width="50%", out.extra='style = "float:right;padding:20px"'}
+merged_data_wide %>% count (SEX)
 
-## 04_analysis_visualizations - Sex and vaccine manufacturer distribution
+merged_data_wide %>% count (VAX_MANU)
 
-Table: Sex distribution
+```
 
-|SEX |     n|
-|:---|-----:|
-|F   | 24070|
-|M   |  8514|
-|NA  |   828|
 
-Table: Vaccine manufacturer distribution
-
-|VAX_MANU        |     n|
-|:---------------|-----:|
-|JANSSEN         |  1106|
-|MODERNA         | 16253|
-|PFIZER-BIONTECH | 16053|
 
 ## 04_analysis_visualizations - Days until onset of symptoms vs. Age Group
 

@@ -32,13 +32,17 @@ merged_data_long <- read_csv(file = gzfile("data/03_merged_data_long.csv.gz"),
 
 # Convert variables to factors
 merged_data_wide <- merged_data_wide %>% 
-  mutate_if(is.character, as.factor) %>%
-  mutate_if(is.logical, as.factor)
+  mutate_if(is.character,
+            as.factor) %>%
+  mutate_if(is.logical,
+            as.factor)
 
 # Convert variables to factors
 merged_data_long <- merged_data_long %>%
-  mutate_if(is.character, as.factor) %>%
-  mutate_if(is.logical, as.factor)
+  mutate_if(is.character,
+            as.factor) %>%
+  mutate_if(is.logical,
+            as.factor)
 
 # Use top_n_symptoms_func() function to get vector of top 20 symptoms occurring in data set.
 # Use format_func() function to capitalize vector elements and replace spaces with _
@@ -53,17 +57,17 @@ symptoms <- top_n_symptoms_func(data = symptoms_clean,
 
 # Make density plot showing the age distribution within the data set
 age_dist <- merged_data_wide %>%
-  ggplot(aes(AGE_YRS, 
-             stat(count))) +
-  geom_density(color="black", 
-               fill="#00846b",
+  ggplot(aes(x = AGE_YRS, 
+             y = stat(count))) +
+  geom_density(color = "black", 
+               fill = "#00846b",
                alpha = 0.5) +
   labs(x = "Age (years)",
        y = "Count",
        title = "Age distribution of the subjects in the dataset") +
-  theme_minimal(base_family = "Avenir", 
+  theme_minimal(base_family = "Avenir",
                 base_size = 12) +
-  theme(plot.title = element_text(size=13))
+  theme(plot.title = element_text(size = 13))
                
 
 ## 2. Symptoms after n days -------------------------------------------------
@@ -319,7 +323,9 @@ symptom_types_v_manu <- merged_data_long %>%
 
 # Save age distribution plot
 ggsave(age_dist,
-       file = "results/age_dist.png")
+       file = "results/age_dist.png",
+       height = 4,
+       width = 7)
 
 # Save days after vaccination plot
 ggsave(symptoms_after_dist_age,
