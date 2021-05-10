@@ -44,10 +44,11 @@ merged_data_long <- merged_data_long %>%
   mutate_if(is.logical,
             as.factor)
 
-# Use top_n_symptoms_func() function to get vector of top 20 symptoms occurring in data set.
-# Use format_func() function to capitalize vector elements and replace spaces with _
+# Use top_n_symptoms_func() to get vector of top 20 symptoms occurring in data set.
+# Use format_func() to capitalize vector elements and replace spaces with _
 symptoms <- top_n_symptoms_func(data = symptoms_clean, 
-                                n_symp = 20) %>%
+                                n_symp = 20,
+                                VAERS_ID = VAERS_ID) %>%
   format_func()
 
 
