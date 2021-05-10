@@ -471,8 +471,10 @@ Table: Vaccine manufacturer distribution
 
 ## 04_analysis_visualizations - Days until onset of symptoms vs. Age Group
 
-```{r symptoms_after_v_agegroup, echo = FALSE, out.width = "600px", out.height= "450px"}
-include_graphics("../results/symptoms_after_v_agegroup.png")
+Hypothesis: two peaks corresponding to the innate and acquired immune response
+
+```{r symptoms_after_v_agegroup, echo = FALSE, out.width = "700px", out.height= "350px"}
+include_graphics("../results/symptoms_after_dist_age.png")
 
 ```
 
