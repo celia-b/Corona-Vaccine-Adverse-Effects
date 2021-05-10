@@ -435,10 +435,10 @@ Important verbs and tools used:
 - prcomp()
 - augment ()
 
-## 04_analysis_pca - PCA biplot
+## 04_analysis_pca - PCA plot
 
-```{r biplot, echo = FALSE, out.width = "695px", out.height= "400px"}
-include_graphics("../results/biplot.png")
+```{r pca_plot, echo = FALSE, out.width = "695px", out.height= "400px"}
+include_graphics("../results/pca_plot.png")
 ```
 
 ## 04_analysis_pca - Rotation matrix
