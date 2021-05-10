@@ -118,11 +118,9 @@ symptoms_after_age <- merged_data_wide %>%
 # Patchwork the two above plots together
 symptoms_after_dist_age <- symptoms_after + 
   symptoms_after_age + 
-  plot_annotation(title = "Distribution of the number of days after vaccination
-                  until symptom onset",
+  plot_annotation(title = "Distribution of the number of days after vaccination until symptom onset",
                   subtitle = NULL,
-                  caption = "Symptoms that appear after day 15 are infrequent 
-                  and not shown")
+                  caption = "Symptoms that appear after day 15 are infrequent and not shown")
 
 
 
