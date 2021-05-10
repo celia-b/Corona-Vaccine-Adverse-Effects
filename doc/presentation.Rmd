@@ -618,29 +618,27 @@ include_graphics(c("../results/manu_v_death.png", "../results/sex_v_death.png"))
 
 
 
-# 04_analysis_clustering
+# 04_analysis_pca
 
-## 04_analysis_clustering - Important tools used
+## 04_analysis_pca - Important tools used
 Important verbs and tools used:
 
 - prcomp()
-- kmeans()
-- tidymodels: (used for what?)
+- augment ()
 
-
-## 04_analysis_clustering - PCA biplot
+## 04_analysis_pca - PCA biplot
 
 ```{r biplot, echo = FALSE, out.width = "695px", out.height= "400px"}
 include_graphics("../results/biplot.png")
 ```
 
-## 04_analysis_clustering - Rotation matrix
+## 04_analysis_pca - Rotation matrix
 
 ```{r rotation_matrix, echo = FALSE, out.width = "640px", out.height= "500px"}
 include_graphics("../results/rotation_matrix.png")
 ```
 
-## 04_analysis_clustering - Scree plot
+## 04_analysis_pca - Scree plot
 
 ```{r scree_plot, echo = FALSE, out.width = "695px", out.height= "340px"}
 include_graphics("../results/scree_plot.png")
