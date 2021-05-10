@@ -11,14 +11,18 @@ source(file = "R/99_project_functions.R")
 
 
 # Load data ---------------------------------------------------------------
-
-# Load in data sets and manually assign column types to those misinterpreted by R
+# Misinterpreted column types are manually asigned
+## 1. Patients ------------------------------------------------------------
 patients_clean <- read_csv(file = gzfile("data/02_patients_clean.csv.gz"), 
                            col_types = cols(VAX_DATE = col_date(format = "%m/%d/%Y"),
                                             DATEDIED = col_date(format = "%m/%d/%Y")))
 
+## 2. Symptoms ------------------------------------------------------------
 symptoms_clean <- read_csv(file = gzfile("data/02_symptoms_clean.csv.gz"))
 
+
+
+## 3. Vaccines ------------------------------------------------------------
 vaccines_clean <- read_csv(file = gzfile("data/02_vaccines_clean.csv.gz"),
                            col_types = cols(VAX_DOSE_SERIES = col_character()))
 
@@ -26,9 +30,9 @@ vaccines_clean <- read_csv(file = gzfile("data/02_vaccines_clean.csv.gz"),
 # Wrangle data ------------------------------------------------------------
 
 ## 1. Patients ---------------------------------------------------------------
-
-# Convert variables containing long strings into categorical variables with Y/N values. 
+# Convert variables containing long strings into categorical (Y/N) variables. 
 # Remove dirty and uninformative columns. 
+
 patients_clean_aug <- patients_clean %>%
   mutate(HAS_ALLERGIES = case_when(is.na(ALLERGIES) ~ "N",
                                    TRUE ~ "Y")) %>% 
@@ -54,11 +58,6 @@ patients_clean_aug <- patients_clean %>%
                                                  OTHER_MEDS, 
                                                  ignore.case = TRUE) ~ "Y",
                                            TRUE ~ "N")) %>% 
-  mutate(TAKES_STEROIDS = case_when(grepl("steroid | betamethasone | prednisolone |
-                                          dexamethasone | hydrocortisone", 
-                                          OTHER_MEDS, 
-                                          ignore.case = TRUE) ~ "Y",
-                                    TRUE ~ "N")) %>% 
   select(-OTHER_MEDS) %>% 
   mutate(AGE_CLASS = case_when(AGE_YRS < 15 ~ "[0, 15)",
                                AGE_YRS >= 15 & AGE_YRS < 25 ~ "[15, 25)",
@@ -76,32 +75,35 @@ patients_clean_aug <- patients_clean %>%
 
 
 ## 2. Symptoms -------------------------------------------------------------
+# Convert symptoms dataset into long format
 
-# Convert symptoms data set into long format
 symptoms_clean_long <- symptoms_clean %>%
   pivot_longer(cols = -VAERS_ID, 
                names_to = "symptom_num", 
-               values_to = "symptom", 
+               values_to = "symptom",
                values_drop_na = TRUE) %>%
   select(-symptom_num)
 
-# Extract top 20 occurring symptoms using top_n_symptoms_func() function.
+
+# Extract top 20 occurring symptoms using self-made top_n_symptoms_func() function.
 # Filter for individuals that have a least one of these top 20 symptoms. 
 # Fill tibble with TRUE/FALSE depending on whether the individual has symptom.
 # Convert top 20 symptoms to wide format tibble. 
+
 top_20_symptoms <- symptoms_clean_long %>%
   filter(symptom %in% top_n_symptoms_func(data = symptoms_clean, 
                                           n_symp = 20, 
                                           VAERS_ID = VAERS_ID)) %>% 
-  mutate(true_col = TRUE) %>% 
-  drop_na(symptom) %>% 
+  mutate(true_col = TRUE) %>%
   pivot_wider(id_cols = VAERS_ID,
               names_from = symptom,
               values_from = true_col,
               values_fill = FALSE)
 
+
 # Reintroduce individuals with none of the top 20 symptoms which were filtered out above. 
 # The result is a tibble containing all IDs and TRUE/FALSE symptom columns.
+
 symptoms_all_IDs <- symptoms_clean %>% 
   select(VAERS_ID) %>%
   distinct(VAERS_ID) %>% 
@@ -112,19 +114,19 @@ symptoms_all_IDs <- symptoms_clean %>%
 
 # Make new column containing total number of symptoms each individual has.
 # Join this column with top 20 symptom columns. 
-# The final tibble contains IDs, total number of symptoms and top 20 symptoms. 
+# The final tibble contains IDs, total number of symptoms and top 20 symptoms.
+
 symptoms_clean_aug <- symptoms_clean_long %>%
   group_by(VAERS_ID) %>%
   count(sort = FALSE) %>%
   rename(n_symptoms = n) %>%
   full_join(symptoms_all_IDs,
-            by = "VAERS_ID") %>% 
+            by = "VAERS_ID") %>%
   setNames(gsub(" ", 
                 "_", 
                 colnames(.))) %>%
   setNames(str_to_upper(names(.))) %>%
   ungroup()
-
 
 ## 3. Vaccines --------------------------------------------------------------
 
@@ -164,15 +166,19 @@ merged_data_long <- merged_data_wide %>%
 
 # Write data --------------------------------------------------------------
 
+## 1. Patients ------------------------------------------------------------
 write_csv(x = patients_clean_aug,
           file = "data/03_patients_clean_aug.csv.gz")
 
+## 2. Symptoms ------------------------------------------------------------
 write_csv(x = symptoms_clean_aug,
           file = "data/03_symptoms_clean_aug.csv.gz")
 
+## 3. Vaccines ------------------------------------------------------------
 write_csv(x = vaccines_clean_aug,
           file = "data/03_vaccines_clean_aug.csv.gz")
 
+## 4. Merged Tables  ------------------------------------------------------
 write_csv(x = merged_data_wide,
           file = "data/03_merged_data_wide.csv.gz")
 
