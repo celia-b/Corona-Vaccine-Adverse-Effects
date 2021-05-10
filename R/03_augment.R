@@ -128,11 +128,6 @@ symptoms_clean_aug <- symptoms_clean_long %>%
   setNames(str_to_upper(names(.))) %>%
   ungroup()
 
-<<<<<<< HEAD
-
-
-=======
->>>>>>> a9c5e8ac6a15b035edf1b337db94c58161320b9f
 ## 3. Vaccines --------------------------------------------------------------
 
 vaccines_clean_aug <- vaccines_clean

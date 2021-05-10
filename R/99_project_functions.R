@@ -13,7 +13,7 @@ top_n_symptoms_func <- function(data = symptoms_clean,
   #  with symptoms as character values. Default is "02_symptoms_clean.csv.gz"
   # :param VAERS_ID: identifier. Default is VAERS_ID.
   # :param n_symp: number of top occurring symptoms to extract. Default is 20. 
-  symptoms_clean %>%
+  data %>%
     pivot_longer(cols = -VAERS_ID, 
                  names_to = "symptom_num", 
                  values_to = "symptom", 
