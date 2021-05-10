@@ -268,10 +268,14 @@ clean %>%
 include_graphics("../results/age_dist.png")
 
 ```
-```{r message=FALSE, warning=FALSE, echo=FALSE, out.width="50%", out.extra='style = "float:right;padding:20px"'}
-merged_data_wide %>% count (SEX)
 
-merged_data_wide %>% count (VAX_MANU)
+```{r message=FALSE, warning=FALSE, echo=FALSE, out.width="50%", out.extra='style = "float:right;padding:20px"'}
+merged_data_wide <- read_csv(gzfile("../data/03_merged_data_wide.csv.gz"))
+merged_data_wide %>% 
+  count (SEX)
+
+merged_data_wide %>% 
+  count (VAX_MANU)
 
 ```
 
@@ -410,34 +414,6 @@ include_graphics(c("../results/symptoms_v_antiinflamatory_model_fig_manhattan.pn
 
 ## 04_analysis_tests
 Chi-squared contingency table tests
-
-```{r}
-contingency_table1 <- read_csv("..\results\")
-```
-
-
-```{r eval=FALSE, include=FALSE, results='asis'}
-    # Setting `results = 'asis'` allows for using Latex within the code chunk
-    cat('\\begin{center}')
-    # `{c c}` Creates a two column table
-    # Use `{c | c}` if you'd like a line between the tables
-    cat('\\begin{tabular}{ c c }')
-    print(knitr::kable(contingency_table1, format = 'latex'))
-    # Separate the two columns with an `&`
-    cat('&')
-    print(knitr::kable(contingency_table2, format = 'latex'))
-    cat('\\end{tabular}')
-    cat('\\end{center}')
-```
-
-
-
-```{r, echo = FALSE, out.width = "60%", out.extra = 'style = "float:right; padding:10px"'}
-include_graphics(c("../results/manu_v_death.png", "../results/sex_v_death.png"))
-```
-
-
-
 
 
 
