@@ -11,6 +11,7 @@ source(file = "R/99_project_functions.R")
 
 
 # Load data ---------------------------------------------------------------
+
 patients_clean <- read_csv(file = gzfile("data/02_patients_clean.csv.gz"), 
                            col_types = cols(VAX_DATE = col_date(format = "%m/%d/%Y"),
                                             DATEDIED = col_date(format = "%m/%d/%Y")))
@@ -118,8 +119,8 @@ symptoms_clean_aug <- symptoms_clean_long %>%
             by = "VAERS_ID") %>% 
   setNames(gsub(" ", 
                 "_", 
-                names(.))) %>%
-  setNames(toupper(names(.))) %>%
+                colnames(.))) %>%
+  setNames(str_to_upper(names(.))) %>%
   ungroup()
 
 
@@ -131,6 +132,7 @@ vaccines_clean_aug <- vaccines_clean
 ## 4. Merged ------------------------------------------------------------------
 
 ### 4.1 Wide format -----------------------------------------------------------
+
 # Merge patients, symptoms, and vaccine data into one tibble.
 # Make columns DIED and DEATH (symptom) identical.
 merged_data_wide <- patients_clean_aug %>%
@@ -146,6 +148,7 @@ merged_data_wide <- patients_clean_aug %>%
                            TRUE ~ FALSE))
 
 ### 4.2 Long format -----------------------------------------------------------
+
 # Make long format tibble containing a symptoms column with all top 20 symptoms
 # Use format_func() to capitalize and replace spaces with _ in symptom names
 merged_data_long <- merged_data_wide %>%
@@ -158,6 +161,7 @@ merged_data_long <- merged_data_wide %>%
 
 
 # Write data --------------------------------------------------------------
+
 write_csv(x = patients_clean_aug,
           file = "data/03_patients_clean_aug.csv.gz")
 

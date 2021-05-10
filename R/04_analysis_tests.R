@@ -81,24 +81,22 @@ sex_v_died_pval <- sex_v_died_test %>%
 
 # 2. Contingency tables ---------------------------------------------------------
 
-# Make contigency table of manufacturer vs. died
+## 2.1 Manufacturer vs. died  ---------------------------------------------------------
 contingency_table1 <- merged_data_wide %>%
   group_by(DIED, 
            VAX_MANU) %>%
   summarise(n = n()) %>%
-  spread(VAX_MANU,  # change to pivot_wider
-         n) %>% 
-  tibble() 
+  pivot_wider(names_from = VAX_MANU,
+              values_from = n)
 
-# Make contigency table of sex vs. died
+## 2.2 Sex vs. died  ---------------------------------------------------------
 contingency_table2 <- merged_data_wide %>%
   filter(!is.na(SEX)) %>% 
   group_by(DIED, 
            SEX) %>%
   summarise(n = n()) %>%
-  spread(SEX,    # change to pivot_wider
-         n) %>% 
-  tibble() 
+  pivot_wider(names_from = SEX,
+              values_from = n)
 
 
 # 3. Visualizations -------------------------------------------------------
