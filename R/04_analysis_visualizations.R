@@ -55,11 +55,14 @@ symptoms <- top_n_symptoms(data = symptoms_clean, n_symp = 20) %>%
 age_dist <- merged_data_wide %>%
   ggplot(aes(AGE_YRS, 
              stat(count))) +
-  geom_density(color="black", fill="#00846b",alpha = 0.5) +
+  geom_density(color="black",
+               fill="#1E9B8AFF",
+               alpha = 0.5) +
   labs(x = "Age (years)",
        y = "Count",
        title = "Age distribution of the subjects in the dataset") +
-  theme_minimal(base_family = "Avenir", base_size = 12) +
+  theme_minimal(base_family = "Avenir",
+                base_size = 12) +
   theme(plot.title = element_text(size=13))
                
 ## SYMPTOMS AFTER N DAYS -------------------------------------------------
@@ -399,7 +402,9 @@ merged_data_wide %>%
 
 # Save age distribution plot
 ggsave(age_dist,
-       file = "results/age_dist.png")
+       file = "results/age_dist.png",
+       height = 4,
+       width = 7)
 
 # Save days after vaccination plot
 ggsave (symptoms_after_dist_age,
