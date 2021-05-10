@@ -36,17 +36,22 @@ merged_data_long <- read_csv(file = gzfile("data/03_merged_data_long.csv.gz"),
 
 # Convert variables to factors
 merged_data_wide <- merged_data_wide %>% 
-  mutate_if(is.character, as.factor) %>%
-  mutate_if(is.logical, as.factor)
+  mutate_if(is.character, 
+            as.factor) %>%
+  mutate_if(is.logical, 
+            as.factor)
 
 # Convert variables to factors
 merged_data_long <- merged_data_long %>%
-  mutate_if(is.character, as.factor) %>%
-  mutate_if(is.logical, as.factor)
+  mutate_if(is.character, 
+            as.factor) %>%
+  mutate_if(is.logical, 
+            as.factor)
 
 # Define top 20 occurring symptoms in data set. 
 # Get these as a vector with elements in capital letters and no spaces
-symptoms <- top_n_symptoms(data = symptoms_clean, n = 20) %>%
+symptoms <- top_n_symptoms(data = symptoms_clean, 
+                           n = 20) %>%
   capitalize()
 
 
@@ -69,10 +74,8 @@ symptoms <- top_n_symptoms(data = symptoms_clean, n = 20) %>%
 # current illness, current Covid-19, past Covid-19) to see whether a certain 
 # patient profile is more likely to die
 death_v_profile_model <- merged_data_wide %>%
-  glm(formula = DIED ~ 
-        SEX + AGE_YRS + HAS_ALLERGIES + HAS_ILLNESS + HAS_COVID + HAD_COVID, 
-      family = binomial, 
-      data = .) %>%
+  glm(formula = DIED ~ SEX + AGE_YRS + HAS_ALLERGIES + HAS_ILLNESS + HAS_COVID + HAD_COVID, 
+      family = binomial) %>%
   tidy() %>%
   mutate(odds_ratio = exp(estimate)) 
 

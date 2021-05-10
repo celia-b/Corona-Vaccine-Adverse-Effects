@@ -65,46 +65,51 @@ age_dist <- merged_data_wide %>%
 ## SYMPTOMS AFTER N DAYS -------------------------------------------------
 
 ## Distribution of the number of days after receiving the vaccine
-## when symptoms appear.
+## when symptoms appear. DO NOT DELETE
 symptoms_after <- merged_data_wide %>%
-  select(VAERS_ID, AGE_CLASS, SEX, SYMPTOMS_AFTER, VAX_MANU) %>%
+  select(VAERS_ID,
+         AGE_CLASS,
+         SEX,
+         SYMPTOMS_AFTER,
+         VAX_MANU) %>%
   arrange(SYMPTOMS_AFTER) %>%
-  filter(SYMPTOMS_AFTER < 20) %>%
-  ggplot(aes(SYMPTOMS_AFTER, stat(prop))) +
-  geom_bar() +
-  scale_y_continuous(labels = percent) +
+  filter(SYMPTOMS_AFTER < 15) %>%
+  ggplot(aes(SYMPTOMS_AFTER,
+             stat(count))) +
+  geom_bar(fill = "#1E9B8AFF" ,
+           alpha = 0.7) +
   labs(x = "Days after vaccination",
-       y = "Relative ocurrence")
+       y = "Count") +
+  theme_minimal(base_family = "Avenir",
+                base_size = 12) 
 
-
-## By age class
-# I'm not convinced this plot looks nice --> maybe facet_wrap it? make it into heatmap?
-# Delete ?
+## By age class DO NOT DELETE
 symptoms_after_age <- merged_data_wide %>%
-  select(VAERS_ID, AGE_CLASS, SEX, SYMPTOMS_AFTER, VAX_MANU) %>%
+  select(VAERS_ID,
+         AGE_CLASS,
+         SEX,
+         SYMPTOMS_AFTER,
+         VAX_MANU) %>%
   arrange(SYMPTOMS_AFTER) %>%
-  filter(SYMPTOMS_AFTER < 20) %>%
-  drop_na(AGE_CLASS) %>%
-  ggplot(aes(SYMPTOMS_AFTER, 
-             stat(prop), 
+  filter(SYMPTOMS_AFTER < 15) %>%
+  drop_na(AGE_CLASS) %>% 
+  ggplot(aes(x = SYMPTOMS_AFTER,
+             y = AGE_CLASS,
              fill = AGE_CLASS)) +
-  geom_bar(position = "dodge") +
-  #scale_y_continuous(labels = percent) +
-  labs(#subtitle = "Grouping by age class",
-    x = "Days after vaccination",
-    y = "Relative ocurrence") +
-  theme(axis.text.y = element_blank(),
-        axis.ticks.y = element_blank(),
-        axis.title.y = element_blank()) +
-  labs(fill = "Age class")
+  geom_density_ridges(alpha = 0.5) +
+  scale_fill_viridis_d() +
+  labs(fill = "Age class",
+       x = "Days after vaccination",
+       y = "Age class (years)") +
+  theme_minimal(base_family = "Avenir", base_size = 12) +
+  theme(legend.position = "right")
 
-# Patchwork
-# delete ?
-(symptoms_after + symptoms_after_age) + 
-  plot_annotation(title = "Days after vaccination when symptoms appear",
+# Patchwork DO NOT DELETE
+symptoms_after_dist_age <- symptoms_after + 
+  symptoms_after_age + 
+  plot_annotation(title = "Distribution of the number of days after vaccination until symptom onset",
                   subtitle = NULL,
-                  caption = "(Symptoms that appear after day 20 are infrequent and not shown)") +
-  theme(plot.title = element_text(size = 24))
+                  caption = "Symptoms that appear after day 15 are infrequent and not shown")
 
 
 ## By manufacturer 
@@ -393,8 +398,14 @@ merged_data_wide %>%
 # Write data --------------------------------------------------------------
 
 # Save age distribution plot
-ggsave(age_dist, file = "results/age_dist.png")
+ggsave(age_dist,
+       file = "results/age_dist.png")
 
+# Save days after vaccination plot
+ggsave (symptoms_after_dist_age,
+        file = "results/symptoms_after_dist_age.png",
+        height = 5,
+        width = 10)
 
 # Save number of symptoms plots
 ggsave(nsymptoms_age_sex, 
