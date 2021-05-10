@@ -33,13 +33,17 @@ merged_data_long <- read_csv(file = gzfile("data/03_merged_data_long.csv.gz"),
 
 # Convert variables to factors
 merged_data_wide <- merged_data_wide %>% 
-  mutate_if(is.character, as.factor) %>%
-  mutate_if(is.logical, as.factor)
+  mutate_if(is.character,
+            as.factor) %>%
+  mutate_if(is.logical,
+            as.factor)
 
 # Convert variables to factors
 merged_data_long <- merged_data_long %>%
-  mutate_if(is.character, as.factor) %>%
-  mutate_if(is.logical, as.factor)
+  mutate_if(is.character,
+            as.factor) %>%
+  mutate_if(is.logical,
+            as.factor)
 
 # Use top_n_symptoms_func() function to get vector of top 20 symptoms occurring in data set.
 # Use format_func() function to capitalize vector elements and replace spaces with _
