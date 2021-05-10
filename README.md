@@ -1,10 +1,6 @@
 
-```{r setup, include=FALSE, echo=FALSE}
-knitr::opts_chunk$set(echo = FALSE)
-```
-
 # Final Project in Course 22100 R For Bio Data Science, Spring 2021
-![](https://github.com/rforbiodatascience21/2021_group14_final_project/blob/main/DTU_Logo_Corporate_Red_CMYK.png)
+![DTU](https://github.com/rforbiodatascience21/2021_group14_final_project/blob/main/doc/Flowchart.jpg)
 
 
 The goal of this collaborative bio data science project is to demonstrate our ability to use Tidyverse R to perform data cleansing, transformation, visualization, and communication. The focus is on reproducibility and following the tidyverse style guide.
@@ -24,6 +20,8 @@ The raw data consists of 3 CSV files:
 
 ## Project Description
 
+[Flowchart of the workflow](https://github.com/rforbiodatascience21/2021_group14_final_project/blob/main/doc/Flowchart.jpg)
+
 Describe the following: 
 
 - cleaning/wrangling of data using the VAERS Data Use Guide: https://vaers.hhs.gov/docs/VAERSDataUseGuide_November2020.pdf
@@ -31,32 +29,6 @@ Describe the following:
 - modeling 
 
 How to run it ??
-
-
-```{r 
-
-                            _
-                          .' `'.__
-                         /      \ `'"-,
-        .-''''--...__..-/ .     |      \
-      .'               ; :'     '.  a   |
-     /                 | :.       \     =\
-    ;                   \':.      /  ,-.__;.-;`
-   /|     .              '--._   /-.7`._..-;`
-  ; |       '                |`-'      \  =|
-  |/\        .   -' /     /  ;         |  =/
-  (( ;.       ,_  .:|     | /     /\   | =|
-   ) / `\     | `""`;     / |    | /   / =/
-     | ::|    |      \    \ \    \ `--' =/
-    /  '/\    /       )    |/     `-...-`
-   /    | |  `\    /-'    /;
-   \  ,,/ |    \   D    .'  \
-    `""`   \  nnh  D_.-'L__nnh
-            `"""`
-
-
-```
-
 
 
 

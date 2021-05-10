@@ -97,11 +97,12 @@ death_v_profile_model_fig_pval <- death_v_profile_model %>%
        subtitle = "Dashed line indicates a p-value of 0.05",
        x = "Profile features",
        y = "-log(p-value)") +
-  theme_minimal(base_family = "Avenir") +
+  theme_minimal(base_family = "Avenir",
+                base_size = 14) +
   theme(legend.position = "none", 
         axis.text.x = element_text(angle = 45, 
                                    hjust = 1, 
-                                   size = 9), 
+                                   size = 12), 
         plot.title = element_text(hjust = 0.5),
         plot.subtitle = element_text(hjust = 0.5),
         plot.margin = margin(10, 10, 10, 20))
@@ -129,11 +130,12 @@ death_v_profile_model_fig_odds <- death_v_profile_model %>%
        x = "Profile features",
        y = "Log-Odds Ratio",
        caption = "Only features with a p-value < 0.05 are shown.") +
-  theme_minimal(base_family = "Avenir") +
+  theme_minimal(base_family = "Avenir",
+                base_size = 14) +
   theme(legend.position = "none", 
         axis.text.x = element_text(angle = 45, 
                                    hjust = 1, 
-                                   size = 9), 
+                                   size = 12), 
         plot.title = element_text(hjust = 0.5),
         plot.subtitle = element_text(hjust = 0.5),
         plot.margin = margin(10, 10, 10, 20))
@@ -171,11 +173,12 @@ death_v_symptoms_model_fig_pval <- death_v_symptoms_model %>%
        subtitle = "Dashed line indicates a p-value of 0.05",
        x = "Symptoms",
        y = "-log(p-value)") +
-  theme_minimal(base_family = "Avenir") +
+  theme_minimal(base_family = "Avenir",
+                base_size = 14) +
   theme(legend.position = "none", 
         axis.text.x = element_text(angle = 45, 
                                    hjust = 1, 
-                                   size = 9), 
+                                   size = 12), 
         plot.title = element_text(hjust = 0.5),
         plot.subtitle = element_text(hjust = 0.5),
         plot.margin = margin(10, 10, 10, 20))
@@ -207,11 +210,12 @@ death_v_symptoms_model_fig_odds <- death_v_symptoms_model %>%
        x = "Symptoms",
        y = "Log-Odds ratio",
        caption = "Only symptoms with a p-value < 0.05 are shown.") +
-  theme_minimal(base_family = "Avenir") +
+  theme_minimal(base_family = "Avenir",
+                base_size = 14) +
   theme(legend.position = "none", 
         axis.text.x = element_text(angle = 45, 
                                    hjust = 1, 
-                                   size = 9), 
+                                   size = 12), 
         plot.title = element_text(hjust = 0.5),
         plot.subtitle = element_text(hjust = 0.5),
         plot.margin = margin(10, 10, 10, 20))
@@ -260,7 +264,8 @@ symptoms_v_antiinflamatory_model_fig_manhattan <- symptoms_v_antiinflamatory_mod
              linetype = "dashed") +
   geom_text_repel(size = 5) +
   scale_fill_viridis_d() +
-  theme_minimal(base_family = "Avenir") +
+  theme_minimal(base_family = "Avenir",
+                base_size = 14) +
   theme(axis.text.x = element_blank(),
         legend.position = "bottom",
         plot.title = element_text(hjust = 0.5),
@@ -293,11 +298,12 @@ symptoms_v_antiinflamatory_model_fig_odds <- symptoms_v_antiinflamatory_model %>
        x = "Symptoms",
        y = "Log-Odds ratio",
        caption = "Only symptoms with a p-value < 0.05 are shown.") +
-  theme_minimal(base_family = "Avenir") +
+  theme_minimal(base_family = "Avenir",
+                base_size = 14) +
   theme(legend.position = "none", 
         axis.text.x = element_text(angle = 45, 
                                    hjust = 1, 
-                                   size = 9), 
+                                   size = 12), 
         plot.title = element_text(hjust = 0.5),
         plot.subtitle = element_text(hjust = 0.5),
         plot.margin = margin(10, 10, 10, 20))
@@ -312,12 +318,12 @@ write_csv(death_v_profile_model,
 
 ggsave(death_v_profile_model_fig_pval, 
        file = "results/death_v_profile_model_fig_pval.png",
-       height = 5,
+       height = 7,
        width = 10)
 
 ggsave(death_v_profile_model_fig_odds, 
        file = "results/death_v_profile_model_fig_odds.png",
-       height = 5,
+       height = 7,
        width = 10)
 
 
@@ -327,12 +333,12 @@ write_csv(death_v_symptoms_model,
 
 ggsave(death_v_symptoms_model_fig_pval, 
        file = "results/death_v_symptoms_model_fig_pval.png",
-       height = 5,
+       height = 7,
        width = 10)
 
 ggsave(death_v_symptoms_model_fig_odds, 
        file = "results/death_v_symptoms_model_fig_odds.png",
-       height = 5,
+       height = 7,
        width = 10)
 
 
@@ -342,12 +348,12 @@ write_csv(symptoms_v_antiinflamatory_model,
 
 ggsave(symptoms_v_antiinflamatory_model_fig_manhattan, 
        file = "results/symptoms_v_antiinflamatory_model_fig_manhattan.png",
-       height = 5,
+       height = 7,
        width = 10)
 
 ggsave(symptoms_v_antiinflamatory_model_fig_odds, 
        file = "results/symptoms_v_antiinflamatory_model_fig_odds.png",
-       height = 5,
+       height = 7,
        width = 10)
 
 

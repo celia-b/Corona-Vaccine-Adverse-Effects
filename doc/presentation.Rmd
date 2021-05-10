@@ -116,26 +116,9 @@ The aim of this project is to gain insight on the adverse effects of different C
 
 ## Methods: Project workflow
 
-```{r workflow, echo = FALSE, out.width = "60%", out.extra = 'style = "float:right; padding:10px"'}
-include_graphics("../doc/workflow.jpeg")
+```{r workflow, echo = FALSE, out.width = "100%", out.extra = 'style = "float:right; padding:10px"', fig.align = "center"}
+include_graphics("../doc/Flowchart.jpg")
 ```
-
-1. Load datasets 
-
-2. Clean datasets individually
-
-3. Augment and merge the datasets
-
-4. Exploratory data analysis
-
-    - Visualizations
-    - PCA
- 
-5. Modelling
-
-    - Logistic regressions
-    - Proportion testing
-
 
 ## Methods: Challenges and solutions 
 
