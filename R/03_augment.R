@@ -20,6 +20,7 @@ symptoms_clean <- read_csv(file = gzfile("data/02_symptoms_clean.csv.gz"))
 vaccines_clean <- read_csv(file = gzfile("data/02_vaccines_clean.csv.gz"),
                            col_types = cols(VAX_DOSE_SERIES = col_character()))
 
+
 # Wrangle data ------------------------------------------------------------
 
 ## PATIENTS ---------------------------------------------------------------
@@ -75,12 +76,13 @@ symptoms_clean_long <- symptoms_clean %>%
                values_drop_na = TRUE) %>%
   select(-symptom_num)
 
-# Extract the top 20 occurring symptoms using self-made top_n_symptoms() function
+# Extract the top 20 occurring symptoms using self-made top_n_symptoms_func() function
 # Filter for individuals that have a least one of these top 20 symptoms. 
 # Fill tibble with TRUE/FALSE depending on whether the individual has symptom
 # Convert top 20 symptoms to wide format. 
 top_20_symptoms <- symptoms_clean_long %>%
-  filter(symptom %in% top_n_symptoms(data = symptoms_clean, n_symp = 20)) %>% 
+  filter(symptom %in% top_n_symptoms_func(data = symptoms_clean, 
+                                     n_symp = 20)) %>% 
   mutate(true_col = TRUE) %>% 
   drop_na(symptom) %>% 
   pivot_wider(id_cols = VAERS_ID,
@@ -110,6 +112,7 @@ symptoms_clean_aug <- symptoms_clean_long %>%
   setNames(toupper(names(.))) %>%
   ungroup()
 
+
 ## VACCINES --------------------------------------------------------------
 
 vaccines_clean_aug <- vaccines_clean
@@ -120,8 +123,10 @@ vaccines_clean_aug <- vaccines_clean
 # Merge patients, symptoms, and vaccine data into one tibble
 # Make columns DIED and DEATH (symptom) identical
 merged_data_wide <- patients_clean_aug %>%
-  inner_join(symptoms_clean_aug, by = "VAERS_ID") %>%
-  inner_join(vaccines_clean_aug, by = "VAERS_ID") %>%
+  inner_join(symptoms_clean_aug, 
+             by = "VAERS_ID") %>%
+  inner_join(vaccines_clean_aug, 
+             by = "VAERS_ID") %>%
   mutate(DIED = case_when(DIED == "Y" ~ "Y", 
                           DEATH == TRUE ~ "Y",
                           TRUE ~ "N"),
@@ -130,9 +135,11 @@ merged_data_wide <- patients_clean_aug %>%
                            TRUE ~ FALSE))
 
 # Make long format tibble containing a symptoms column with all top 20 symptoms
+# Use format_func() to capitalize and replace spaces with _ in symptom names
 merged_data_long <- merged_data_wide %>%
-  pivot_longer(cols = (top_n_symptoms(data = symptoms_clean, n_symp = 20) %>% 
-                         capitalize()), 
+  pivot_longer(cols = (top_n_symptoms_func(data = symptoms_clean, 
+                                      n_symp = 20) %>% 
+                         format_func()), 
                names_to = "SYMPTOM", 
                values_to = "SYMPTOM_VALUE")
 

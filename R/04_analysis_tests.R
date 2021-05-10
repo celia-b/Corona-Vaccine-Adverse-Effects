@@ -4,12 +4,8 @@ rm(list = ls())
 
 # Load libraries ----------------------------------------------------------
 library("tidyverse")
-library ("cowplot")
-library("patchwork")
-library("scales")
-library("broom")
-library("purrr")
 library("infer")
+
 
 # Define functions --------------------------------------------------------
 source(file = "R/99_project_functions.R")
@@ -26,14 +22,15 @@ merged_data_wide <- read_csv(file = gzfile("data/03_merged_data_wide.csv.gz"),
 
 # Convert variables to factors
 merged_data_wide <- merged_data_wide %>% 
-  mutate_if(is.character, as.factor) %>%
-  mutate_if(is.logical, as.factor)
-
+  mutate_if(is.character, 
+            as.factor) %>%
+  mutate_if(is.logical, 
+            as.factor)
 
 
 # Model data --------------------------------------------------------------
 
-## Proportion tests for DIED vs. different variables
+## Theory: Proportion tests for DIED vs. different variables
 
 # Null hypothesis: the proportions are the same. The two variables are independent.
 # Assumptions:
@@ -45,31 +42,52 @@ merged_data_wide <- merged_data_wide %>%
 # The sample is, supposedly, reasonably random
 
 
-# Run Chi-squared tests and extract p-values
+## Chi-squared tests  --------------------------------------------------------
+
+### DIED, VAX_MANU -----------------------------------------------------------
+# Null hypothesis: the proportion of people that died after vaccination with X 
+# vaccine is equal to the proportion of people that died after Y vaccine
+
+# Do chi-square test
 manu_v_died_test <- chisq_func(DIED, VAX_MANU)
+
+# Extract p-value
 manu_v_died_pval <- manu_v_died_test %>%
   pluck("p.value") %>%
   format.pval(digits = 2)
 
+
+
+### SEX, VAX_MANU -----------------------------------------------------------
+# Null hypothesis: the proportion of people of gender X that died after 
+# vaccination is equal to the proportion of people of gender Y that died
+# after vaccination
+
+# Do chi-square test
 sex_v_died_test <- chisq_func(DIED, SEX)
+
+# Extract p-values
 sex_v_died_pval <- sex_v_died_test %>%
   pluck("p.value") %>% 
   format.pval(digits = 2)
 
 
+# DELETE ??
 # Using the infer library, it can be done like this:
-chisq_test(merged_data_wide, DIED ~ VAX_MANU) 
-chisq_test(merged_data_wide, DIED ~ SEX) 
+chisq_test(merged_data_wide, 
+           DIED ~ VAX_MANU) 
+chisq_test(merged_data_wide, 
+           DIED ~ SEX) 
 
 
-# Contingency tables:
-merged_data_wide %>%
+# Contingency tables ---------------------------------------------------------
+contingency_table1 <- merged_data_wide %>%
   group_by(DIED, VAX_MANU) %>%
   summarise(n = n()) %>%
   spread(VAX_MANU, n) %>% 
   tibble() 
 
-merged_data_wide %>%
+contingency_table2 <- merged_data_wide %>%
   filter(!is.na(SEX)) %>% 
   group_by(DIED, SEX) %>%
   summarise(n = n()) %>%
@@ -77,8 +95,7 @@ merged_data_wide %>%
   tibble() 
 
 
-
-## Visualizations ----------------------------------------------
+# Visualizations ----------------------------------------------
 
 # Vaccine manufacturer vs. death bar plot
 # Counts of deaths per group (per vaccine) are relative to the number of 
@@ -108,7 +125,6 @@ manu_v_death <- merged_data_wide %>%
         plot.title = element_text(hjust = 0.5), 
         plot.subtitle = element_text(hjust = 0.5))
   
-
 
 # Sex vs. death bar plot
 # Counts of deaths per group (per vaccine) are relative to the number of 
@@ -142,10 +158,15 @@ sex_v_death <- merged_data_wide %>%
 
 
 
-
 # Write data --------------------------------------------------------------
-write_tsv(...)
-ggsave(...)
+
+# Save contigency tables
+write_csv(x = contingency_table1,
+          file = "results/contingency_table1.csv")
+
+write_csv(x = contingency_table2,
+          file = "results/contingency_table2.csv")
+
 
 # Save manufacturer/sex vs. death plots
 ggsave(manu_v_death, 

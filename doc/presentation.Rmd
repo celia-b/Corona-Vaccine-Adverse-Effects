@@ -588,6 +588,11 @@ include_graphics(c("../results/symptoms_v_antiinflamatory_model_fig_manhattan.pn
 ## 04_analysis_tests
 Chi-squared contingency table tests
 
+```{r}
+contingency_table1 <- read_csv("..\results\")
+```
+
+
 ```{r eval=FALSE, include=FALSE, results='asis'}
     # Setting `results = 'asis'` allows for using Latex within the code chunk
     cat('\\begin{center}')

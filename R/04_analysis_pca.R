@@ -18,10 +18,11 @@ merged_data_wide <- read_csv(file = gzfile("data/03_merged_data_wide.csv.gz"),
 
 # Wrangle data ------------------------------------------------------------
 
-# Use top_n_symptoms() function to get vector of top 20 symptoms occurring in data set.
-# Use capitalize() function to capitalize elements and replace spaces with _
-symptoms <- top_n_symptoms(data = symptoms_clean, n_symp = 20) %>%
-  capitalize()
+# Use top_n_symptoms_func() function to get vector of top 20 symptoms occurring in data set.
+# Use format_func() function to capitalize vector elements and replace spaces with _
+symptoms <- top_n_symptoms_func(data = symptoms_clean, 
+                                n_symp = 20) %>%
+  format_func()
 
 # Convert symptom-related variables to numeric values (FALSE/N = 0, TRUE/Y = 1)
 numeric_symptoms <- merged_data_wide %>% 
