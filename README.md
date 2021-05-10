@@ -1,6 +1,7 @@
 
 # Final Project in Course 22100 R For Bio Data Science, Spring 2021
 ![DTU](https://github.com/rforbiodatascience21/2021_group14_final_project/blob/main/DTU_Logo.jpg)
+
 The goal of this collaborative bio data science project is to demonstrate our ability to use Tidyverse R to perform data cleansing, transformation, visualization, and communication. The focus is on reproducibility and following the tidyverse style guide.
 
 
