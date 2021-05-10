@@ -1,6 +1,7 @@
 ---
-title: "R for Bio Data Science - Final Project"
-author: Alexandra Weronika Balicki, Celia Burgos Sequeros, Isabel Diaz-Pines Cort and Sofie Schovsbo
+title: 22100 - R for Bio Data Science
+subtitle: Final Project
+author: Alexandra Weronika Balicki, Celia Burgos Sequeros, Isabel Diaz-Pines Cort & Sofie Schovsbo
 
 date: May 10, 2021
 output: 
@@ -123,7 +124,7 @@ include_graphics("../doc/workflow.jpeg")
 2. Clean each data set individually
 3. Augment and merge the data sets
 4. Make visualizations
-5. Do modeling
+5. Do modelling
 
 
 ## Methods: Important packages and verbs
@@ -262,9 +263,9 @@ clean %>%
 - Proportions tests with **chisq.test()**
 
 
-# 04_analysis_visualizations
+# Exploratory Data Analysis | Visualization
 
-## 04_analysis_visualizations - Age, sex and manufacturer distribution
+## Visualization | Age, sex and manufacturer distribution
 
 
 ```{r age_dist, echo = FALSE, out.width = "500px", out.height = "300px", out.extra = 'style = "float:left;padding:20px"'}
@@ -282,8 +283,7 @@ merged_data_wide %>%
 ```
 
 
-
-## 04_analysis_visualizations - Days until onset of symptoms vs. Age Group
+## Visualization | Days until onset of symptoms vs. Age Group
 
 Hypothesis: two peaks corresponding to the innate and acquired immune response
 
@@ -293,46 +293,68 @@ include_graphics("../results/symptoms_after_dist_age.png")
 ```
 
 
-## 04_analysis_visualizations - Age/sex vs. number of symptoms
+## Visualization | Age/sex vs. number of symptoms
 
 ```{r nsymptoms_age_sex, echo = FALSE, out.width = "800px", out.height= "350px"}
 include_graphics("../results/nsymptoms_age_sex.png")
 ```
 
 
-## 04_analysis_visualizations - Vaccine manufacturer vs. number of symptoms
+## Visualization | Vaccine manufacturer vs. number of symptoms
 
 ```{r nsymptoms_v_manu, echo = FALSE, out.width = "650px", out.height= "400px"}
 include_graphics("../results/nsymptoms_v_manu.png")
 ```
 
 
-## 04_analysis_visualizations - Age vs. types of symptoms
+## Visualization | Age vs. types of symptoms
 
 ```{r symptom_types_v_age, echo = FALSE, out.width = "550px", out.height= "450px"}
 include_graphics("../results/symptom_types_v_age.png")
 ```
 
 
-## 04_analysis_visualizations - Sex vs. types of symptoms
+## Visualization | Sex vs. types of symptoms
 
 ```{r symptom_types_v_sex, echo = FALSE, out.width = "750px", out.height= "400px"}
 include_graphics("../results/symptom_types_v_sex.png")
 ```
 
 
-## 04_analysis_visualizations - Vaccine manufacturer vs. types of symptoms
+## Visualization | Vaccine manufacturer vs. types of symptoms
 
 ```{r symptom_types_v_manu, echo = FALSE, out.width = "875px", out.height= "455px"}
 include_graphics("../results/symptom_types_v_manu.png")
 ```
 
+# Exploratory Data Analysis | Principal Component Analysis
+
+## PCA | Important tools used
+Important verbs and tools used:
+
+- prcomp()
+- augment ()
+
+## PCA | PCA plot and rotation matrix 
+
+```{r, fig.show="hold", out.width="50%", out.height= "400px"}
+include_graphics("../results/pca_plot.png")
+include_graphics("../results/rotation_matrix.png")
+```
+
+## PCA | Scree plot 
+
+```{r scree_plot, echo = FALSE, out.width = "750px", out.height= "400px"}
+include_graphics("../results/scree_plot.png")
+```
 
 
-# Modeling 
+# Modelling | Logistic Regressions 
 
 
-## Modeling | Logistic regression: death ~ patient profile
+## Logistic Regression | Death ~ Patient Profile
+
+Is the patient's profile (sex, age, allergic/not, ill/not, has/had covid/not) correlated with death?
 
 ```{r, eval = FALSE}
 merged_data_wide %>%
@@ -348,14 +370,18 @@ model <- read_csv("../results/death_v_profile_model.csv")
 model
 ```
 
-## Modeling | Logistic regression: death ~ patient profile
+## Logistic Regression | Death ~ Patient Profile
+
+Is the patient's profile (sex, age, allergic/not, ill/not, has/had covid/not) correlated with death?
 
 ```{r death_v_profile_pval, echo = FALSE, out.width="50%", fig.show='hold'}
 include_graphics(c("../results/death_v_profile_model_fig_pval.png", "../results/death_v_profile_model_fig_odds.png"))
 ```
 
 
-## Modeling | Logistic regression: death ~ symptoms
+## Logistic Regression | Death ~ Symptoms
+
+Are some symptoms correlated with death?
 
 ```{r, eval = FALSE}
 merged_data_wide %>%
@@ -373,7 +399,9 @@ model %>%
 ```
 
 
-## Modeling | Logistic regression: death ~ symptoms
+## Logistic Regression | Death ~ Symptoms
+
+Are some symptoms correlated with death?
 
 ```{r, echo = FALSE, out.width="50%", fig.show='hold'}
 include_graphics(c("../results/death_v_symptoms_model_fig_pval.png", "../results/death_v_symptoms_model_fig_odds.png"))
@@ -381,7 +409,9 @@ include_graphics(c("../results/death_v_symptoms_model_fig_pval.png", "../results
 
 
 
-## Modeling | Many logistic regressions: each symptom ~ takes anti-inflamatory
+## Many Logistic Regressions | Each Symptom ~ Takes Anti-Inflamatory
+
+Does taking anti-inflamatories modify the chance of having symptoms?
 
 ```{r, eval = FALSE}
 merged_data_long %>%
@@ -404,7 +434,7 @@ model %>%
 
 
 
-## Modeling | Many logistic regressions: each symptom ~ takes anti-inflamatory
+## Many Logistic Regressions | Each Symptom ~ Takes Anti-Inflamatory
 
 ```{r symptoms_v_antiinfl_manhattan, echo = FALSE, out.width="50%", fig.show='hold'}
 include_graphics(c("../results/symptoms_v_antiinflamatory_model_fig_manhattan.png", "../results/symptoms_v_antiinflamatory_model_fig_odds.png"))
@@ -412,10 +442,8 @@ include_graphics(c("../results/symptoms_v_antiinflamatory_model_fig_manhattan.pn
 
 
 
-# 04_analysis_tests 
 
-## 04_analysis_tests
-Chi-squared contingency table tests
+# Modelling | Chi-squared Contingency Table Tests
 
 ```{r echo = FALSE, include=FALSE}
 contingency_table1 <- read_csv("/cloud/project/results/contingency_table1.csv")
@@ -424,17 +452,29 @@ contingency_table2 <- read_csv("/cloud/project/results/contingency_table2.csv")
 ```
 
 
-```{r echo=FALSE, }
+## Chi-squared Contingency Table Tests | Vaccine Manufacturer and Death
+
+Null hypothesis: the proportion of patients that died after getting one vaccine = the proportion of patients that died after getting another vaccine
+
+```{r echo=FALSE}
 contingency_table1
 ```
+
+```{r echo=FALSE, fig.show='hold', out.width="45%"}
+include_graphics("/cloud/project/results/manu_v_death.png")
+```
+
+
+## Chi-squared Contingency Table Tests | Vaccine Manufacturer and Sex
+
+Null hypothesis: the proportion of males that died after vaccination = the proportion of females that died after vaccination
 
 ```{r echo=FALSE, }
 contingency_table2
 ```
 
-
-```{r echo=FALSE, fig.show='hold', out.width="50%"}
-include_graphics(c("/cloud/project/results/manu_v_death.png", "/cloud/project/results/sex_v_death.png"))
+```{r echo=FALSE, fig.show='hold', out.width="45%"}
+include_graphics("/cloud/project/results/manu_v_death.png")
 ```
 
 
@@ -458,14 +498,6 @@ include_graphics("../results/pca_plot.png")
 include_graphics("../results/rotation_matrix.png")
 ```
 
-## 04_analysis_pca - Scree plot
-
-```{r scree_plot, echo = FALSE, out.width = "695px", out.height= "340px"}
-include_graphics("../results/scree_plot.png")
-```
-
-
-
 
 
 ## Conclusion and discussion
@@ -474,7 +506,7 @@ include_graphics("../results/scree_plot.png")
 
 ## References
 
-Data set: https://www.kaggle.com/ayushggarg/covid19-vaccine-adverse-reactions?select=2021VAERSSYMPTOMS.csv
+Dataset: https://www.kaggle.com/ayushggarg/covid19-vaccine-adverse-reactions?select=2021VAERSSYMPTOMS.csv
 
 Dataset user guide: https://vaers.hhs.gov/docs/VAERSDataUseGuide_November2020.pdf
 
