@@ -162,10 +162,10 @@ sex_v_death <- merged_data_wide %>%
 
 # Save contigency tables
 write_csv(x = contingency_table1,
-          file = "contingency_table1.csv")
+          file = "results/contingency_table1.csv")
 
 write_csv(x = contingency_table2,
-          file = "contingency_table2.csv")
+          file = "results/contingency_table2.csv")
 
 
 # Save manufacturer/sex vs. death plots
