@@ -56,9 +56,9 @@ symptoms <- top_n_symptoms_func(data = symptoms_clean,
 # Logistic regressions are fit for categorical outcome variables like DIED (Y/N)
 
 # The "estimate" column is the log-odds ratio, so we must interpret them as follows:
-# 1. If the variable is categorical, like HAS_ILLNESS, an estimate of 9.877e-01 for the "Y" group
-#    means that this group is exp(9.877e-01) = 2.685052 times more likely to die after taking 
-#    the vaccine than the reference 'N' group.
+# 1. If the variable is categorical, like HAS_ILLNESS, an estimate of 9.877e-01 for 
+#    the "Y" group means that this group is exp(9.877e-01) = 2.685052 times more 
+#    likely to die after taking the vaccine than the reference 'N' group.
 # 2. If the variable is continuous, like HOSPDAYS, an estimate of 6.024e-02
 #    means that, holding all else constant, one unit change in HOSPDAYS will have 
 #    exp(6.024e-02) = 1.062091 units change in the odds ratio.
@@ -141,7 +141,6 @@ death_v_profile_model_fig_odds <- death_v_profile_model %>%
         plot.margin = margin(10, 10, 10, 20))
 
 
-
 ## 2. Symptoms vs. death LogReg ----------------------------------------------
 
 # Modeling death outcome vs presence/absence of 20 most common symptoms 
@@ -221,13 +220,14 @@ death_v_symptoms_model_fig_odds <- death_v_symptoms_model %>%
         plot.margin = margin(10, 10, 10, 20))
 
 
-
 ## 3. Many LogRegs ---------------------------------------------
 
 # How much more/less likely is it to get each of the symptoms
 # if you have taken an anti-inflammatory?
 symptoms_v_antiinflamatory_model <- merged_data_long %>%
-  select(SYMPTOM, SYMPTOM_VALUE, TAKES_ANTIINFLAMATORY) %>%
+  select(SYMPTOM, 
+         SYMPTOM_VALUE, 
+         TAKES_ANTIINFLAMATORY) %>%
   group_by(SYMPTOM) %>%
   nest %>% 
   ungroup %>%
