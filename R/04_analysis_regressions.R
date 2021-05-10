@@ -4,12 +4,8 @@ rm(list = ls())
 
 # Load libraries ----------------------------------------------------------
 library("tidyverse")
-library ("cowplot")
-library("patchwork")
-library("scales")
 library("broom")
 library("purrr")
-library("infer")
 library("viridis")
 library("ggrepel")
 
@@ -34,29 +30,28 @@ merged_data_long <- read_csv(file = gzfile("data/03_merged_data_long.csv.gz"),
 
 # Wrangle data ------------------------------------------------------------
 
-# Convert variables to factors
+# Convert variables of wide format tibble to factors
 merged_data_wide <- merged_data_wide %>% 
   mutate_if(is.character, 
             as.factor) %>%
   mutate_if(is.logical, 
             as.factor)
 
-# Convert variables to factors
+# Convert variables of long format tibble to factors
 merged_data_long <- merged_data_long %>%
   mutate_if(is.character, 
             as.factor) %>%
   mutate_if(is.logical, 
             as.factor)
 
-# Use top_n_symptoms_func() function to get vector of top 20 symptoms occurring in data set.
-# Use format_func() function to capitalize vector elements and replace spaces with _
+# Use top_n_symptoms_func() to get vector of top 20 symptoms occurring in data set.
+# Use format_func() to capitalize vector elements and replace spaces with _
 symptoms <- top_n_symptoms_func(data = symptoms_clean, 
                                 n_symp = 20) %>%
   format_func()
 
 
 # Model data -------------------------------------------------------------
-
 
 # Logistic regressions are fit for categorical outcome variables like DIED (Y/N)
 
@@ -69,18 +64,21 @@ symptoms <- top_n_symptoms_func(data = symptoms_clean,
 #    exp(6.024e-02) = 1.062091 units change in the odds ratio.
 
 
-## Logistic regression 1 -------------------------------------------------
-# Modeling death outcome vs patient profile (sex, age, allergies, 
-# current illness, current Covid-19, past Covid-19) to see whether a certain 
-# patient profile is more likely to die
+## 1. Patient profile vs death LogReg ------------------------------------------
+
+# Model death outcome vs patient profile (sex, age, allergies, current illness, 
+# current Covid-19, past Covid-19) to see whether a certain patient profile is 
+# more likely to die after the vaccine
 death_v_profile_model <- merged_data_wide %>%
-  glm(formula = DIED ~ SEX + AGE_YRS + HAS_ALLERGIES + HAS_ILLNESS + HAS_COVID + HAD_COVID, 
+  glm(formula = DIED ~ SEX + AGE_YRS + HAS_ALLERGIES + HAS_ILLNESS + HAS_COVID +
+        HAD_COVID, 
       family = binomial) %>%
   tidy() %>%
   mutate(odds_ratio = exp(estimate)) 
 
 
-### LogReg Visualization 1.1 ---------------------------------------------
+### 1.1 LogReg Visualization ---------------------------------------------
+
 # Make p-value bar plot
 death_v_profile_model_fig_pval <- death_v_profile_model %>%
   filter(term != "(Intercept)") %>%
@@ -109,7 +107,8 @@ death_v_profile_model_fig_pval <- death_v_profile_model %>%
         plot.margin = margin(10, 10, 10, 20))
 
 
-### LogReg Visualization 1.2 ---------------------------------------------
+### 1.2 LogReg Visualization ---------------------------------------------
+
 # Make log-odds ratio bar plot
 death_v_profile_model_fig_odds <- death_v_profile_model %>%
   filter(p.value < 0.05) %>%
@@ -125,7 +124,8 @@ death_v_profile_model_fig_odds <- death_v_profile_model %>%
   scale_fill_viridis_d() +
   scale_x_discrete(labels = c("Age", "Has illness", "Is male")) +
   labs(title = "Log-Odds ratio for death ~ patient profile association",
-       subtitle = "A Log-Odds ratio above 0 means the feature is more common in patients who die",
+       subtitle = "A Log-Odds ratio above 0 means the feature is more common in 
+       patients who die",
        x = "Profile features",
        y = "Log-Odds Ratio",
        caption = "Only features with a p-value < 0.05 are shown.") +
@@ -140,7 +140,8 @@ death_v_profile_model_fig_odds <- death_v_profile_model %>%
 
 
 
-## Logistic Regression 2 ----------------------------------------------
+## 2. Symptoms vs. death LogReg ----------------------------------------------
+
 # Modeling death outcome vs presence/absence of 20 most common symptoms 
 # to see whether the presence/absence of certain symptoms increase risk of dying
 death_v_symptoms_model <- merged_data_wide %>%
@@ -152,7 +153,8 @@ death_v_symptoms_model <- merged_data_wide %>%
   mutate(odds_ratio = exp(estimate))
   
 
-### LogReg Visualization 2.1 -----------------------------------------
+### 2.1 LogReg Visualization -----------------------------------------
+
 # Make p-value plot
 death_v_symptoms_model_fig_pval <- death_v_symptoms_model %>%
   filter(term != "(Intercept)") %>%
@@ -178,7 +180,9 @@ death_v_symptoms_model_fig_pval <- death_v_symptoms_model %>%
         plot.subtitle = element_text(hjust = 0.5),
         plot.margin = margin(10, 10, 10, 20))
 
-### LogReg Visualization 2.2 -----------------------------------------
+
+### 2.2. LogReg Visualization -----------------------------------------
+
 # Make log-odds ratio plot
 death_v_symptoms_model_fig_odds <- death_v_symptoms_model %>%
   filter(p.value < 0.05) %>%
@@ -198,7 +202,8 @@ death_v_symptoms_model_fig_odds <- death_v_symptoms_model %>%
                               "DYSPNOEA", "VOMITING")) +
   scale_fill_viridis_d() +
   labs(title = "Log-Odds ratio for death ~ symptoms association",
-       subtitle = "A Log-Odds ratio above 0 means the symtom is more common in patients who die",
+       subtitle = "A Log-Odds ratio above 0 means the symtom is more common in 
+       patients who die",
        x = "Symptoms",
        y = "Log-Odds ratio",
        caption = "Only symptoms with a p-value < 0.05 are shown.") +
@@ -212,7 +217,9 @@ death_v_symptoms_model_fig_odds <- death_v_symptoms_model %>%
         plot.margin = margin(10, 10, 10, 20))
 
 
-## Many LogRegs ---------------------------------------------
+
+## 3. Many LogRegs ---------------------------------------------
+
 # How much more/less likely is it to get each of the symptoms
 # if you have taken an anti-inflammatory?
 symptoms_v_antiinflamatory_model <- merged_data_long %>%
@@ -225,7 +232,8 @@ symptoms_v_antiinflamatory_model <- merged_data_long %>%
                         data = .x,
                         family = binomial(link = "logit")))) %>%
   mutate(mdl_tidy = map(mdl, 
-                        ~tidy(.x, conf.int = TRUE))) %>% 
+                        ~tidy(.x, 
+                              conf.int = TRUE))) %>% 
   unnest(mdl_tidy) %>%
   filter(term != "(Intercept)") %>%
   mutate(odds_ratio = exp(estimate)) %>%
@@ -234,10 +242,12 @@ symptoms_v_antiinflamatory_model <- merged_data_long %>%
          symptom_label = case_when(identified_as == "Significant" ~ as.character(SYMPTOM),
                                    identified_as == "Non-significant" ~ ""),
          neg_log10_p = -log10(p.value)) %>%
-  select(-c(data, mdl)) # Nested columns are removed bc otherwise we can't save the csv
+  select(-c(data, 
+            mdl))
 
 
-### Many LogRegs Visualization 1 ---------------------------
+### 3.1 Many LogRegs Visualization 1 ---------------------------
+
 # Make Manhattan plot
 symptoms_v_antiinflamatory_model_fig_manhattan <- symptoms_v_antiinflamatory_model %>% 
   ggplot(aes(x = SYMPTOM,
@@ -261,7 +271,9 @@ symptoms_v_antiinflamatory_model_fig_manhattan <- symptoms_v_antiinflamatory_mod
        x = "Symptom",
        y = "-log10(p)")
 
-### Many LogRegs Visualization 2 ---------------------------
+
+### 3.2 Many LogRegs Visualization  ---------------------------
+
 # Make p-value plot
 symptoms_v_antiinflamatory_model_fig_odds <- symptoms_v_antiinflamatory_model %>%
   filter(p.value < 0.05) %>%
