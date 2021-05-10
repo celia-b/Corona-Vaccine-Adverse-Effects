@@ -123,7 +123,7 @@ include_graphics("../doc/workflow.jpeg")
 2. Clean each data set individually
 3. Augment and merge the data sets
 4. Make visualizations
-5. Do modeling
+5. Do modelling
 
 
 ## Methods: Important packages and verbs
@@ -329,10 +329,12 @@ include_graphics("../results/symptom_types_v_manu.png")
 
 
 
-# Modeling 
+# Modelling | Logistic Regressions 
 
 
-## Modeling | Logistic regression: death ~ patient profile
+## Logistic Regression | Death ~ Patient Profile
+
+Is the patient's profile (sex, age, allergic/not, ill/not, has/had covid/not) correlated with death?
 
 ```{r, eval = FALSE}
 merged_data_wide %>%
@@ -348,14 +350,18 @@ model <- read_csv("../results/death_v_profile_model.csv")
 model
 ```
 
-## Modeling | Logistic regression: death ~ patient profile
+## Logistic Regression: | Death ~ Patient Profile
+
+Is the patient's profile (sex, age, allergic/not, ill/not, has/had covid/not) correlated with death?
 
 ```{r death_v_profile_pval, echo = FALSE, out.width="50%", fig.show='hold'}
 include_graphics(c("../results/death_v_profile_model_fig_pval.png", "../results/death_v_profile_model_fig_odds.png"))
 ```
 
 
-## Modeling | Logistic regression: death ~ symptoms
+## Logistic Regression | Death ~ Symptoms
+
+Are some symptoms correlated with death?
 
 ```{r, eval = FALSE}
 merged_data_wide %>%
@@ -373,7 +379,9 @@ model %>%
 ```
 
 
-## Modeling | Logistic regression: death ~ symptoms
+## Logistic Regression | Death ~ Symptoms
+
+Are some symptoms correlated with death?
 
 ```{r, echo = FALSE, out.width="50%", fig.show='hold'}
 include_graphics(c("../results/death_v_symptoms_model_fig_pval.png", "../results/death_v_symptoms_model_fig_odds.png"))
@@ -381,7 +389,9 @@ include_graphics(c("../results/death_v_symptoms_model_fig_pval.png", "../results
 
 
 
-## Modeling | Many logistic regressions: each symptom ~ takes anti-inflamatory
+## Many Logistic Regressions | Each Symptom ~ Takes Anti-Inflamatory
+
+Does taking antiiflamatories modify the chance of having symptoms?
 
 ```{r, eval = FALSE}
 merged_data_long %>%
@@ -404,7 +414,7 @@ model %>%
 
 
 
-## Modeling | Many logistic regressions: each symptom ~ takes anti-inflamatory
+## Many Logistic Regressions | Each Symptom ~ Takes Anti-Inflamatory
 
 ```{r symptoms_v_antiinfl_manhattan, echo = FALSE, out.width="50%", fig.show='hold'}
 include_graphics(c("../results/symptoms_v_antiinflamatory_model_fig_manhattan.png", "../results/symptoms_v_antiinflamatory_model_fig_odds.png"))
@@ -429,6 +439,7 @@ kable(list(contingency_table1,contingency_table2))
 ```{r echo = FALSE, out.width="50%", fig.show='hold'}
 include_graphics(c("/cloud/project/results/manu_v_death.png", "/cloud/project/results/sex_v_death.png"))
 ```
+
 
 # 04_analysis_pca
 
@@ -465,6 +476,7 @@ include_graphics("../results/scree_plot.png")
 ## References
 
 Dataset: https://www.kaggle.com/ayushggarg/covid19-vaccine-adverse-reactions?select=2021VAERSSYMPTOMS.csv
+
 Dataset user guide: https://vaers.hhs.gov/docs/VAERSDataUseGuide_November2020.pdf
 
 
