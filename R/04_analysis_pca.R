@@ -33,7 +33,7 @@ numeric_symptoms <- merged_data_wide %>%
   mutate(DISABLE = case_when(DISABLE == "N" ~ 0,
                              DISABLE == "Y" ~ 1)) %>%
   mutate(ER_ED_VISIT = case_when(ER_ED_VISIT == "N" ~ 0,
-                                 ER_ED_VISIT == "Y" ~ 1)) %>%
+                                 ER_ED_VISIT == "Y" ~ 1)) %>% 
   mutate_if(is.logical, 
             as.numeric) %>% 
   select(all_of(symptoms), 
@@ -48,8 +48,12 @@ numeric_symptoms <- merged_data_wide %>%
 # Get tibble containing the vaccine manufacturer of each patient. 
 # To be used as classes (labels) for the PCA.
 classes <- merged_data_wide %>% 
-  drop_na(all_of(symptoms), HOSPITAL, DISABLE, ER_ED_VISIT, 
-          SYMPTOMS_AFTER, N_SYMPTOMS) %>%
+  drop_na(all_of(symptoms), 
+          HOSPITAL, 
+          DISABLE, 
+          ER_ED_VISIT, 
+          SYMPTOMS_AFTER, 
+          N_SYMPTOMS) %>%
   select(VAX_MANU)
 
 
