@@ -160,7 +160,7 @@ sex_v_death <- merged_data_wide %>%
 
 # Write data --------------------------------------------------------------
 
-# Save contigency tables
+# Save contingency tables
 write_csv(x = contingency_table1,
           file = "results/contingency_table1.csv")
 
